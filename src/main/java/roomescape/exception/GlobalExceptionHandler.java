@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.response.ErrorResponse;
 
@@ -16,33 +17,20 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleBusiness(RuntimeException e) {
+        ResponseStatus status = e.getClass().getAnnotation(ResponseStatus.class);
+        if (status == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("서버 내부 오류가 발생했습니다."));
+        }
+        return ResponseEntity.status(status.value())
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNoSuchElement(NoSuchElementException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(exception.getMessage()));
-    }
-
-    @ExceptionHandler(PastReservationException.class)
-    public ResponseEntity<ErrorResponse> handlePastReservation(PastReservationException exception) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(exception.getMessage()));
-    }
-
-    @ExceptionHandler(DuplicateReservationException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateReservation(DuplicateReservationException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(exception.getMessage()));
-    }
-
-    @ExceptionHandler(DeletionNotAllowedException.class)
-    public ResponseEntity<ErrorResponse> handleDeletionNotAllowed(DeletionNotAllowedException exception) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(exception.getMessage()));
-    }
-
-    @ExceptionHandler(InvalidReferenceException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidReference(InvalidReferenceException exception) {
-        return ResponseEntity.badRequest()
                 .body(new ErrorResponse(exception.getMessage()));
     }
 
@@ -74,11 +62,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException exception) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("유효하지 않은 참조 데이터입니다."));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("서버 내부 오류가 발생했습니다."));
     }
 }

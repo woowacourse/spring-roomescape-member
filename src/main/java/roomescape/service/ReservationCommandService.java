@@ -41,23 +41,19 @@ public class ReservationCommandService {
         }
     }
 
-    private void validateNotPast(LocalDate date, ReservationTime time) {
-        if (date.atTime(time.startAt()).isBefore(LocalDateTime.now(clock))) {
-            throw new PastReservationException();
-        }
-    }
-
-    private void validateDuplicate(LocalDate date, Long timeId, Long themeId) {
-        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new DuplicateReservationException();
-        }
+    private boolean isPast(LocalDate date, ReservationTime time) {
+        return date.atTime(time.startAt()).isBefore(LocalDateTime.now(clock));
     }
 
     public Reservation create(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime time = findTimeReference(timeId);
         findThemeReference(themeId);
-        validateNotPast(date, time);
-        validateDuplicate(date, timeId, themeId);
+        if (isPast(date, time)) {
+            throw new PastReservationException("지나간 시간에는 예약을 생성할 수 없습니다.");
+        }
+        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new DuplicateReservationException("해당 날짜와 시간에 이미 예약이 존재합니다.");
+        }
         return reservationDao.save(name, date, timeId, themeId);
     }
 
@@ -67,17 +63,21 @@ public class ReservationCommandService {
 
     public void cancel(long reservationId) {
         Reservation reservation = reservationDao.findById(reservationId);
-        validateNotPast(reservation.reservationDate(), reservation.reservationTime());
+        if (isPast(reservation.reservationDate(), reservation.reservationTime())) {
+            throw new PastReservationException("이미 시작된 예약은 취소할 수 없습니다.");
+        }
         reservationDao.delete(reservationId);
     }
 
     public Reservation update(long reservationId, LocalDate newDate, long newTimeId) {
         ReservationTime newTime = findTimeReference(newTimeId);
-        validateNotPast(newDate, newTime);
+        if (isPast(newDate, newTime)) {
+            throw new PastReservationException("지나간 시간으로 예약을 변경할 수 없습니다.");
+        }
         Reservation current = reservationDao.findById(reservationId);
         long themeId = current.reservationTheme().id();
         if (reservationDao.existsByDateAndTimeIdAndThemeIdExcluding(newDate, newTimeId, themeId, reservationId)) {
-            throw new DuplicateReservationException();
+            throw new DuplicateReservationException("변경하려는 시간에 이미 다른 예약이 존재합니다.");
         }
         return reservationDao.updateDateAndTime(reservationId, newDate, newTimeId);
     }

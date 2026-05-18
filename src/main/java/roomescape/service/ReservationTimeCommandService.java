@@ -24,7 +24,7 @@ public class ReservationTimeCommandService {
         try {
             reservationTimeDao.deleteByTimeId(reservationTimeId);
         } catch (DataIntegrityViolationException e) {
-            throw new DeletionNotAllowedException();
+            throw new DeletionNotAllowedException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
     }
 }

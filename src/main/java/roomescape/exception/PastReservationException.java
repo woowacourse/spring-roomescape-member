@@ -1,8 +1,12 @@
 package roomescape.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.BAD_REQUEST)
 public class PastReservationException extends RuntimeException {
 
-    public PastReservationException() {
-        super("지나간 시간에 대해서는 예약생성이 불가능 합니다.");
+    public PastReservationException(String message) {
+        super(message);
     }
 }

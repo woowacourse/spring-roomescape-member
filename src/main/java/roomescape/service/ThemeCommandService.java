@@ -21,7 +21,7 @@ public class ThemeCommandService {
         try {
             themeDao.delete(themeId);
         } catch (DataIntegrityViolationException e) {
-            throw new DeletionNotAllowedException();
+            throw new DeletionNotAllowedException("예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
     }
 }

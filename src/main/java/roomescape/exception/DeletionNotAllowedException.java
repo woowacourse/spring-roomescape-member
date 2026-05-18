@@ -1,7 +1,11 @@
 package roomescape.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.BAD_REQUEST)
 public class DeletionNotAllowedException extends RuntimeException {
-    public DeletionNotAllowedException() {
-        super("예약이 존재하는 시간은 삭제할 수 없습니다.");
+    public DeletionNotAllowedException(String message) {
+        super(message);
     }
 }
