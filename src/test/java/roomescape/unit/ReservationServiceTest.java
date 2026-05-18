@@ -478,24 +478,24 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제할 수 있다.")
     void 예약_삭제_성공() {
         // given
-        when(reservationQueryingDao.existsById(reservationTimeId))
-                .thenReturn(true);
+        when(reservationQueryingDao.findReservationById(reservationId))
+                .thenReturn(Optional.of(reservation));
 
         // when
-        reservationService.delete(reservationTimeId);
+        reservationService.delete(reservationId);
 
         // then
-        verify(reservationUpdatingDao, times(1)).delete(reservationTimeId);
+        verify(reservationUpdatingDao, times(1)).delete(reservationId);
     }
 
     @Test
     @DisplayName("예약을 삭제할 때 존재하지 않는 예약인 경우 에러가 발생한다.")
     void 예약_삭제_에러() {
         // given
-        when(reservationQueryingDao.existsById(reservationTimeId))
-                .thenReturn(false);
+        when(reservationQueryingDao.findReservationById(reservationId))
+                .thenReturn(Optional.empty());
 
         // when && then
-        Assertions.assertThrows(BusinessException.class, () -> reservationService.delete(reservationTimeId));
+        Assertions.assertThrows(BusinessException.class, () -> reservationService.delete(reservationId));
     }
 }

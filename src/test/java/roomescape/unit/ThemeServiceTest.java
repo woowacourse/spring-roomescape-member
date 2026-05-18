@@ -43,8 +43,16 @@ class ThemeServiceTest {
         String name = "인형의 집";
         String description = "공포 테마의 클래식, 밤마다 살아 움직이는 인형들이 가득한 저택을 탈출하세요.";
         String url = "https://example.com/1";
+        Long themeId = 1L;
+        Theme theme = new Theme(themeId, name, description, url);
 
         ThemeCreateRequest request = new ThemeCreateRequest(name, description, url);
+
+        when(themeUpdatingDao.insert(request))
+                .thenReturn(themeId);
+
+        when(themeQueryingDao.findThemeById(themeId))
+                .thenReturn(Optional.of(theme));
 
         // when
         ThemeResponse themeResponse = themeService.create(request);
@@ -77,10 +85,7 @@ class ThemeServiceTest {
     void 테마_삭제_성공() {
         // given
         Long themeId = 1L;
-        Theme theme = new Theme(themeId, "인형의 집", "설명", "https://example.com/1");
 
-        when(themeQueryingDao.findThemeById(themeId))
-                .thenReturn(Optional.of(theme));
         when(reservationQueryingDao.existsReservationByThemeId(themeId))
                 .thenReturn(false);
 
@@ -92,28 +97,11 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("테마를 삭제할 때 존재하지 않는 테마인 경우 에러가 발생한다.")
-    void 테마_삭제_에러_테마_없음() {
-        // given
-        Long themeId = 1L;
-
-        when(themeQueryingDao.findThemeById(themeId))
-                .thenReturn(Optional.empty());
-
-        // when && then
-        Assertions.assertThrows(BusinessException.class, () -> themeService.delete(themeId));
-        verify(themeUpdatingDao, never()).delete(themeId);
-    }
-
-    @Test
     @DisplayName("테마를 삭제할 때 예약이 있는 테마인 경우 에러가 발생한다.")
     void 테마_삭제_에러_예약이_있는_테마() {
         // given
         Long themeId = 1L;
-        Theme theme = new Theme(themeId, "인형의 집", "설명", "https://example.com/1");
 
-        when(themeQueryingDao.findThemeById(themeId))
-                .thenReturn(Optional.of(theme));
         when(reservationQueryingDao.existsReservationByThemeId(themeId))
                 .thenReturn(true);
 

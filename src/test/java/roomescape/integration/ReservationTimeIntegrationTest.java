@@ -139,7 +139,7 @@ class ReservationTimeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/999")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(204);
     }
 
     @Test

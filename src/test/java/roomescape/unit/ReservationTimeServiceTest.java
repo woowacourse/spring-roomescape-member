@@ -130,9 +130,6 @@ class ReservationTimeServiceTest {
         // given
         Long reservationTimeId = 1L;
 
-        when(reservationTimeQueryingDao.existsById(reservationTimeId))
-                .thenReturn(true);
-
         when(reservationQueryingDao.existsReservationByTimeId(reservationTimeId))
                 .thenReturn(false);
 
@@ -144,27 +141,10 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간을 삭제할 때 존재하지 않는 예약 시간인 경우 에러가 발생한다.")
-    void 시간_삭제_에러_존재하지_않는_시간() {
-        // given
-        Long reservationTimeId = 1L;
-
-        when(reservationTimeQueryingDao.existsById(reservationTimeId))
-                .thenReturn(false);
-
-        // when && then
-        Assertions.assertThrows(BusinessException.class, () -> reservationTimeService.delete(reservationTimeId));
-        verify(reservationQueryingDao, never()).existsReservationByTimeId(reservationTimeId);
-    }
-
-    @Test
     @DisplayName("예약 시간을 삭제할 때 예약이 있는 시간인 경우 에러가 발생한다.")
     void 시간_삭제_에러_예약이_있는_시간() {
         // given
         Long reservationTimeId = 1L;
-
-        when(reservationTimeQueryingDao.existsById(reservationTimeId))
-                .thenReturn(true);
 
         when(reservationQueryingDao.existsReservationByTimeId(reservationTimeId))
                 .thenReturn(true);

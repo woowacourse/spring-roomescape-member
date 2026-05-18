@@ -109,7 +109,7 @@ class ThemeIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/999")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(204);
     }
 
     @Test

@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.dto.ThemeCreateRequest;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.exception.BusinessException;
@@ -30,7 +29,8 @@ public class ThemeService {
     @Transactional
     public ThemeResponse create(ThemeCreateRequest themeRequest) {
         Long id = themeUpdatingDao.insert(themeRequest);
-        return ThemeResponse.from(new Theme(id, themeRequest.getName(), themeRequest.getDescription(), themeRequest.getUrl()));
+        return ThemeResponse.from(themeQueryingDao.findThemeById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND)));
     }
 
     public List<ThemeResponse> findAll() {
