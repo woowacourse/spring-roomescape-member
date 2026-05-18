@@ -12,6 +12,7 @@ public record ReservationUpdateRequest(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         LocalDate date,
 
-        long timeId
+        @NotNull(message = "시간은 필수입니다.")
+        Long timeId
 ) {
 }
