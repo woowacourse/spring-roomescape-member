@@ -10,4 +10,9 @@ public class MainController {
     public String index() {
         return "index";
     }
+
+    @GetMapping("/my-reservation")
+    public String myReservation() {
+        return "my-reservation";
+    }
 }

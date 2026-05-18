@@ -2,10 +2,11 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeRequest;
-import roomescape.domain.theme.ThemeResponse;
-import roomescape.exception.ThemeNotFoundException;
+import roomescape.domain.theme.dto.ThemeCreateRequest;
+import roomescape.domain.theme.dto.ThemeResponse;
+import roomescape.common.exception.BusinessException;
+import roomescape.common.exception.ErrorCode;
+import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
@@ -17,16 +18,19 @@ public class ThemeService {
 
     private final ThemeQueryingDao themeQueryingDao;
     private final ThemeUpdatingDao themeUpdatingDao;
+    private final ReservationQueryingDao reservationQueryingDao;
 
-    public ThemeService(ThemeQueryingDao themeQueryingDao, ThemeUpdatingDao themeUpdatingDao) {
+    public ThemeService(ThemeQueryingDao themeQueryingDao, ThemeUpdatingDao themeUpdatingDao, ReservationQueryingDao reservationQueryingDao) {
         this.themeQueryingDao = themeQueryingDao;
         this.themeUpdatingDao = themeUpdatingDao;
+        this.reservationQueryingDao = reservationQueryingDao;
     }
 
     @Transactional
-    public ThemeResponse create(ThemeRequest themeRequest) {
+    public ThemeResponse create(ThemeCreateRequest themeRequest) {
         Long id = themeUpdatingDao.insert(themeRequest);
-        return ThemeResponse.from(new Theme(id, themeRequest.getName(), themeRequest.getDescription(), themeRequest.getUrl()));
+        return ThemeResponse.from(themeQueryingDao.findThemeById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND)));
     }
 
     public List<ThemeResponse> findAll() {
@@ -43,10 +47,9 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        int count = themeUpdatingDao.delete(id);
-
-        if (count == 0) {
-            throw new ThemeNotFoundException(id);
+        if (reservationQueryingDao.existsReservationByThemeId(id)) {
+            throw new BusinessException(ErrorCode.THEME_DELETE_CONFLICT);
         }
+        themeUpdatingDao.delete(id);
     }
 }

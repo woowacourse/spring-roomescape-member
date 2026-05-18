@@ -42,14 +42,14 @@ public class ReservationTimeQueryingDao {
         }
     }
 
-    public List<ReservationTime> findAllReservationTime(LocalDate date, Long themeId) {
-        if (date == null && themeId == null) {
-            String sql = """
-                   select t.id, t.start_at from reservation_time as t
-                   """;
-            return jdbcTemplate.query(sql, reservationTimeRowMapper);
-        }
+    public List<ReservationTime> findAllReservationTime() {
+        String sql = """
+               select t.id, t.start_at from reservation_time as t
+               """;
+        return jdbcTemplate.query(sql, reservationTimeRowMapper);
+    }
 
+    public List<ReservationTime> findAvailableReservationTimes(LocalDate date, Long themeId) {
         String sql = """
                 select t.id, t.start_at from reservation_time as t
                 left join reservation as r on t.id = r.time_id
@@ -62,5 +62,31 @@ public class ReservationTimeQueryingDao {
                 .addValue("date", date)
                 .addValue("theme_id", themeId);
         return jdbcTemplate.query(sql, param, reservationTimeRowMapper);
+    }
+
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT count(1)
+                FROM reservation_time as r
+                WHERE r.id = :id
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = """
+                SELECT count(1)
+                FROM reservation_time as r
+                WHERE r.start_at = :start_at
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("start_at", startAt);
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
     }
 }

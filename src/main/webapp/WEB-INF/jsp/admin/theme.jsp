@@ -240,11 +240,11 @@
                 </div>
                 <div class="form-group">
                     <label for="description">설명</label>
-                    <input type="text" id="description" name="description" required placeholder="테마 설명을 입력하세요">
+                    <input type="text" id="description" name="description" placeholder="테마 설명을 입력하세요">
                 </div>
                 <div class="form-group">
                     <label for="url">썸네일 URL</label>
-                    <input type="text" id="url" name="url" required placeholder="https://example.com/image.jpg">
+                    <input type="text" id="url" name="url" placeholder="https://example.com/image.jpg">
                 </div>
                 <button type="submit" class="btn">테마 추가</button>
             </form>
@@ -314,7 +314,9 @@
                     document.getElementById('themeForm').reset();
                     loadThemes();
                 } else {
-                    alert('테마 추가에 실패했습니다.');
+                    return response.json().then(error => {
+                        alert('테마 추가 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
                 }
             })
             .catch(error => {
@@ -336,7 +338,9 @@
                     alert('테마가 삭제되었습니다.');
                     loadThemes();
                 } else {
-                    alert('테마 삭제에 실패했습니다.');
+                    return response.json().then(error => {
+                        alert('테마 삭제 실패: ' + (error.message || '알 수 없는 오류'));
+                    });
                 }
             })
             .catch(error => {

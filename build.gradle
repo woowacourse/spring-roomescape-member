@@ -23,6 +23,7 @@ dependencies {
 
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl'
     runtimeOnly 'com.h2database:h2'

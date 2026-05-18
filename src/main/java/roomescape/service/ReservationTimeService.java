@@ -1,11 +1,15 @@
 package roomescape.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeRequest;
-import roomescape.domain.reservationtime.ReservationTimeResponse;
-import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.domain.reservationtime.dto.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.reservationtime.dto.ReservationTimeUpdateRequest;
+import roomescape.common.exception.BusinessException;
+import roomescape.common.exception.ErrorCode;
+import roomescape.repository.ReservationQueryingDao;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
 
@@ -18,41 +22,60 @@ public class ReservationTimeService {
 
     private final ReservationTimeQueryingDao reservationTimeQueryingDao;
     private final ReservationTimeUpdatingDao reservationTimeUpdatingDao;
+    private final ReservationQueryingDao reservationQueryingDao;
 
-    public ReservationTimeService(ReservationTimeQueryingDao reservationTimeQueryingDao, ReservationTimeUpdatingDao reservationTimeUpdatingDao) {
+    public ReservationTimeService(ReservationTimeQueryingDao reservationTimeQueryingDao, ReservationTimeUpdatingDao reservationTimeUpdatingDao, ReservationQueryingDao reservationQueryingDao) {
         this.reservationTimeQueryingDao = reservationTimeQueryingDao;
         this.reservationTimeUpdatingDao = reservationTimeUpdatingDao;
+        this.reservationQueryingDao = reservationQueryingDao;
+    }
+
+    @Transactional
+    public ReservationTimeResponse create(ReservationTimeCreateRequest reservationTimeReq) {
+        if (reservationTimeQueryingDao.existsByStartAt(reservationTimeReq.getStartAt())) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+        }
+
+        Long generatedId;
+        try {
+            generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+        }
+
+        return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
     }
 
     public List<ReservationTimeResponse> read(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeQueryingDao.findAllReservationTime(date, themeId);
-        return reservationTimes.stream()
-                .map(reservationTime -> ReservationTimeResponse.from(
-                        new ReservationTime(
-                                reservationTime.getId(),
-                                reservationTime.getStartAt()
-                        )
-                ))
+        if (date == null && themeId == null) {
+            return reservationTimeQueryingDao.findAllReservationTime().stream()
+                    .map(ReservationTimeResponse::from)
+                    .toList();
+        }
+        return reservationTimeQueryingDao.findAvailableReservationTimes(date, themeId).stream()
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     @Transactional
-    public ReservationTimeResponse create(ReservationTimeRequest reservationTimeReq) {
-        Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
-        return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
-    }
+    public ReservationTimeResponse update(Long id, ReservationTimeUpdateRequest newReservationTimeReq) {
+        if (!reservationTimeQueryingDao.existsById(id)) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
+        }
 
-    @Transactional
-    public void update(ReservationTimeRequest newReservationTimeReq, Long id) {
         reservationTimeUpdatingDao.update(id, newReservationTimeReq);
+
+        ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        return ReservationTimeResponse.from(findReservationTime);
     }
 
     @Transactional
     public void delete(Long id) {
-        int delete = reservationTimeUpdatingDao.delete(id);
-
-        if (delete == 0) {
-            throw new ReservationTimeNotFoundException(id);
+        if (reservationQueryingDao.existsReservationByTimeId(id)) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_DELETE_CONFLICT);
         }
+        reservationTimeUpdatingDao.delete(id);
     }
 }

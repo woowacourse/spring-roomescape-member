@@ -44,13 +44,24 @@ public class ReservationQueryingDao {
                 resultSet.getObject("reservation_date", LocalDate.class),
                 reservationTime,
                 theme,
-                resultSet.getObject("reservation_created_at", LocalDateTime.class)
+                resultSet.getObject("reservation_created_at", LocalDateTime.class),
+                resultSet.getObject("reservation_updated_at", LocalDateTime.class)
         );
     };
 
     public Optional<Reservation> findReservationById(long id) {
         String sql = """
-                select r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, r.time_id, r.created_at as reservation_created_at, t.start_at, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.url as theme_url
+                select r.id as reservation_id, 
+                       r.name as reservation_name, 
+                       r.date as reservation_date, 
+                       r.time_id, 
+                       r.created_at as reservation_created_at, 
+                       r.updated_at as reservation_updated_at,
+                       t.start_at, 
+                       th.id as theme_id, 
+                       th.name as theme_name, 
+                       th.description as theme_description, 
+                       th.url as theme_url
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
@@ -68,7 +79,17 @@ public class ReservationQueryingDao {
 
     public List<Reservation> findAllReservations() {
         String sql = """
-                select r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, r.time_id, r.created_at as reservation_created_at, t.start_at, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.url as theme_url
+                 select r.id as reservation_id, 
+                       r.name as reservation_name, 
+                       r.date as reservation_date, 
+                       r.time_id, 
+                       r.created_at as reservation_created_at, 
+                       r.updated_at as reservation_updated_at,
+                       t.start_at, 
+                       th.id as theme_id, 
+                       th.name as theme_name, 
+                       th.description as theme_description, 
+                       th.url as theme_url
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
@@ -76,9 +97,42 @@ public class ReservationQueryingDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
+    public List<Reservation> findMyReservations(String name) {
+        String sql = """
+                 select r.id as reservation_id, 
+                       r.name as reservation_name, 
+                       r.date as reservation_date, 
+                       r.time_id, 
+                       r.created_at as reservation_created_at, 
+                       r.updated_at as reservation_updated_at,
+                       t.start_at, 
+                       th.id as theme_id, 
+                       th.name as theme_name, 
+                       th.description as theme_description, 
+                       th.url as theme_url
+                from reservation as r
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as th on th.id = r.theme_id
+                where r.name = :name
+                """;
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("name", name);
+        return jdbcTemplate.query(sql, param, reservationRowMapper);
+    }
+
     public Optional<Reservation> findReservationByThemeAndDateAndTime(Long themeId, LocalDate date, Long timeId) {
         String sql = """
-                select r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, r.time_id, r.created_at as reservation_created_at, t.start_at, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.url as theme_url
+                 select r.id as reservation_id, 
+                       r.name as reservation_name, 
+                       r.date as reservation_date, 
+                       r.time_id, 
+                       r.created_at as reservation_created_at, 
+                       r.updated_at as reservation_updated_at,
+                       t.start_at, 
+                       th.id as theme_id, 
+                       th.name as theme_name, 
+                       th.description as theme_description, 
+                       th.url as theme_url
                 from reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on th.id = r.theme_id
@@ -94,5 +148,45 @@ public class ReservationQueryingDao {
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
+    }
+
+    public boolean existsReservationByTimeId(Long timeId) {
+        String sql = """
+                select count(1)
+                from reservation as r
+                where r.time_id = :time_id
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("time_id", timeId);
+
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public boolean existsReservationByThemeId(Long themeId) {
+        String sql = """
+                select count(1)
+                from reservation as r
+                where r.theme_id = :theme_id
+                """;
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("theme_id", themeId);
+
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT count(1)
+                FROM reservation as r
+                WHERE r.id = :id
+                """;
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+        Integer count = jdbcTemplate.queryForObject(sql, param, Integer.class);
+        return count != null && count > 0;
     }
 }
