@@ -44,6 +44,7 @@ public class ReservationService {
 
     @Transactional
     public Reservation saveReservation(String name, LocalDate date, Long reservationTimeId, Long themeId) {
+        validateBeforeDate(date);
         validateIsExistBy(date, reservationTimeId, themeId);
 
         Theme theme = getThemeOrElseThrow(themeId);
@@ -111,6 +112,12 @@ public class ReservationService {
     private Reservation getReservationOrElseThrow(long reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private void validateBeforeDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_NOT_ALLOWED_DATE);
+        }
     }
 
     private void validateIsExistBy(LocalDate date, Long reservationTimeId, Long themeId) {
