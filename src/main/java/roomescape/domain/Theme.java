@@ -4,8 +4,6 @@ import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
 import roomescape.domain.vo.ThumbnailUrl;
 
-import java.util.Objects;
-
 public class Theme {
     private final Long id;
     private final Name name;

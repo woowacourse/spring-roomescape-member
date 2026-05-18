@@ -3,7 +3,6 @@ package roomescape.domain;
 import roomescape.domain.exception.DomainRuleViolationException;
 
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class Time {
     private final Long id;

@@ -3,7 +3,6 @@ package roomescape.common;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.validation.FieldError;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ErrorResponse {

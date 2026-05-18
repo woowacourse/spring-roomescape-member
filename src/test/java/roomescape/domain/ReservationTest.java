@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ class ReservationTest {
 
     @Nested
     @DisplayName("예약 생성 시")
-    class Create{
+    class Create {
         @Test
         void 과거_날짜는_예약_불가() {
             LocalDate past = LocalDate.of(2026, 5, 9);
