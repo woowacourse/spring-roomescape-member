@@ -49,7 +49,7 @@ public class ReservationTimeDao {
         int affected = jdbcTemplate.update(sql, timeId);
 
         if(affected == 0) {
-            throw new NoSuchElementException("삭제할 id에 해당하는 시간이 존재하지 않습니다.");
+            throw new NoSuchElementException("요청한 시간을 찾을 수 없습니다.");
         }
     }
 
@@ -58,7 +58,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, rowMapper, timeId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("요청한 시간을 찾을 수 없습니다."));
     }
 
     public List<ReservationTime> findAllReservationTimes() {

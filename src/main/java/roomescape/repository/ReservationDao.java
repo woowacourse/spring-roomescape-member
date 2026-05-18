@@ -86,7 +86,7 @@ public class ReservationDao {
         int affected = jdbcTemplate.update(sql, reservationId);
 
         if (affected == 0) {
-            throw new NoSuchElementException("삭제할 id에 해당하는 예약이 존재하지 않습니다.");
+            throw new NoSuchElementException("요청한 예약을 찾을 수 없습니다.");
         }
     }
 
@@ -132,7 +132,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper, reservationId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("요청한 예약을 찾을 수 없습니다."));
     }
 
     public List<Reservation> findByName(String name) {

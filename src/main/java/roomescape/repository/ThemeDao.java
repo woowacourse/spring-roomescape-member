@@ -54,7 +54,7 @@ public class ThemeDao {
         int affected = jdbcTemplate.update(sql, themeId);
 
         if(affected == 0) {
-            throw new NoSuchElementException("삭제할 id에 해당하는 테마가 존재하지 않습니다.");
+            throw new NoSuchElementException("요청한 테마를 찾을 수 없습니다.");
         }
     }
 
@@ -65,7 +65,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper, themeId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("요청한 테마를 찾을 수 없습니다."));
     }
 
     public List<Theme> findAllThemes() {
