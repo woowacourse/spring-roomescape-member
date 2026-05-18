@@ -16,12 +16,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.presentation.dto.ReservationResponse;
+import roomescape.reservation.presentation.dto.ReservationsResponse;
 import roomescape.theme.application.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.presentation.dto.ThemeResponse;
+import roomescape.theme.presentation.dto.ThemesResponse;
 import roomescape.time.application.ReservationTimeService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.presentation.dto.ReservationTimeResponse;
+import roomescape.time.presentation.dto.ReservationTimesResponse;
 
 @WebMvcTest(PageController.class)
 class PageControllerTest {
@@ -40,8 +43,8 @@ class PageControllerTest {
 
     @Test
     void reservationPageReturnsTemplateAndModel() throws Exception {
-        given(themeService.getThemes()).willReturn(List.of(themeResponse()));
-        given(themeService.getWeeksTopThemes()).willReturn(List.of(themeResponse()));
+        given(themeService.getThemes()).willReturn(ThemesResponse.from(List.of(themeResponse())));
+        given(themeService.getWeeksTopThemes()).willReturn(ThemesResponse.from(List.of(themeResponse())));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
@@ -52,8 +55,8 @@ class PageControllerTest {
 
     @Test
     void reservationAliasReturnsTemplateAndModel() throws Exception {
-        given(themeService.getThemes()).willReturn(List.of(themeResponse()));
-        given(themeService.getWeeksTopThemes()).willReturn(List.of(themeResponse()));
+        given(themeService.getThemes()).willReturn(ThemesResponse.from(List.of(themeResponse())));
+        given(themeService.getWeeksTopThemes()).willReturn(ThemesResponse.from(List.of(themeResponse())));
 
         mockMvc.perform(get("/reservation"))
                 .andExpect(status().isOk())
@@ -63,9 +66,9 @@ class PageControllerTest {
 
     @Test
     void adminPageReturnsTemplateAndModel() throws Exception {
-        given(themeService.getThemes()).willReturn(List.of(themeResponse()));
-        given(reservationTimeService.getReservationTimes()).willReturn(List.of(timeResponse()));
-        given(reservationService.getReservations(null)).willReturn(List.of(reservationResponse()));
+        given(themeService.getThemes()).willReturn(ThemesResponse.from(List.of(themeResponse())));
+        given(reservationTimeService.getReservationTimes()).willReturn(ReservationTimesResponse.from(List.of(timeResponse())));
+        given(reservationService.getReservations()).willReturn(ReservationsResponse.from(List.of(reservationResponse())));
 
         mockMvc.perform(get("/admin"))
                 .andExpect(status().isOk())
