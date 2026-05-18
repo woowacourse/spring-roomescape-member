@@ -1,5 +1,6 @@
 package roomescape.reservation.application;
 
+import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ThemeService {
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     @Transactional
     public ThemeSaveResponse save(ThemeSaveRequest body) {
@@ -26,12 +28,6 @@ public class ThemeService {
 
     @Transactional
     public void delete(long id) {
-        // TODO: 사이클2 요구사항에서 검증로직 추가 예정
-        /**
-         * 1. theme id 존재 유무 검증
-         * 2. 예약에서 참조되어 있는 경우 검증
-         * 3. 스케줄에서 참조되어 있는 경우 검증
-         */
         themeRepository.deleteById(id);
     }
 
@@ -41,11 +37,11 @@ public class ThemeService {
     }
 
     public List<ThemeFindResponse> findByDayAndLimit(int day, int limit) {
-        List<Theme> themes = themeRepository.findByDayAndLimit(day, limit);
+        List<Theme> themes = themeRepository.findByDayAndLimit(LocalDate.now(clock), day, limit);
         return ThemeFindResponse.of(themes);
     }
 
-    public List<ThemeFindResponse> findAll(){
+    public List<ThemeFindResponse> findAll() {
         List<Theme> themes = themeRepository.findAll();
         return ThemeFindResponse.of(themes);
     }

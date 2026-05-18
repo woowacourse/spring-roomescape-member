@@ -1,9 +1,15 @@
 package roomescape.reservation.infra;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Theme;
 
@@ -11,9 +17,19 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class JdbcThemeRepositoryTest {
+    @MockitoBean(enforceOverride = true)
+    Clock clock;
+
+    @BeforeEach
+    void setUpClock() {
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
+        given(clock.instant()).willReturn(Instant.parse("2026-05-06T14:00:00Z"));
+    }
+
     @Autowired
     private JdbcThemeRepository repository;
 
@@ -62,7 +78,7 @@ class JdbcThemeRepositoryTest {
     @Test
     @Transactional
     void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트() {
-        List<Theme> themes = repository.findByDayAndLimit(7, 10);
+        List<Theme> themes = repository.findByDayAndLimit(LocalDate.now(clock), 7, 10);
 
         assertThat(themes).hasSize(10);
         assertThat(themes)

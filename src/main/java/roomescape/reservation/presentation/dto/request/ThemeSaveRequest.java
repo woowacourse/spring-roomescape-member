@@ -1,9 +1,10 @@
 package roomescape.reservation.presentation.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.reservation.domain.Theme;
 
 public record ThemeSaveRequest(
-        String name,
+        @NotBlank String name,
         String description,
         String thumbnailUrl
 ) {

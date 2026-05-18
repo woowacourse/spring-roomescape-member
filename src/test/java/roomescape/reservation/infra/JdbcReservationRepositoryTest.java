@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.domain.Reservation;
@@ -15,8 +16,9 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class JdbcReservationRepositoryTest {
     @Autowired
@@ -28,7 +30,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약_저장_레포지토리_테스트() {
         Reservation reservation = new Reservation(null, "브라운", LocalDate.of(2026, 5, 5),
-                new ReservationTime(2L, LocalTime.of(11, 0)),
+                new ReservationTime(3L, LocalTime.of(12, 0)),
                 new Theme(1L, "세기의 도둑", "보안을 뚫고 보석을 훔쳐라", "https://example.com/themes/time.jpg")
         );
 
@@ -36,8 +38,8 @@ class JdbcReservationRepositoryTest {
 
         assertThat(savedReservation.getName()).isEqualTo("브라운");
         assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 5));
-        assertThat(savedReservation.getTime().getId()).isEqualTo(2L);
-        assertThat(savedReservation.getTime().getStartAt()).isEqualTo(LocalTime.of(11, 0));
+        assertThat(savedReservation.getTime().getId()).isEqualTo(3L);
+        assertThat(savedReservation.getTime().getStartAt()).isEqualTo(LocalTime.of(12, 0));
     }
 
     @Test
@@ -73,5 +75,32 @@ class JdbcReservationRepositoryTest {
         List<Long> result = reservationRepository.findTimeIdByDateAndThemeId(LocalDate.parse("2026-05-05"), 1L);
 
         assertThat(result).containsExactly(1L, 2L);
+    }
+
+    @Test
+    void 이름으로_예약_목록을_조회할_수_있다() {
+        List<Reservation> reservations = reservationRepository.findByName("kim");
+
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations)
+                .extracting(Reservation::getName)
+                .containsExactly("kim", "kim");
+        assertThat(reservations)
+                .extracting(Reservation::getDate)
+                .containsExactly(LocalDate.of(2026, 5, 5), LocalDate.of(2026, 5, 5));
+        assertThat(reservations)
+                .extracting(Reservation::getTimeId)
+                .containsExactly(1L, 2L);
+    }
+
+    @Test
+    void 중복된_예약은_DB_유니크_제약으로_저장에_실패한다() {
+        Reservation reservation = new Reservation(null, "브라운", LocalDate.of(2026, 5, 5),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "세기의 도둑", "보안을 뚫고 보석을 훔쳐라", "https://example.com/themes/time.jpg")
+        );
+
+        assertThatThrownBy(() -> reservationRepository.save(reservation))
+                .isInstanceOf(DuplicateKeyException.class);
     }
 }

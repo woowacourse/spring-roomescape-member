@@ -2,23 +2,43 @@ package roomescape.reservation.presentation;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ReservationTimeControllerTest {
+    @LocalServerPort
+    private int port;
+
+    @MockitoBean(enforceOverride = true)
+    Clock clock;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUpClock() {
+        RestAssured.port = port;
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
+        given(clock.instant()).willReturn(Instant.parse("2026-05-01T14:00:00Z"));
+    }
 
     @Test
     void 시간_관리_API() {
@@ -111,6 +131,16 @@ public class ReservationTimeControllerTest {
                 .body("[2].isAvailable", is(false))
                 .body("[3].isAvailable", is(false))
                 .statusCode(200);
+    }
+
+    @Test
+    void 예약이_참조하는_시간인_경우_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("RESERVATION_TIME_DELETE_CONFLICT"))
+                .body("message", is("이미 예약에 사용 중인 시간대는 삭제할 수 없습니다."));
     }
 
     private void deleteTable() {

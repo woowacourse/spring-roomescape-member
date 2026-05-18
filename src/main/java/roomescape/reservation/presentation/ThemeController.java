@@ -1,5 +1,6 @@
 package roomescape.reservation.presentation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class ThemeController {
     private final ThemeService themeService;
 
     @PostMapping
-    public ResponseEntity<ThemeSaveResponse> save(@RequestBody ThemeSaveRequest body) {
+    public ResponseEntity<ThemeSaveResponse> save(@RequestBody @Valid ThemeSaveRequest body) {
         ThemeSaveResponse response = themeService.save(body);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
