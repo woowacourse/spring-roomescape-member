@@ -110,7 +110,7 @@ public class ReservationService {
         }
     }
 
-    private static void validateAlreadyCancelled(Reservation reservation) {
+    private void validateAlreadyCancelled(Reservation reservation) {
         if (reservation.isCancel()) {
             throw new ReservationUpdateNotAllowedException(ErrorCode.RESERVATION_ALREADY_CANCELLED);
         }
