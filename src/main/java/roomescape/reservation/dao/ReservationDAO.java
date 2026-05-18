@@ -175,13 +175,6 @@ public class ReservationDAO {
     return count != null && count > 0;
   }
 
-  public boolean existsByNameAndReservationId(String name, Long reservationId) {
-    String sql = "select count(*) from reservation where name = ? and id = ?";
-    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name, reservationId);
-
-    return count != null && count > 0;
-  }
-
   public void updateReservation(LocalDate date, Long timeId, String name, Long reservationId) {
     String sql = "update reservation set date = ?, time_id = ? "
         + "where name = ? and id = ?";
