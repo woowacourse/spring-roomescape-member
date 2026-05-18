@@ -5,8 +5,8 @@ import java.util.Objects;
 public class Name {
     private static final int MIN_NAME_LENGTH = 1;
     private static final int MAX_NAME_LENGTH = 20;
-    private static final String INVALID_NAME_LENGTH = String.format("이름 길이는 %d ~ %d자여야 합니다.", MIN_NAME_LENGTH,
-            MAX_NAME_LENGTH);
+    private static final String INVALID_NAME_LENGTH =
+            String.format("이름 길이는 %d ~ %d자여야 합니다.", MIN_NAME_LENGTH, MAX_NAME_LENGTH);
     public static final String NAME_SHOULD_NOT_BE_NULL = "이름이 입력되어야 합니다.";
 
     private final String value;
