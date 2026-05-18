@@ -1,6 +1,7 @@
 package roomescape.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException methodArgumentNotValidException, HttpServletRequest httpServletRequest
+    ) {
+        ErrorResponse errorResponse = new ErrorResponseBuilder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .errorMessage("요청값이 잘못됐습니다.")
+                .apiUrl(httpServletRequest.getRequestURI())
+                .timeStamp(LocalDateTime.now())
+                .traceId(MDC.get("traceId"))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(
+            ConstraintViolationException constraintViolationException, HttpServletRequest httpServletRequest
     ) {
         ErrorResponse errorResponse = new ErrorResponseBuilder()
                 .httpStatus(HttpStatus.BAD_REQUEST)

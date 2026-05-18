@@ -12,9 +12,9 @@ import roomescape.controller.dto.*;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
-@Validated
 @RestController
 @RequestMapping("/reservations")
+@Validated
 public class ReservationController {
 
     private final ReservationService reservationService;
