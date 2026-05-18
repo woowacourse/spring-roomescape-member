@@ -262,6 +262,72 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 내_예약을_취소한다() {
+        ReservationTime reservationTime = createReservationTime(TEN);
+        Theme theme = createTheme();
+        String name = "브라운";
+
+        ReservationRequest request = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.addReservation(request);
+
+        reservationService.cancelMyReservation(reservation.getId(), name);
+
+        assertThatThrownBy(() -> reservationService.getReservation(reservation.getId()))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 사용자_예약을_취소할_때_존재하지_않는_예약이면_예외() {
+        assertThatThrownBy(() -> reservationService.cancelMyReservation(1L, "브라운"))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 예약을_취소할_때_예약한_이름과_사용자_이름이_일치하지_않으면_예외() {
+        ReservationTime reservationTime = createReservationTime(TEN);
+        Theme theme = createTheme();
+        String name = "브라운";
+
+        ReservationRequest request = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation reservation = reservationService.addReservation(request);
+
+        String userName = "브리";
+
+        assertThatThrownBy(() -> reservationService.cancelMyReservation(reservation.getId(), userName))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("선택한 예약과 사용자 이름이 일치하지 않습니다.");
+    }
+
+    @Test
+    @Sql("/data_relative_dates.sql")
+    void 예약을_취소할_때_이미_지난_예약이면_예외() {
+        String name = "김민수";
+        Reservation pastReservation = reservationService.getReservationsByName(name).getFirst();
+
+        LocalDateTime dateTime = LocalDateTime.of(
+                pastReservation.getDate(),
+                pastReservation.getTime().getStartAt()
+        );
+
+        assertThat(dateTime.isBefore(LocalDateTime.now())).isTrue();
+        assertThatThrownBy(() -> reservationService.cancelMyReservation(pastReservation.getId(), name))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+    }
+
+    @Test
     void 선택한_예약에_내_이름이_일치하면_예약의_날짜와_시간을_수정할_수_있다() {
         ReservationTime reservationTime = createReservationTime(TEN);
         Theme theme = createTheme();

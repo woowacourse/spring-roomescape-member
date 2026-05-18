@@ -105,6 +105,15 @@ public class ReservationService {
     }
 
     @Transactional
+    public void cancelMyReservation(Long id, String name) {
+        Reservation reservation = getReservation(id);
+        validateReservationOwner(name, reservation);
+        reservationValidator.validateNotPastReservation(reservation.getDate(),
+                reservation.getTime().getStartAt(), "이미 지난 예약은 취소할 수 없습니다.");
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
     public Reservation updateReservation(Long id, String name, ReservationUpdateRequest request) {
         Reservation reservation = getReservation(id);
         validateReservationOwner(name, reservation);
@@ -126,7 +135,7 @@ public class ReservationService {
 
     private void validateUpdate(ReservationUpdateRequest request, Reservation reservation,
                                 ReservationTime reservationTime) {
-        reservationValidator.validateFutureReservationDateTime(reservation.getDate(),
+        reservationValidator.validateNotPastReservation(reservation.getDate(),
                 reservation.getTime().getStartAt(), "이미 지난 예약은 변경할 수 없습니다.");
         reservationValidator.validateFutureReservationDateTime(
                 request.date(),

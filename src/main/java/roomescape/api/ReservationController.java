@@ -56,6 +56,12 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping(value = "/{id}", params = "name")
+    public ResponseEntity<Void> cancelMyReservation(@PathVariable Long id, @RequestParam String name) {
+        reservationService.cancelMyReservation(id, name);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping(value = "/{id}", params = "name")
     public ResponseEntity<ReservationResponse> update(@PathVariable Long id, @RequestParam String name,
                                                       @Valid @RequestBody ReservationUpdateRequest request) {

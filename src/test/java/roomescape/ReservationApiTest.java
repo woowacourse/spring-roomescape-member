@@ -175,6 +175,70 @@ class ReservationApiTest {
     }
 
     @Test
+    void 내_예약을_취소한다() {
+        Integer timeId = createTime("10:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        String name = "브라운";
+        Integer reservationId = createReservation(name, FUTURE_FIRST_DATE, timeId, themeId);
+
+        RestAssured.given().log().all()
+                .queryParam("name", name)
+                .when().delete("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=" + name)
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
+    void 내_예약을_취소할_때_존재하지_않는_예약이면_404() {
+        RestAssured.given().log().all()
+                .queryParam("name", "브라운")
+                .when().delete("/reservations/" + 1)
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is("존재하지 않는 예약입니다."));
+    }
+
+    @Test
+    void 내_예약을_취소할_때_사용자_이름이_일치하지_않으면_403() {
+        Integer timeId = createTime("10:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        String reservationOwner = "브라운";
+        Integer reservationId = createReservation(reservationOwner, FUTURE_FIRST_DATE, timeId, themeId);
+
+        RestAssured.given().log().all()
+                .queryParam("name", "브리")
+                .when().delete("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(403)
+                .body("message", is("선택한 예약과 사용자 이름이 일치하지 않습니다."));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?name=" + reservationOwner)
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @Test
+    @Sql("/data_relative_dates.sql")
+    void 내_예약을_취소할_때_이미_지난_예약이면_400() {
+        RestAssured.given().log().all()
+                .queryParam("name", "김민수")
+                .when().delete("/reservations/" + 1)
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("이미 지난 예약은 취소할 수 없습니다."));
+    }
+
+    @Test
     void 예약할_때_이름이_비어_있으면_400() {
         Integer timeId = createTime("11:00");
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");

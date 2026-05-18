@@ -16,4 +16,8 @@ public class ReservationValidator {
             throw new InvalidReservationException(message);
         }
     }
+
+    public void validateNotPastReservation(LocalDate date, LocalTime time, String message) {
+        validateFutureReservationDateTime(date, time, message);
+    }
 }
