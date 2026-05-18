@@ -94,5 +94,5 @@
 | `PAST_DATE_RESERVATION`            | 400       | 과거 날짜로 예약할 수 없습니다.             |
 | `DATA_CONFLICT`                    | 409       | 요청한 데이터가 현재 상태와 충돌합니다.     |
 | `RESERVATION_TIME_DELETE_CONFLICT` | 409       | 예약이 존재하는 시간은 삭제할 수 없습니다.  |
-| `DUPLICATE_RESERVATION`            | 422       | 이미 예약된 시간입니다.                     |
+| `DUPLICATE_RESERVATION`            | 409       | 이미 예약된 시간입니다.                     |
 | `RESERVATION_OWNER_MISMATCH`       | 403       | 본인의 예약만 취소할 수 있습니다.           |
