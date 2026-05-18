@@ -96,6 +96,7 @@ public class ReservationTimeDao {
 
     public Optional<ReservationTime> findByTimeId(long timeId) {
         String sql = "SELECT id, start_at, status FROM reservation_time WHERE id = ? AND status = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, timeId, TimeStatus.AVAILABLE.name()));
+        return jdbcTemplate.query(sql, rowMapper, timeId, TimeStatus.AVAILABLE.name())
+                .stream().findFirst();
     }
 }
