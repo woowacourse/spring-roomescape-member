@@ -1,28 +1,40 @@
 package roomescape.theme;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.theme.repository.ThemeRepository;
 
 @WebMvcTest(ThemeController.class)
-@Import(ThemeService.class)
+@Import({ThemeService.class, ThemeControllerTest.TestClockConfig.class})
 class ThemeControllerTest {
+
+    @TestConfiguration
+    static class TestClockConfig {
+        @Bean
+        public Clock clock() {
+            return Clock.fixed(
+                    Instant.parse("2026-06-15T12:00:00Z"),
+                    ZoneId.of("Asia/Seoul")
+            );
+        }
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,7 +51,8 @@ class ThemeControllerTest {
                 "셜록이 되어 사건을 해결해보세요.",
                 "https://example.com/themes/mystery.jpg");
 
-        given(themeRepository.findAll()).willReturn(List.of(horror, mystery));
+        given(themeRepository.findAll()).willReturn(List.of(horror,
+                mystery));
 
         mockMvc.perform(get("/api/themes"))
                 .andExpect(status().isOk())
@@ -52,27 +65,24 @@ class ThemeControllerTest {
 
     @Test
     void 인기_테마_조회() throws Exception {
-        LocalDate fixedNow = LocalDate.of(2026, 5, 11);
         Theme popular = new Theme(5L, "초보자 방",
                 "방탈출이 처음이신 분들을 위한 입문 테마.",
                 "https://example.com/themes/beginner.jpg");
 
-        try (MockedStatic<LocalDate> mocked = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
-            mocked.when(LocalDate::now).thenReturn(fixedNow);
+        given(themeRepository.findPopularThemes(
+                LocalDate.of(2026, 6, 8),
+                LocalDate.of(2026, 6, 14)))
+                .willReturn(List.of(popular));
 
-            given(themeRepository.findPopularThemes(any(LocalDate.class), any(LocalDate.class)))
-                    .willReturn(List.of(popular));
+        mockMvc.perform(get("/api/themes/popularity"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(5))
+                .andExpect(jsonPath("$[0].name").value("초보자 방"));
 
-            mockMvc.perform(get("/api/themes/popularity"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].id").value(5))
-                    .andExpect(jsonPath("$[0].name").value("초보자 방"));
-
-            verify(themeRepository).findPopularThemes(
-                    LocalDate.of(2026, 5, 4),
-                    LocalDate.of(2026, 5, 10)
-            );
-        }
+        verify(themeRepository).findPopularThemes(
+                LocalDate.of(2026, 6, 8),
+                LocalDate.of(2026, 6, 14)
+        );
     }
 }

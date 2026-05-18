@@ -20,7 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorReason;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.dto.ReservationResponse;
 
@@ -86,7 +86,7 @@ class ReservationControllerTest {
 
     @Test
     void 존재하지_않는_예약_삭제시_404() throws Exception {
-        willThrow(new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND))
+        willThrow(new RoomescapeException(ErrorReason.RESERVATION_NOT_FOUND))
                 .given(reservationService).delete(0L);
 
         mockMvc.perform(delete("/api/reservations/0"))
@@ -101,7 +101,7 @@ class ReservationControllerTest {
         reservation.put("date", "2026-05-10");
         reservation.put("timeId", 1);
 
-        willThrow(new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE))
+        willThrow(new RoomescapeException(ErrorReason.RESERVATION_DUPLICATE))
                 .given(reservationService).create(any());
 
         mockMvc.perform(post("/api/reservations")

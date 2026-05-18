@@ -2,14 +2,14 @@ package roomescape.exception;
 
 public class RoomescapeException extends RuntimeException {
 
-    private final ErrorCode errorCode;
+    private final ErrorReason errorReason;
 
-    public RoomescapeException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public RoomescapeException(ErrorReason errorReason) {
+        super(errorReason.getMessage());
+        this.errorReason = errorReason;
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
+    public ErrorReason getErrorReason() {
+        return errorReason;
     }
 }

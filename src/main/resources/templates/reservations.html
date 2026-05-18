@@ -68,6 +68,44 @@
         </div>
     </section>
 
+    <dialog id="edit-dialog" class="confirm-dialog edit-dialog" aria-labelledby="edit-title">
+        <form method="dialog" id="edit-form" style="margin: 0;">
+            <div class="dialog-head">
+                <span class="dialog-tag">RESCHEDULE</span>
+                <button type="button" class="dialog-close" data-action="cancel" aria-label="닫기">×</button>
+            </div>
+            <div class="dialog-body">
+                <h3 id="edit-title">예약 변경</h3>
+                <p class="edit-hint">
+                    REF <strong id="edit-ref">#0</strong> ·
+                    <span id="edit-owner-label"></span> 명의
+                </p>
+
+                <div class="field">
+                    <label for="edit-theme">사건 (테마)</label>
+                    <select id="edit-theme" name="themeId" required></select>
+                </div>
+
+                <div class="field">
+                    <label for="edit-date">일자</label>
+                    <input type="date" id="edit-date" name="date" required>
+                </div>
+
+                <div class="field">
+                    <label>시간 슬롯</label>
+                    <div class="slot-grid" id="edit-slots"></div>
+                    <span class="field-help" id="edit-slots-help">
+                        사건과 일자를 정하면 가용 시간이 표시됩니다
+                    </span>
+                </div>
+            </div>
+            <div class="dialog-foot">
+                <button type="button" class="btn btn-ghost btn-sm" data-action="cancel">취소</button>
+                <button type="submit" class="btn btn-primary btn-sm" data-action="confirm">변경 확정</button>
+            </div>
+        </form>
+    </dialog>
+
 </main>
 
 <footer th:replace="~{fragments/site :: footer}"></footer>

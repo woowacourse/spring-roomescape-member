@@ -1,9 +1,10 @@
 package roomescape.theme;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorReason;
 import roomescape.exception.RoomescapeException;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
@@ -13,9 +14,11 @@ import roomescape.theme.repository.ThemeRepository;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public ThemeResponse create(ThemeRequest themeRequest) {
@@ -36,13 +39,12 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        themeRepository.findById(id).orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+        themeRepository.findById(id).orElseThrow(() -> new RoomescapeException(ErrorReason.THEME_NOT_FOUND));
         themeRepository.deleteById(id);
     }
 
-
     public List<ThemeResponse> readPopularThemes() {
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(clock);
         LocalDate start = now.minusDays(7);
         LocalDate end = now.minusDays(1);
 

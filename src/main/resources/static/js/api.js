@@ -9,8 +9,16 @@ window.api = (function () {
     }
 
     async function postJson(url, body) {
+        return sendJson('POST', url, body);
+    }
+
+    async function patchJson(url, body) {
+        return sendJson('PATCH', url, body);
+    }
+
+    async function sendJson(method, url, body) {
         const res = await fetch(url, {
-            method: 'POST',
+            method: method,
             headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
             body: JSON.stringify(body)
         });
@@ -25,10 +33,16 @@ window.api = (function () {
     }
 
     async function toError(res) {
+        const ct = res.headers.get('content-type') || '';
         let message = '';
         try {
-            message = await res.text();
-        } catch (_) { /* ignore */
+            if (ct.includes('application/problem+json') || ct.includes('application/json')) {
+                const body = await res.json();
+                message = body.detail || body.title || body.message || '';
+            } else {
+                message = await res.text();
+            }
+        } catch (_) { /* ignore parse errors */
         }
         const err = new Error(message || ('HTTP ' + res.status));
         err.status = res.status;
@@ -40,6 +54,7 @@ window.api = (function () {
         popularThemes: () => getJson('/api/themes/popularity'),
         listReservations: (userName) => getJson(userName ? '/api/reservations?user_name=' + encodeURIComponent(userName) : '/api/reservations'),
         createReservation: (payload) => postJson('/api/reservations', payload),
+        updateReservation: (id, payload) => patchJson('/api/reservations/' + id, payload),
         deleteReservation: (id) => del('/api/reservations/' + id),
         listTimes: () => getJson('/api/times'),
         availableTimes: (themeId, date) => getJson('/api/times/availability?theme_id=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
