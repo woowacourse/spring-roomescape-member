@@ -98,4 +98,11 @@ class ReservationTimeServiceTest {
                 .isInstanceOf(InvalidDeleteException.class)
                 .hasMessage("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
     }
+
+    @Test
+    void 없는_예약시간을_삭제할_수_없다() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약 시간입니다.");
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.common.exception.DuplicateReservationException;
 import roomescape.common.exception.ForbiddenException;
 import roomescape.common.exception.InvalidDeleteException;
@@ -30,7 +31,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
+        String message = e
+                .getAllErrors()
+                .getFirst()
+                .getDefaultMessage();
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(message));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e
+    ) {
+        String message = String.format(
+                "'%s' 값의 형식이 올바르지 않습니다.",
+                e.getName()
+        );
+
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(message));
     }
 
     @ExceptionHandler(InvalidDeleteException.class)

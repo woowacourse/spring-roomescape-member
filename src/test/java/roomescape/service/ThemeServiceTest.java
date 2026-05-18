@@ -108,6 +108,13 @@ class ThemeServiceTest {
     }
 
     @Test
+    void 없는_테마를_삭제할_수_없다() {
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @Test
     void 예약_목록에_삭제할_테마가_존재한다면_테마를_삭제할_수_없다() {
         Long timeSaveId = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(timeSaveId);

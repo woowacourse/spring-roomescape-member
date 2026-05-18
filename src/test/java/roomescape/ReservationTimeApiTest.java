@@ -104,6 +104,15 @@ class ReservationTimeApiTest {
     }
 
     @Test
+    void 없는_시간은_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/times/" + 1)
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is("존재하지 않는 예약 시간입니다."));
+    }
+
+    @Test
     void 잘못된_시간_형식으로_추가하면_400() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "25:00");

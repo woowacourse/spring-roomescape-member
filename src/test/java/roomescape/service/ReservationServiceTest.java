@@ -215,6 +215,13 @@ class ReservationServiceTest {
                 .hasMessage("존재하지 않는 예약입니다.");
     }
 
+    @Test
+    void 없는_예약을_삭제할_수_없다() {
+        assertThatThrownBy(() -> reservationService.deleteReservation(1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
     private ReservationTime createReservationTime(LocalTime time) {
         ReservationTime reservationTime = new ReservationTime(time);
         Long id = timeRepository.save(reservationTime);

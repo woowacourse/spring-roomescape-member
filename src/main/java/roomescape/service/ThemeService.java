@@ -51,6 +51,8 @@ public class ThemeService {
         if (reservationRepository.existsByThemeId(id)) {
             throw new InvalidDeleteException("해당 테마를 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
         }
+
+        getTheme(id);
         themeRepository.deleteById(id);
     }
 }

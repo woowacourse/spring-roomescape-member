@@ -109,6 +109,15 @@ class ThemeApiTest {
     }
 
     @Test
+    void 없는_테마는_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/themes/" + 1)
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is("존재하지 않는 테마입니다."));
+    }
+
+    @Test
     void 테마를_추가할_때_이름이_비어_있으면_400() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "");

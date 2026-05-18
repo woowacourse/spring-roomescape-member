@@ -53,6 +53,8 @@ public class ReservationTimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new InvalidDeleteException("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
         }
+
+        getReservationTime(id);
         reservationtimeRepository.deleteById(id);
     }
 }
