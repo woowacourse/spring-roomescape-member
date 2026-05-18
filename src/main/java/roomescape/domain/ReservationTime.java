@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.dao.DataRetrievalFailureException;
 
 import java.time.LocalTime;
@@ -31,6 +32,10 @@ public class ReservationTime {
 
     public ReservationTime(String startAt) {
         this(null, startAt);
+    }
+
+    public static ReservationTime from(LocalTime time) {
+        return new ReservationTime(time);
     }
 
     public Long getId() {

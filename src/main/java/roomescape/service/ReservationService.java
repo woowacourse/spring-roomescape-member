@@ -1,9 +1,5 @@
 package roomescape.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -11,14 +7,16 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationUpdateRequestDto;
-import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
+import roomescape.service.command.ReservationCommand;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,9 +27,9 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     public ReservationService(
-        ReservationRepository reservationRepository,
-        ReservationTimeRepository reservationTimeRepository,
-        ThemeRepository themeRepository
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -43,19 +41,20 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation addReservation(ReservationRequestDto requestDto) {
-        ReservationTime time = reservationTimeRepository.findById(requestDto.timeId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND));
-        Theme theme = themeRepository.findById(requestDto.themeId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
+    public Reservation addReservation(ReservationCommand command) {
+        ReservationTime time = reservationTimeRepository.findById(command.timeId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND));
+        Theme theme = themeRepository.findById(command.themeId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
         List<ReservationTime> availableTimes = reservationTimeRepository
-            .findTimesByDateAndThemeId(requestDto.date(), requestDto.themeId());
+                .findAvailableTimes(command.date(), command.themeId());
+
         if (!availableTimes.contains(time)) {
             throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
         }
 
-        Reservation reservation = Reservation.create(requestDto.name(), requestDto.date(), time, theme);
+        Reservation reservation = Reservation.create(command.name(), command.date(), time, theme);
         return reservationRepository.createReservation(reservation);
     }
 
@@ -69,9 +68,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationTime addReservationTime(ReservationTimeRequestDto requestDto) {
-        return reservationTimeRepository.createReservationTime(
-            new ReservationTime(requestDto.startAt()));
+    public ReservationTime addReservationTime(ReservationTime time) {
+        return reservationTimeRepository.createReservationTime(time);
     }
 
     @Transactional
@@ -96,12 +94,12 @@ public class ReservationService {
     }
 
     public Map<ReservationTime, Boolean> getTimesWithAvailability(ReservationDate date, Long themeId) {
-        Map<ReservationTime, Boolean> timesWithAvailability =  new HashMap<>();
+        Map<ReservationTime, Boolean> timesWithAvailability = new HashMap<>();
 
         Theme theme = themeRepository.findById(themeId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
-        List<ReservationTime> availableTimes = reservationTimeRepository.findTimesByDateAndThemeId(date, theme.getId());
+        List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimes(date, theme.getId());
 
         for (ReservationTime time : reservationTimeRepository.findAll()) {
             if (availableTimes.contains(time)) {
@@ -120,27 +118,29 @@ public class ReservationService {
     }
 
     @Transactional
-    public void update(ReservationUpdateRequestDto requestDto, MemberName name) {
-        Reservation reservation = new Reservation(
-                requestDto.id(),
-                requestDto.name(),
-                requestDto.date(),
-                reservationTimeRepository.findById(requestDto.timeId()).orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND)),
-                themeRepository.findById(requestDto.themeId()).orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND)));
-
-        Reservation oldReservation = reservationRepository.findById(reservation.getId())
+    public void update(Long id, ReservationCommand command, MemberName name) {
+        Reservation oldReservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-
-        List<ReservationTime> availableTimes = reservationTimeRepository
-                .findTimesByDateAndThemeId(requestDto.date(), requestDto.themeId());
-        if (!availableTimes.contains(reservation.getTime())) {
-            throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
-        }
 
         if (!oldReservation.getName().equals(name)) {
             throw new BusinessException(ErrorCode.RESERVATION_ACCESS_DENIED);
         }
 
-        reservationRepository.update(reservation);
+        List<Long> availableTimeIds = reservationTimeRepository
+                .findAvailableTimes(command.date(), command.themeId()).stream()
+                .map(ReservationTime::getId)
+                .toList();
+
+        if (oldReservation.getTime().getId() != command.timeId() && !availableTimeIds.contains(command.timeId())) {
+            throw new BusinessException(ErrorCode.RESERVATION_TIME_CONFLICT);
+        }
+
+        reservationRepository.update(
+                Reservation.create(
+                                command.name(),
+                                command.date(),
+                                reservationTimeRepository.findById(command.timeId()).orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND)),
+                                themeRepository.findById(command.themeId()).orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND)))
+                        .withId(id));
     }
 }

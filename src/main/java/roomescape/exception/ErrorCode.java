@@ -13,7 +13,8 @@ public enum ErrorCode {
 
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
 
-    MISSING_CREDENTIALS(HttpStatus.UNAUTHORIZED, "삭제를 위한 권한(role) 또는 식별자(name) 정보가 필요합니다.");
+    MISSING_CREDENTIALS(HttpStatus.UNAUTHORIZED, "삭제를 위한 권한(role) 또는 식별자(name) 정보가 필요합니다."),
+    ADMIN_ROLE_REQUIRED(HttpStatus.FORBIDDEN, "관리자 권한이 필요한 요청입니다.");
 
     private final HttpStatus status;
     private final String message;

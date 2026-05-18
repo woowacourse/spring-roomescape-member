@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.theme.PopularThemesResponseDto;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
-import roomescape.dto.theme.ThemesResponseDto;
+import roomescape.controller.dto.ResourceIdResponseDto;
+import roomescape.controller.dto.theme.PopularThemesResponseDto;
+import roomescape.controller.dto.theme.ThemeRequestDto;
+import roomescape.controller.dto.theme.ThemeResponseDto;
+import roomescape.controller.dto.theme.ThemesResponseDto;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.ForbiddenAccessException;
 import roomescape.service.ThemeService;
 
@@ -38,10 +39,10 @@ public class ThemeController {
         @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("테마 추가는 관리자만 가능합니다.");
+            throw new BusinessException(ErrorCode.ADMIN_ROLE_REQUIRED);
         }
 
-        Theme saved = themeService.addTheme(request);
+        Theme saved = themeService.addTheme(request.toCommand());
         return new ResourceIdResponseDto(saved.getId());
     }
 
@@ -52,7 +53,7 @@ public class ThemeController {
         @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("테마 삭제는 관리자만 가능합니다.");
+            throw new BusinessException(ErrorCode.ADMIN_ROLE_REQUIRED);
         }
 
         themeService.deleteThemeById(id);

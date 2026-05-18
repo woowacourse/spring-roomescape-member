@@ -3,15 +3,12 @@ package roomescape.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import roomescape.controller.dto.ResourceIdResponseDto;
+import roomescape.controller.dto.reservation.ReservationRequestDto;
+import roomescape.controller.dto.reservation.ReservationResponseDto;
+import roomescape.controller.dto.reservation.ReservationsResponseDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.vo.MemberName;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationResponseDto;
-import roomescape.dto.reservation.ReservationUpdateRequestDto;
-import roomescape.dto.reservation.ReservationsResponseDto;
-import roomescape.exception.BusinessException;
-import roomescape.exception.ErrorCode;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -27,10 +24,10 @@ public class ReservationController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ReservationsResponseDto getReservations(
-            @RequestParam(value = "name", required = false) MemberName name
+            @RequestParam(value = "name", required = false) String name
     ) {
         if (name != null) {
-            return new ReservationsResponseDto(reservationService.findReservationsByName(name).stream()
+            return new ReservationsResponseDto(reservationService.findReservationsByName(MemberName.from(name)).stream()
                     .map(ReservationResponseDto::from)
                     .toList());
         }
@@ -45,7 +42,7 @@ public class ReservationController {
     public ResourceIdResponseDto addReservation(
             @Valid @RequestBody ReservationRequestDto requestDto
     ) {
-        Reservation reservation = reservationService.addReservation(requestDto);
+        Reservation reservation = reservationService.addReservation(requestDto.toCommand());
         return new ResourceIdResponseDto(reservation.getId());
     }
 
@@ -53,7 +50,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(
             @RequestParam(value = "role", required = false) String role,
-            @RequestParam(value = "name", required = false) MemberName name,
+            @RequestParam(value = "name", required = false) String name,
             @PathVariable Long id
     ) {
         if ("admin".equals(role)) {
@@ -61,23 +58,16 @@ public class ReservationController {
             return;
         }
 
-        if (name == null) {
-            throw new BusinessException(ErrorCode.MISSING_CREDENTIALS);
-        }
-
-        reservationService.deleteReservation(id, name);
+        reservationService.deleteReservation(id, MemberName.from(name));
     }
 
-    @PutMapping()
+    @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateReservation(
-            @RequestParam(value = "name") MemberName name,
-            @Valid @RequestBody ReservationUpdateRequestDto requestDto
+            @RequestParam(value = "name") String name,
+            @Valid @RequestBody ReservationRequestDto requestDto,
+            @PathVariable Long id
     ) {
-        if (name == null) {
-            throw new BusinessException(ErrorCode.MISSING_CREDENTIALS);
-        }
-
-        reservationService.update(requestDto, name);
+        reservationService.update(id, requestDto.toCommand(), MemberName.from(name));
     }
 }
