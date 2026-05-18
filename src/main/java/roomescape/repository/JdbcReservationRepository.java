@@ -44,12 +44,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                     theme.thumbnail_url AS theme_thumbnail_url
                 FROM 
                     reservation r 
+                        INNER JOIN  
+                        time t ON r.time_id = t.id
                         INNER JOIN 
-                        time t 
-                            INNER JOIN 
-                        theme theme
-                            ON r.time_id = t.id 
-                                   AND r.theme_id = theme.id
+                        theme theme ON r.theme_id = theme.id
                 """;
         return jdbcTemplate.query(sql, rowMapper());
     }
@@ -71,13 +69,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                 FROM 
                     reservation r 
                         INNER JOIN 
-                        time t 
+                        time t ON r.time_id = t.id
                         INNER JOIN 
-                        theme theme
-                            ON 
-                                r.time_id = t.id 
-                                   AND 
-                                r.theme_id = theme.id
+                        theme theme ON r.theme_id = theme.id
                 WHERE r.id = ?
                 """;
 
