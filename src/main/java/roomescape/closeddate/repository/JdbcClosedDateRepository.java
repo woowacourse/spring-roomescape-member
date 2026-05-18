@@ -37,7 +37,10 @@ public class JdbcClosedDateRepository implements ClosedDateRepository {
 
     @Override
     public Optional<ClosedDate> findById(Long id) {
-        String sql = "SELECT * FROM closed_date WHERE id = :id";
+        String sql = """
+                SELECT * FROM closed_date 
+                WHERE id = :id
+                """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, closedDateRowMapper));
@@ -56,14 +59,20 @@ public class JdbcClosedDateRepository implements ClosedDateRepository {
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM closed_date WHERE id = :id";
+        String sql = """
+                DELETE FROM closed_date 
+                WHERE id = :id
+                """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, params);
     }
 
     @Override
     public boolean existsByDate(LocalDate date) {
-        String sql = "SELECT COUNT(*) FROM closed_date WHERE date = :date";
+        String sql = """
+                SELECT COUNT(*) FROM closed_date 
+                WHERE date = :date
+                """;
         SqlParameterSource params = new MapSqlParameterSource("date", date);
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;

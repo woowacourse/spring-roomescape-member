@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.time.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
@@ -18,6 +19,6 @@ public interface ReservationTimeRepository {
 
     boolean existsByStartAt(LocalTime startAt);
 
-    List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId);
+    List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, long themeId, ReservationStatus status);
 
 }

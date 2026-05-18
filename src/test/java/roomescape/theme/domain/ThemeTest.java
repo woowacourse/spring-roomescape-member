@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.common.exception.DomainValidationException;
 
 class ThemeTest {
     private final String name = "공포";
@@ -18,8 +19,7 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(nullName, description, emptyThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 이름은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 
     @Test
@@ -30,8 +30,7 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(emptyName, description, emptyThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 이름은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 
     @Test
@@ -42,8 +41,7 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(name, nullDescription, emptyThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 설명은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 
     @Test
@@ -54,15 +52,13 @@ class ThemeTest {
 
         // when & then
         assertThatThrownBy(() -> Theme.create(name, emptyDescription, emptyThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 설명은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 
     @Test
     @DisplayName("테마 썸네일 URL이 비어있으면 예외가 발생한다.")
     void create_empty_thumbnail(){
         assertThatThrownBy(() -> Theme.create(name, description, emptyThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 썸네일 URL은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 }

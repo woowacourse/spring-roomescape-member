@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
@@ -38,7 +39,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id=:id";
+        String sql = """
+                SELECT * FROM reservation_time 
+                WHERE id=:id
+                """;
 
         SqlParameterSource params = new MapSqlParameterSource("id", id);
 
@@ -59,34 +63,41 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id=:id";
+        String sql = """
+                DELETE FROM reservation_time 
+                WHERE id=:id
+                """;
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, params);
     }
 
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = :start_at";
+        String sql = """
+                SELECT COUNT(*) FROM reservation_time 
+                WHERE start_at = :start_at
+                """;
         MapSqlParameterSource params = new MapSqlParameterSource("start_at", startAt);
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }
 
     @Override
-    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, long themeId, ReservationStatus status) {
         String sql = """
                 SELECT * FROM reservation_time
                 WHERE start_at NOT IN (
                     SELECT start_at FROM reservation
                     WHERE date = :date
                     AND theme_id = :theme_id
-                    AND status = 'RESERVED'
+                    AND status = :status
                 )
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("theme_id", themeId);
+                .addValue("theme_id", themeId)
+                .addValue("status", status.name());
 
         return jdbcTemplate.query(sql, params, RESERVATION_TIME_ROW_MAPPER);
     }

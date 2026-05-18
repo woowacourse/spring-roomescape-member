@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.response.ThemeDetailDto;
 import roomescape.theme.service.ThemeService;
 
 @RestController
+@RequestMapping("/themes")
 public class ThemeController {
     private final ThemeService themeService;
 
@@ -17,7 +19,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     @Operation(summary = "Read active themes", description = "활성화된 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getActiveThemes(){
         List<ThemeDetailDto> responseData = themeService.findActiveThemes().stream()
@@ -26,7 +28,7 @@ public class ThemeController {
         return ResponseEntity.ok(responseData);
     }
 
-    @GetMapping("/themes/popular")
+    @GetMapping("/popular")
     @Operation(summary = "Read popular themes", description = "인기 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getPopularThemes(@RequestParam int top){
         List<ThemeDetailDto> responseData = themeService.findPopularThemes(top).stream()

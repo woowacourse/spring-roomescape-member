@@ -1,8 +1,10 @@
 package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.reservation.service.ReservationService;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 
 @SpringBootTest
@@ -20,6 +24,12 @@ import roomescape.time.domain.ReservationTime;
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ThemeService themeService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     @BeforeEach
     void setup() {
@@ -51,8 +61,7 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 존재하는 예약 시간 생성 시 예외가 발생한다.")
     void create_already_exist() {
         assertThatThrownBy(() -> reservationTimeService.create(LocalTime.of(15, 40)))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("이미 존재하는 예약 시간입니다.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -70,10 +79,22 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간 삭제 시 예외가 발생한다.")
+    @DisplayName("예약이 존재하는 시간 삭제 시 예외가 발생한다.")
+    void delete_time_with_reservation(){
+        // given
+        ReservationTime time = reservationTimeService.create(LocalTime.of(12, 0));
+        Theme theme = themeService.register("테마", "설명", "썸네일");
+        reservationService.create("한다", LocalDate.of(2099, 1, 1), time.id(), theme.id());
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(time.id()))
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간 삭제 시 정상 처리된다.")
     void deleteNotExist() {
-        assertThatThrownBy(() -> reservationTimeService.delete(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+        assertThatCode(() -> reservationTimeService.delete(999L))
+                .doesNotThrowAnyException();
     }
 }

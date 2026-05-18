@@ -37,13 +37,13 @@ public class ClosedDateService {
 
     @Transactional
     public void deregister(Long id) {
-        ClosedDate closedDate = getClosedDate(id);
+        ClosedDate closedDate = findClosedDateOrThrow(id);
         closedDateRepository.delete(id);
         log.info("Closed date deleted: id={}, date={}", closedDate.id(), closedDate.date());
     }
 
     @NonNull
-    private ClosedDate getClosedDate(Long id) {
+    private ClosedDate findClosedDateOrThrow(Long id) {
         return closedDateRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Closed date not found: id={}", id);

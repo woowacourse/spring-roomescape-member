@@ -18,15 +18,15 @@ import roomescape.closeddate.dto.response.ClosedDateDetailDto;
 import roomescape.closeddate.service.ClosedDateService;
 
 @RestController
-@RequestMapping("/admin")
-public class ClosedDateAdminController {
+@RequestMapping("/admin/closed-dates")
+public class AdminClosedDateController {
     private final ClosedDateService closedDateService;
 
-    public ClosedDateAdminController(ClosedDateService closedDateService) {
+    public AdminClosedDateController(ClosedDateService closedDateService) {
         this.closedDateService = closedDateService;
     }
 
-    @GetMapping("/closed-dates")
+    @GetMapping
     @Operation(summary = "Get all closed dates", description = "휴무일 전체 목록을 조회하는 api")
     public ResponseEntity<List<ClosedDateDetailDto>> getClosedDates() {
         List<ClosedDateDetailDto> responseData = closedDateService.findClosedDates().stream()
@@ -35,7 +35,7 @@ public class ClosedDateAdminController {
         return ResponseEntity.ok(responseData);
     }
 
-    @PostMapping("/closed-dates")
+    @PostMapping
     @Operation(summary = "Create a closed date", description = "휴무일을 등록하는 api")
     public ResponseEntity<ClosedDateDetailDto> createClosedDate(
             @Valid @RequestBody ClosedDateSaveDto dto
@@ -44,7 +44,7 @@ public class ClosedDateAdminController {
         return ResponseEntity.status(CREATED).body(responseData);
     }
 
-    @DeleteMapping("/closed-dates/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete a closed date", description = "휴무일을 삭제하는 api")
     public ResponseEntity<Void> deleteClosedDate(@PathVariable Long id) {
         closedDateService.deregister(id);

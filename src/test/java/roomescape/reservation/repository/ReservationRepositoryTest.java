@@ -5,10 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,41 +50,6 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("id로 특정 예약 정보를 조횧한다.")
-    void findById() {
-        // given
-        Reservation savedReservation = jdbcReservationRepository.save(
-                Reservation.create(name, date1, reservationTime1.startAt(), theme));
-        Long savedId = savedReservation.id();
-
-        // when
-        Reservation actual = jdbcReservationRepository.findById(savedId).get();
-
-        // then
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(savedReservation);
-    }
-
-
-    @Test
-    @DisplayName("모든 예약 정보를 조회한다.")
-    void findAll() {
-        // given
-        List<Reservation> reservations = saveAll(List.of(
-                Reservation.create(name, date1, reservationTime1.startAt(), theme),
-                Reservation.create(name, date1, reservationTime2.startAt(), theme))
-        );
-
-        // when
-        List<Reservation> actual = jdbcReservationRepository.findAll();
-
-        // then
-        assertThat(actual)
-                .hasSize(2);
-    }
-
-    @Test
     @DisplayName("나의 예약들을 조회하면 날짜/시간 오름차순으로 정렬해 모두 조회한다.")
     void findAllByName() {
         // given
@@ -96,7 +59,7 @@ class ReservationRepositoryTest {
                         Reservation.create(name, date2, reservationTime1.startAt(), theme),
                         Reservation.create(name, date2, reservationTime2.startAt(), theme))
         );
-        Collections.sort(reservations, Comparator.comparing(Reservation::date).thenComparing(Reservation::status));
+        reservations.sort(Comparator.comparing(Reservation::date).thenComparing(Reservation::time));
 
         // when
         List<Reservation> actual = jdbcReservationRepository.findAllByNameOrderByDateAndTime(name);
@@ -108,51 +71,31 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약을 추가한다.")
-    void save() {
+    @DisplayName("자기 자신을 제외하고 날짜/시간/테마 중복 여부를 확인한다.")
+    void existsByDateAndTimeAndThemeId_excludeSelf() {
         // given
-        List<Reservation> emptyReservations = List.of();
-
-        // when
-        jdbcReservationRepository.save(
+        Reservation saved = jdbcReservationRepository.save(
                 Reservation.create(name, date1, reservationTime1.startAt(), theme));
 
-        //then
-        assertThat(jdbcReservationRepository.findAll())
-                .hasSize(emptyReservations.size() + 1);
-    }
-
-    @Test
-    @DisplayName("예약 날짜와 시간 ID 정보로 존재하는지 확인한다.")
-    void exitsByDateAndTimeId() {
-        // given
-        jdbcReservationRepository.save(Reservation.create(name, date1, reservationTime1.startAt(), theme));
-        LocalDate wrongDate = LocalDate.now().plusWeeks(3);
-
         // when & then
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(date1,
-                reservationTime1.startAt(), theme.id()))
-                .isTrue();
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, reservationTime1.startAt(),
-                theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(
+                date1, reservationTime1.startAt(), theme.id(), saved.id(), ReservationStatus.RESERVED))
                 .isFalse();
     }
 
     @Test
-    @DisplayName("예약을 취소하면 상태가 CANCELED가 된다.")
-    void updateState_canceled() {
+    @DisplayName("자기 자신 외 다른 예약이 있으면 true를 반환한다.")
+    void existsByDateAndTimeAndThemeId_excludeSelf_otherExists() {
         // given
-        Reservation beforeReservation =  jdbcReservationRepository.save(
+        Reservation saved = jdbcReservationRepository.save(
                 Reservation.create(name, date1, reservationTime1.startAt(), theme));
-        ReservationStatus cancelled = ReservationStatus.CANCELED;
-        updateStatus(beforeReservation);
+        jdbcReservationRepository.save(
+                Reservation.create("브라운", date1, reservationTime2.startAt(), theme));
 
-        // when
-        Reservation afterReservation = jdbcReservationRepository.findById(beforeReservation.id()).get();
-
-        // then
-        Assertions.assertThat(afterReservation.status())
-                .isEqualTo(cancelled);
+        // when & then
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(
+                date1, reservationTime2.startAt(), theme.id(), saved.id(), ReservationStatus.RESERVED))
+                .isTrue();
     }
 
     private List<Reservation> saveAll(List<Reservation> reservations) {
@@ -163,10 +106,4 @@ class ReservationRepositoryTest {
         }
         return savedReservations;
     }
-
-    private void updateStatus(Reservation beforeReservation) {
-        beforeReservation.updateStatus(ReservationStatus.CANCELED);
-        jdbcReservationRepository.updateStatus(beforeReservation);
-    }
-
 }

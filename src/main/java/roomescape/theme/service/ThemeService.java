@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -25,7 +27,7 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public Theme findTheme(Long id) {
-        return getTheme(id);
+        return findThemeOrThrow(id);
     }
 
     @Transactional(readOnly = true)
@@ -40,7 +42,7 @@ public class ThemeService {
         LocalDate startDate = today.minusDays(7);
         LocalDate endDate = today;
 
-        return themeRepository.findPopularThemes(startDate, endDate, top);
+        return themeRepository.findPopularThemes(startDate, endDate, top, ReservationStatus.RESERVED);
     }
 
     @Transactional
@@ -52,21 +54,18 @@ public class ThemeService {
 
     @Transactional
     public Theme updateStatus(Long id, boolean isActive) {
-        Theme theme = getTheme(id);
-        theme.updateStatus(isActive);
-        if (!themeRepository.update(theme)) {
-            log.warn("Theme status update failed: id={}, name={}", theme.id(), theme.name());
-            throw new IllegalArgumentException("테마 상태 변경에 실패했습니다.");
-        }
-        log.info("Theme status updated: id={}, name={}, isActive={}", theme.id(), theme.name(), theme.isActive());
-        return theme;
+        Theme theme = findThemeOrThrow(id);
+        Theme changedTheme = theme.changeStatus(isActive);
+        Theme updatedTheme = themeRepository.updateStatus(changedTheme);
+        log.info("Theme status updated: id={}, name={}, isActive={}", updatedTheme.id(), updatedTheme.name(), updatedTheme.isActive());
+        return updatedTheme;
     }
 
     @NonNull
-    private Theme getTheme(Long id) {
+    private Theme findThemeOrThrow(Long id) {
         return themeRepository.findById(id).orElseThrow(() -> {
             log.warn("Theme not found: id={}", id);
-            return new IllegalArgumentException("해당 테마가 존재하지 않습니다.");
+            return new NotFoundException("해당 테마가 존재하지 않습니다.");
         });
     }
 }

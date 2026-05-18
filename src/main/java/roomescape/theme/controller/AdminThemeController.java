@@ -20,15 +20,15 @@ import roomescape.theme.dto.response.ThemeDetailDto;
 import roomescape.theme.service.ThemeService;
 
 @RestController
-@RequestMapping("/admin")
-public class ThemeAdminController {
+@RequestMapping("/admin/themes")
+public class AdminThemeController {
     private final ThemeService themeService;
 
-    public ThemeAdminController(ThemeService themeService) {
+    public AdminThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     @Operation(summary = "Read all themes", description = "모든 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getThemes() {
         List<ThemeDetailDto> responseData = themeService.findThemes().stream()
@@ -37,14 +37,14 @@ public class ThemeAdminController {
         return ResponseEntity.ok(responseData);
     }
 
-    @GetMapping("/themes/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Read a theme by id", description = "테마 id로 테마를 조회하는 api")
     public ResponseEntity<ThemeDetailDto> getTheme(@PathVariable Long id) {
         ThemeDetailDto responseData = ThemeDetailDto.from(themeService.findTheme(id));
         return ResponseEntity.ok(responseData);
     }
 
-    @PostMapping("/themes")
+    @PostMapping
     @Operation(summary = "Create a theme", description = "테마를 생성하는 api")
     public ResponseEntity<ThemeDetailDto> createTheme(@Valid @RequestBody ThemeSaveDto dto) {
         Theme theme = themeService.register(dto.name(), dto.description(), dto.thumbnailUrl());
@@ -52,7 +52,7 @@ public class ThemeAdminController {
         return ResponseEntity.status(CREATED).body(responseData);
     }
 
-    @PatchMapping("/themes/{id}")
+    @PatchMapping("/{id}")
     @Operation(summary = "Update theme status", description = "테마 활성화 상태를 업데이트하는 api")
     public ResponseEntity<ThemeDetailDto> updateThemeStatus(@PathVariable Long id, @Valid @RequestBody ThemeActiveUpdateDto dto) {
         Theme theme = themeService.updateStatus(id, dto.isActive());

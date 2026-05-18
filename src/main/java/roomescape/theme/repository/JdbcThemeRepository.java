@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -40,7 +41,10 @@ public class JdbcThemeRepository implements ThemeRepository{
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = :id";
+        String sql = """
+                SELECT * FROM theme 
+                WHERE id = :id
+                """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, themeRowMapper));
@@ -51,7 +55,11 @@ public class JdbcThemeRepository implements ThemeRepository{
 
     @Override
     public List<Theme> findByStatus(boolean status) {
-        String sql = "SELECT * FROM theme WHERE is_active = :status ORDER BY name ASC";
+        String sql = """
+                SELECT * FROM theme 
+                WHERE is_active = :status 
+                ORDER BY name ASC
+                """;
         SqlParameterSource params = new MapSqlParameterSource("status", status);
         return jdbcTemplate.query(sql, params, themeRowMapper);
     }
@@ -68,49 +76,47 @@ public class JdbcThemeRepository implements ThemeRepository{
     }
 
     @Override
-    public boolean update(Theme theme) {
+    public Theme updateStatus(Theme theme) {
         String sql = """
-                    UPDATE theme 
-                    SET name = :name, description = :description, thumbnail_url = :thumbnail_url, is_active = :is_active
-                    WHERE id = :id
-                    """;
+                UPDATE theme
+                SET is_active = :is_active
+                WHERE id = :id
+                """;
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", theme.id())
-                .addValue("name", theme.name())
-                .addValue("description", theme.description())
-                .addValue("thumbnail_url", theme.thumbnailUrl())
                 .addValue("is_active", theme.isActive());
 
-        int updateCount = jdbcTemplate.update(sql, params);
-        return updateCount > 0;
+        jdbcTemplate.update(sql, params);
+        return theme;
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit, ReservationStatus status) {
         String sql = """
-            SELECT
-                t.id,
-                t.name,
-                t.description,
-                t.thumbnail_url,
-                t.is_active,
-                COUNT(r.id) AS reservation_count
-            FROM reservation r
-            JOIN theme t ON r.theme_id = t.id
-            WHERE t.is_active = true
-              AND r.status = 'RESERVED'
-              AND r.date >= :startDate
-              AND r.date < :endDate
-            GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
-            ORDER BY reservation_count DESC
-            LIMIT :limit
-            """;
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail_url,
+                    t.is_active,
+                    COUNT(r.id) AS reservation_count
+                FROM reservation r
+                JOIN theme t ON r.theme_id = t.id
+                WHERE t.is_active = true
+                  AND r.status = :status
+                  AND r.date >= :startDate
+                  AND r.date < :endDate
+                GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
+                ORDER BY reservation_count DESC
+                LIMIT :limit
+                """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("startDate", startDate)
                 .addValue("endDate", endDate)
-                .addValue("limit", limit);
+                .addValue("limit", limit)
+                .addValue("status", status.name());
 
         return jdbcTemplate.query(sql, params, (rs, rowNum) -> Theme.load(
                 rs.getLong("id"),

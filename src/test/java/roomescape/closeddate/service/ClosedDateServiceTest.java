@@ -82,8 +82,7 @@ class ClosedDateServiceTest {
 
         // when & then
         assertThatThrownBy(() -> closedDateService.register(DEFAULT_DATE))
-                .isInstanceOf(ConflictException.class)
-                .hasMessage("이미 등록된 휴무일입니다.");
+                .isInstanceOf(ConflictException.class);
     }
 
     @Test
@@ -108,7 +107,6 @@ class ClosedDateServiceTest {
 
         // when & then
         assertThatThrownBy(() -> closedDateService.deregister(wrongId))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 휴무일입니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 }

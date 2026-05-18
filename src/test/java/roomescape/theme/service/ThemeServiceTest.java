@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
 import roomescape.theme.domain.Theme;
 
 @SpringBootTest
@@ -63,8 +64,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.findTheme(unregisteredId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 테마가 존재하지 않습니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -122,7 +122,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마를 활성화한다.")
-    void updateStatus_active() {
+    void changeStatus_active() {
         // given
         Theme savedTheme = themeService.register("테마1", "테마1 설명", "테마1 썸네일");
 
@@ -136,16 +136,16 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마를 비활성화한다.")
-    void updateStatus_deactivate() {
+    void changeStatus_deactivate() {
         // given
-        Theme savedTheme = themeService.register("테마1", "테마1 설명", "테마1 썸네일");
-        savedTheme.updateStatus(true);
+        Theme theme = themeService.register("테마1", "테마1 설명", "테마1 썸네일");
+        themeService.updateStatus(theme.id(), true);
 
         // when
-        themeService.updateStatus(savedTheme.id(), false);
+        themeService.updateStatus(theme.id(), false);
 
         // then
-        assertThat(themeService.findTheme(savedTheme.id()).isActive())
+        assertThat(themeService.findTheme(theme.id()).isActive())
                 .isFalse();
     }
 
@@ -163,8 +163,8 @@ class ThemeServiceTest {
         List<Theme> themes = new ArrayList<>();
         for (String name : names) {
             Theme theme = Theme.create(name, DEFAULT_DESCRIPTION, DEFAULT_THUMBNAIL_URL);
-            theme.updateStatus(true);
-            themes.add(theme);
+            Theme changedTheme = theme.changeStatus(true);
+            themes.add(changedTheme);
         }
         return themes;
     }

@@ -72,8 +72,6 @@ function initTimeSelectBox() {
     minuteSelect.value = "00";
 }
 
-// 날짜 관리 → 휴무일 관리로 변경
-
 async function loadDates() {
     const response = await fetch("/admin/closed-dates");
     const dates = await response.json();
@@ -129,7 +127,6 @@ async function deleteDate(id) {
     await loadDates();
 }
 
-// 시간 관리
 async function loadTimes() {
     const response = await fetch("/admin/times");
     const times = await response.json();
@@ -193,7 +190,6 @@ function formatTime(value) {
     return `${hour}:${minute}:${second}`;
 }
 
-// 테마 관리
 async function loadThemes() {
     const response = await fetch("/admin/themes");
     const themes = await response.json();
@@ -264,7 +260,6 @@ async function toggleThemeStatus(id, isActive) {
     await loadThemes();
 }
 
-// 예약 조회
 async function loadReservations() {
     const response = await fetch("/admin/reservations");
     const reservations = await response.json();
@@ -296,7 +291,7 @@ async function cancelReservation(id) {
         return;
     }
 
-    await fetch(`/admin/reservations/${id}`, {
+    await fetch(`/admin/reservations/${id}/cancel`, {
         method: "PATCH"
     });
 

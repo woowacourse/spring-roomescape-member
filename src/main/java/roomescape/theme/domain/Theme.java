@@ -1,11 +1,13 @@
 package roomescape.theme.domain;
 
+import roomescape.common.exception.DomainValidationException;
+
 public class Theme {
-    private Long id;
-    private String name;
-    private String description;
-    private String thumbnailUrl;
-    private boolean isActive;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnailUrl;
+    private final boolean isActive;
 
     private Theme(Long id, String name, String description, String thumbnailUrl, boolean isActive) {
         validate(name, description, thumbnailUrl);
@@ -21,7 +23,6 @@ public class Theme {
     }
 
     public static Theme load(Long id, String name, String description, String thumbnailUrl, boolean isActive) {
-        validateId(id);
         return new Theme(id, name, description, thumbnailUrl, isActive);
     }
 
@@ -31,27 +32,21 @@ public class Theme {
         validateThumbnailUrl(thumbnailUrl);
     }
 
-    private static void validateId(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("테마 ID는 필수입니다.");
-        }
-    }
-
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 필수입니다.");
+            throw new DomainValidationException("테마 이름은 필수입니다.");
         }
     }
 
     private static void validateThumbnailUrl(String thumbnailUrl) {
         if (thumbnailUrl == null || thumbnailUrl.isBlank()) {
-            throw new IllegalArgumentException("테마 썸네일 URL은 필수입니다.");
+            throw new DomainValidationException("테마 썸네일 URL은 필수입니다.");
         }
     }
 
     private static void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 필수입니다.");
+            throw new DomainValidationException("테마 설명은 필수입니다.");
         }
     }
 
@@ -75,7 +70,7 @@ public class Theme {
         return isActive;
     }
 
-    public void updateStatus(boolean isActive) {
-        this.isActive = isActive;
+    public Theme changeStatus(boolean isActive) {
+        return new Theme(id, name, description, thumbnailUrl, isActive);
     }
 }

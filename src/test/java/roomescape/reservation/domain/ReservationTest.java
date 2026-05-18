@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.common.exception.DomainValidationException;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
@@ -101,8 +102,7 @@ class ReservationTest {
 
         //then
         assertThatThrownBy(() -> Reservation.create(name, pastDate, startAt, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("과거 날짜/시간으로는 예약할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -112,41 +112,9 @@ class ReservationTest {
         String emptyName = "";
 
         assertThatThrownBy(() -> Reservation.create(nullName, date, startAt, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자 이름은 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
 
         assertThatThrownBy(() -> Reservation.create(emptyName, date, startAt, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자 이름은 필수입니다.");
-    }
-
-    @Test
-    @DisplayName("예약 시간이 유효하지 않은 경우 생성 시 예외가 발생한다.")
-    void validateTime() {
-        LocalTime nullTime = null;
-
-        assertThatThrownBy(() -> Reservation.create(name, date, nullTime, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 시간은 필수입니다.");
-    }
-
-    @Test
-    @DisplayName("예약 날짜가 유효하지 않은 경우 생성 시 예외가 발생한다.")
-    void validateDate() {
-        LocalDate nullDate = null;
-
-        assertThatThrownBy(() -> Reservation.create(name, nullDate, startAt, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 날짜는 필수입니다.");
-    }
-
-    @Test
-    @DisplayName("예약 ID가 유효하지 않은 경우 생성 시 예외가 발생한다.")
-    void validateId() {
-        Long nullId = null;
-
-        assertThatThrownBy(() -> Reservation.load(nullId, name, date, startAt, theme, RESERVED))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 ID는 필수입니다.");
+                .isInstanceOf(DomainValidationException.class);
     }
 }

@@ -4,11 +4,90 @@
     <meta charset="UTF-8">
     <title>ENIGMA ROOMS - 예약 조회</title>
     <link rel="stylesheet" th:href="@{/css/user.css}">
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            width: 520px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 32px;
+            background: #0b0d10;
+            border: 1px solid rgba(210, 180, 76, 0.28);
+            border-radius: 12px;
+        }
+        .modal h2 {
+            margin: 0 0 24px;
+            font-size: 20px;
+            font-weight: 900;
+        }
+        .modal-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a4a4a4;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .modal-select {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            margin-bottom: 24px;
+            background: #07090c;
+            border: 1px solid #222832;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-cancel-btn {
+            flex: 1;
+            height: 44px;
+            border: 1px solid #343944;
+            border-radius: 6px;
+            background: transparent;
+            color: #d8d8d8;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .modal-confirm-btn {
+            flex: 1;
+            height: 44px;
+            border: none;
+            border-radius: 6px;
+            background: #d6b943;
+            color: #090909;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .modal-confirm-btn:hover { background: #e4c74d; }
+        .error-message {
+            margin-bottom: 16px;
+            color: #e25a5a;
+            font-size: 13px;
+        }
+    </style>
 </head>
 <body>
 <header class="header">
     <a class="logo" href="/">ENIGMA ROOMS</a>
-
     <nav class="nav">
         <a href="/">예약하기</a>
         <a href="/reservation-lookup">예약 조회</a>
@@ -27,7 +106,6 @@
             <span>⌕</span>
             <input id="lookup-name-input" type="text" placeholder="예약자 성함을 입력하세요">
         </div>
-
         <button class="primary-button search" type="button" onclick="searchReservations()">
             조회
         </button>
@@ -38,6 +116,21 @@
         <div id="reservation-result-list" class="reservation-result-list"></div>
     </section>
 </main>
+
+<div id="change-modal" class="modal-overlay">
+    <div class="modal">
+        <h2>예약 변경</h2>
+        <label class="modal-label">날짜</label>
+        <div id="change-date-list" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;"></div>
+        <label class="modal-label">시간</label>
+        <select id="change-time-select" class="modal-select"></select>
+        <p id="change-error-message" class="error-message hidden"></p>
+        <div class="modal-buttons">
+            <button class="modal-cancel-btn" type="button" onclick="closeChangeModal()">취소</button>
+            <button class="modal-confirm-btn" type="button" onclick="confirmChange()">변경 확정</button>
+        </div>
+    </div>
+</div>
 
 <script th:src="@{/js/reservation-lookup.js}"></script>
 </body>
