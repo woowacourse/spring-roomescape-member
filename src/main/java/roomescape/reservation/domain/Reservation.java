@@ -3,6 +3,7 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -59,7 +60,7 @@ public class Reservation {
     }
 
     public boolean isOwnerBy(String name) {
-        return name.equals(this.name);
+        return Objects.equals(name, this.name);
     }
 
     private void validateName(String name) {
