@@ -2,6 +2,7 @@ package roomescape.service.reservation;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.repository.reservation.ReservationRepository;
@@ -46,14 +47,18 @@ public class ReservationService {
 
         Theme theme = themeService.getById(themeId);
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
-        reservationValidator.validateReservationDateTime(date, reservationTime);
+        Reservation nonIdReservation = Reservation.createNew(name, date, theme, reservationTime);
+        reservationValidator.validateReservable(nonIdReservation);
 
         if(reservationRepository.existsByDateAndThemeIdAndTimeId(date, themeId, timeId)){
             throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED, "동일한 시기에 예약을 할 수 없습니다.");
         }
 
-        Reservation nonIdReservation = Reservation.createNew(name, date, theme, reservationTime);
-        return reservationRepository.save(nonIdReservation);
+        try {
+            return reservationRepository.save(nonIdReservation);
+        } catch (DuplicateKeyException exception) {
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED, "동일한 시기에 예약을 할 수 없습니다.");
+        }
     }
 
     public void deleteById(final long id) {
@@ -92,7 +97,8 @@ public class ReservationService {
         reservationValidator.validateUpdatable(reservation);
 
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
-        reservationValidator.validateReservationDateTime(date, reservationTime);
+        Reservation updatedReservation = reservation.withDateAndTime(date, reservationTime);
+        reservationValidator.validateReservable(updatedReservation);
 
         if (reservationRepository.existsByDateAndThemeIdAndTimeIdExcludingId(
                 date,
@@ -103,7 +109,10 @@ public class ReservationService {
             throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED, "동일한 시기에 예약을 할 수 없습니다.");
         }
 
-        Reservation updatedReservation = reservation.withDateAndTime(date, reservationTime);
-        return reservationRepository.update(updatedReservation);
+        try {
+            return reservationRepository.update(updatedReservation);
+        } catch (DuplicateKeyException exception) {
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED, "동일한 시기에 예약을 할 수 없습니다.");
+        }
     }
 }

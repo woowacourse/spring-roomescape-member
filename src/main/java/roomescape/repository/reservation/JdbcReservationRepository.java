@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.ConflictException;
-import roomescape.exception.ErrorCode;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -156,21 +153,14 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-                preparedStatement.setString(1, reservation.getName());
-                preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
-                preparedStatement.setLong(3, reservation.getTheme().getId());
-                preparedStatement.setLong(4, reservation.getTime().getId());
-                return preparedStatement;
-            }, keyHolder);
-        } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException(
-                    ErrorCode.RESERVATION_DUPLICATED,
-                    "동일한 시기에 예약을 할 수 없습니다."
-            );
-        }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+            preparedStatement.setString(1, reservation.getName());
+            preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
+            preparedStatement.setLong(3, reservation.getTheme().getId());
+            preparedStatement.setLong(4, reservation.getTime().getId());
+            return preparedStatement;
+        }, keyHolder);
 
         Number key = keyHolder.getKey();
         if (key == null) {
@@ -188,19 +178,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE id = ?
                 """;
 
-        try {
-            jdbcTemplate.update(
-                    sql,
-                    Date.valueOf(reservation.getDate()),
-                    reservation.getTime().getId(),
-                    reservation.getId()
-            );
-        } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException(
-                    ErrorCode.RESERVATION_DUPLICATED,
-                    "동일한 시기에 예약을 할 수 없습니다."
-            );
-        }
+        jdbcTemplate.update(
+                sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId()
+        );
 
         return reservation;
     }
