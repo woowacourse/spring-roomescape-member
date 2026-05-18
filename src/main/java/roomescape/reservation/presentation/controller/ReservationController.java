@@ -27,9 +27,15 @@ public class ReservationController {
     private final ReservationService service;
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations(
-            @RequestParam(required = false) String name) {
-        return ResponseEntity.ok().body(service.getReservations(name));
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        return ResponseEntity.ok().body(service.getReservations());
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationResponse>> getMyReservations(
+            @RequestParam String name
+        ) {
+        return ResponseEntity.ok().body(service.getMyReservations(name));
     }
 
     @PostMapping

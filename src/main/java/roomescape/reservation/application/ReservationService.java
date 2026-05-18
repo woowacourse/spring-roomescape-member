@@ -31,18 +31,17 @@ public class ReservationService {
     private final ReservationSchedulePolicy reservationSchedulePolicy;
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservations(String name) {
-        List<Reservation> reservations = findReservations(name);
-        return reservations.stream()
+    public List<ReservationResponse> getReservations() {
+        return reservationRepository.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
-    private List<Reservation> findReservations(String name) {
-        if (name == null || name.isBlank()) {
-            return reservationRepository.findAll();
-        }
-        return reservationRepository.findByName(name);
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> getMyReservations(String name) {
+        return reservationRepository.findByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {

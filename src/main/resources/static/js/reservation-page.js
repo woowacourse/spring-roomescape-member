@@ -188,7 +188,7 @@ async function loadMyReservations(name) {
     clearFeedback(myReservationsFeedback);
     try {
         const data = await request(
-            `/reservations?name=${encodeURIComponent(name)}`,
+            `/reservations/mine?name=${encodeURIComponent(name)}`,
             { method: "GET" }
         );
         myReservationsCurrentName = name;

@@ -139,7 +139,7 @@ class ReservationApiTest {
 
         given().log().all()
                 .queryParam("name", "포비")
-                .when().get("/reservations")
+                .when().get("/reservations/mine")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", equalTo(1))
