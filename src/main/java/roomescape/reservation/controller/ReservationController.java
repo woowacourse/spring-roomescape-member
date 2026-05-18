@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.request.UpdateMyReservation;
 import roomescape.reservation.dto.response.ReservationCreateResponse;
@@ -20,6 +21,7 @@ import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationFacade;
 
 @Controller
+@RestController
 public class ReservationController {
 
   private final ReservationFacade reservationFacade;
@@ -58,14 +60,14 @@ public class ReservationController {
   @DeleteMapping("/reservations/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     reservationFacade.deleteReservation(id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping("/reservations/my")
   public ResponseEntity<Void> deleteMyReservationById(@RequestParam String name,
       @RequestParam Long reservationId) {
     reservationFacade.deleteReservationByNameAndReservationId(name, reservationId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   @PatchMapping("/reservations")
