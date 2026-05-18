@@ -113,6 +113,8 @@ public class ReservationService {
 
     @Transactional
     public void updateUserReservation(Long id, ReservationUpdateRequest request) {
+        ReservationTime time = reservationTimeDao.findById(request.timeId());
+        validateNotPastDate(LocalDateTime.of(request.date(), time.getStartAt()));
         int updateCount = reservationDao.update(id, request.date(), request.timeId(), request.themeId());
         validateChanged(updateCount);
     }
