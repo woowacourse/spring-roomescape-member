@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -102,6 +103,12 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
+        Reservation findReservation = reservationQueryingDao.findReservationById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        ReservationTime reservationTime = findReservation.getTime();
+
+        validateNotPast(findReservation.getDate(), reservationTime.getStartAt());
+
         reservationUpdatingDao.delete(id);
     }
 
