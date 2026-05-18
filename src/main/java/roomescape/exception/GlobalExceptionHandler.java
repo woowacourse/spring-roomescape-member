@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,6 +37,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_REQUEST);
+        return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus())
+                .body(response);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
         ErrorResponse response = new ErrorResponse(ErrorCode.INVALID_REQUEST);
         return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus())
                 .body(response);

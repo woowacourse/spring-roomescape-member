@@ -1,10 +1,13 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +25,7 @@ import roomescape.reservation.dto.UpdateReservationRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
+@Validated
 @RequestMapping("/api")
 public class ReservationController {
 
@@ -32,7 +36,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<ReservationsResponse> findReservationsByName(@RequestParam String name) {
+    public ResponseEntity<ReservationsResponse> findReservationsByName(@RequestParam @NotBlank @Size(max = 20) String name) {
         List<ReservationResponse> reservations = reservationService.findByName(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
