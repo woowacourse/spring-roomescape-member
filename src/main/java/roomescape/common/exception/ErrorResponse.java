@@ -21,7 +21,7 @@ public record ErrorResponse(
         return new ErrorResponse(
                 LocalDateTime.now(),
                 errorCode.getStatus().value(),
-                errorCode.name(),
+                errorCode.getCode(),
                 message,
                 details
         );
