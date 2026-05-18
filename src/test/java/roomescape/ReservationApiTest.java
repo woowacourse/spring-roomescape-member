@@ -107,6 +107,63 @@ class ReservationApiTest {
     }
 
     @Test
+    void 예약할_때_이름이_비어_있으면_400() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "");
+        params.put("date", FUTURE_FIRST_DATE);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약할_때_시간_id가_null이면_400() {
+        Integer timeId = null;
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "");
+        params.put("date", FUTURE_FIRST_DATE);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약할_때_테마_id가_null이면_400() {
+        Integer timeId = createTime("11:00");
+        Integer themeId = null;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "");
+        params.put("date", FUTURE_FIRST_DATE);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 범위를_벗어난_월로_예약하면_400() {
         Integer timeId = createTime("11:00");
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");

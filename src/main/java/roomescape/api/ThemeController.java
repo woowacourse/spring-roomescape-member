@@ -1,5 +1,6 @@
 package roomescape.api;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> add(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> add(@Valid @RequestBody ThemeRequest request) {
         ThemeResponse response = ThemeResponse.from(themeService.addTheme(request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

@@ -95,6 +95,51 @@ class ThemeApiTest {
     }
 
     @Test
+    void 테마를_추가할_때_이름이_비어_있으면_400() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "");
+        params.put("description", "우주에서 탈출");
+        params.put("thumbnailImageUrl", "https://example.com/sf.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 테마를_추가할_때_설명이_비어_있으면_400() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "SF");
+        params.put("description", "");
+        params.put("thumbnailImageUrl", "https://example.com/sf.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 테마를_추가할_때_썸네일_이미지가_비어_있으면_400() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "SF");
+        params.put("description", "우주에서 탈출");
+        params.put("thumbnailImageUrl", "");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     @Sql("/data_relative_dates.sql")
     void 인기_테마_탑10_조회() {
         RestAssured.given().log().all()
