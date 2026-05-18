@@ -120,8 +120,9 @@ async function loadAvailableTimes() {
         });
         availableTimes = data.times ?? [];
         selectedTimeId = null;
+        const themeName = themeSelect.options[themeSelect.selectedIndex].text;
         availabilitySummary.textContent =
-            `${data.theme.name} 테마의 ${date} 예약 가능 시간 ${availableTimes.length}개`;
+            `${themeName} 테마의 ${date} 예약 가능 시간 ${availableTimes.length}개`;
         renderAvailableTimes();
     } catch (error) {
         availableTimes = [];
