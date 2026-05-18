@@ -66,7 +66,8 @@ public class ReservationService {
     public ReservationResponse update(Long reservationId, UpdateReservationRequest request) {
         Reservation reservation = getReservation(reservationId);
         ReservationTime time = getTime(request.timeId());
-        validateUniqueReservation(request.date(), request.timeId(), reservation.getTheme().getId());
+        validateUniqueExcludingSelf(request.date(), request.timeId(), reservation.getTheme().getId(),
+                reservation.getId());
         validatePastDatetime(request.date(), time);
 
         Reservation updateReservation = reservationDao.update(reservationId, request.date(), request.timeId());
@@ -92,6 +93,13 @@ public class ReservationService {
 
     private void validateUniqueReservation(LocalDate date, long timeId, long themeId) {
         boolean exists = reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId);
+        if (exists) {
+            throw new AlreadyExistException("동일한 날짜, 시간, 테마에 이미 예약이 존재합니다.");
+        }
+    }
+
+    private void validateUniqueExcludingSelf(LocalDate date, long timeId, long themeId, long id) {
+        boolean exists = reservationDao.existsDuplicateExcluding(date, timeId, themeId, id);
         if (exists) {
             throw new AlreadyExistException("동일한 날짜, 시간, 테마에 이미 예약이 존재합니다.");
         }

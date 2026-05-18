@@ -177,6 +177,18 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
+    public boolean existsDuplicateExcluding(LocalDate date, long timeId, long themeId,
+                                            long reservationId) {
+        String sql = """
+                SELECT COUNT(*) > 0
+                FROM reservation
+                WHERE date = ?
+                AND time_id = ?
+                AND theme_id = ?
+                AND id != ?""";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId, reservationId);
+    }
+
     public Reservation update(Long reservationId, LocalDate date, long timeId) {
         String sql = """
                 UPDATE reservation
