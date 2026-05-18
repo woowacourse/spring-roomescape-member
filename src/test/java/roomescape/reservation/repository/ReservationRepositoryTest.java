@@ -130,11 +130,11 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void id와_이름으로_예약을_조회한다() {
+    void id로_예약을_조회한다() {
         Reservation savedReservation = reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
 
-        Reservation result = reservationRepository.findByIdAndName(savedReservation.getId(), "브라운").get();
+        Reservation result = reservationRepository.findById(savedReservation.getId()).get();
 
         assertThat(result.getId()).isEqualTo(savedReservation.getId());
         assertThat(result.getName()).isEqualTo("브라운");
@@ -144,15 +144,12 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void id와_이름이_일치하지_않으면_예약을_조회하지_않는다() {
-        Reservation savedReservation = reservationRepository.save(new Reservation(
-                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
-
-        assertThat(reservationRepository.findByIdAndName(savedReservation.getId(), "어셔")).isEmpty();
+    void 존재하지_않는_id로_조회하면_빈_Optional을_반환한다() {
+        assertThat(reservationRepository.findById(999L)).isEmpty();
     }
 
     @Test
-    void id와_이름이_일치하는_예약의_날짜와_시간을_변경한다() {
+    void 예약의_날짜와_시간을_변경한다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
         ReservationTime newTime = jdbcTemplate.queryForObject(
                 "SELECT * FROM reservation_time WHERE start_at = ?",
@@ -163,12 +160,12 @@ class ReservationRepositoryTest {
         );
         Reservation savedReservation = reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        Reservation updated = new Reservation(
+                savedReservation.getId(), "브라운", LocalDate.of(2026, 5, 11), newTime, theme);
 
-        int updatedRows = reservationRepository.updateDateAndTimeByIdAndName(
-                savedReservation.getId(), "브라운", LocalDate.of(2026, 5, 11), newTime.getId());
+        reservationRepository.update(updated);
 
-        Reservation result = reservationRepository.findByIdAndName(savedReservation.getId(), "브라운").get();
-        assertThat(updatedRows).isEqualTo(1);
+        Reservation result = reservationRepository.findById(savedReservation.getId()).get();
         assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 11));
         assertThat(result.getTime().getId()).isEqualTo(newTime.getId());
         assertThat(result.getTime().getStartAt()).isEqualTo(LocalTime.of(12, 0));
@@ -181,7 +178,7 @@ class ReservationRepositoryTest {
         boolean onlySelf = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
                 first.getId(), LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
-        Reservation second = reservationRepository.save(new Reservation(
+        reservationRepository.save(new Reservation(
                 null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
         boolean anotherReservation = reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
                 first.getId(), LocalDate.of(2026, 5, 10), time.getId(), theme.getId());

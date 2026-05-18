@@ -46,6 +46,30 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowsMapper(), size, offset);
     }
 
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+                SELECT r.id          AS reservation_id,
+                       r.name        AS reservation_name,
+                       r.date        AS reservation_date,
+                       t.id          AS time_id,
+                       t.start_at    AS time_start_at,
+                       th.id         AS theme_id,
+                       th.name       AS theme_name,
+                       th.description AS theme_description,
+                       th.thumbnail  AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowsMapper(), id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public List<Reservation> findByName(String name, int page, int size) {
         String sql = """
                 SELECT r.id          AS reservation_id,
@@ -66,30 +90,6 @@ public class ReservationRepository {
                 """;
         int offset = Math.max(page, 0) * size;
         return jdbcTemplate.query(sql, reservationRowsMapper(), name, size, offset);
-    }
-
-    public Optional<Reservation> findByIdAndName(Long id, String name) {
-        String sql = """
-                SELECT r.id          AS reservation_id,
-                       r.name        AS reservation_name,
-                       r.date        AS reservation_date,
-                       t.id          AS time_id,
-                       t.start_at    AS time_start_at,
-                       th.id         AS theme_id,
-                       th.name       AS theme_name,
-                       th.description AS theme_description,
-                       th.thumbnail  AS theme_thumbnail
-                FROM reservation r
-                JOIN reservation_time t ON r.time_id = t.id
-                JOIN theme th ON r.theme_id = th.id
-                WHERE r.id = ? AND r.name = ?
-                """;
-        try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowsMapper(), id, name);
-            return Optional.ofNullable(reservation);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
@@ -135,9 +135,12 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
-    public int updateDateAndTimeByIdAndName(Long id, String name, LocalDate date, Long timeId) {
-        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ? AND name = ?";
-        return jdbcTemplate.update(sql, date, timeId, id, name);
+    public void update(Reservation reservation) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getId());
     }
 
     public int deleteById(Long id) {

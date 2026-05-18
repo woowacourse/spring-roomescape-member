@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.BusinessException;
+import roomescape.exception.DomainConflictException;
 import roomescape.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -18,7 +19,8 @@ import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,7 +108,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_날짜가_과거인_경우_예외가_발생한다() {
+    void 예약_날짜가_과거인_경우_도메인_충돌_예외가_발생한다() {
         ReservationTime newTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
@@ -114,9 +116,9 @@ class ReservationServiceTest {
         when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
 
         assertThatThrownBy(() -> reservationService.createReservation("레서", LocalDate.of(2026, 4, 1), 1L, 1L))
-                .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.PAST_RESERVATION);
+                .isInstanceOf(DomainConflictException.class);
+
+        verify(reservationRepository, never()).save(any(Reservation.class));
     }
 
     @Test
@@ -148,24 +150,22 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약을_변경하면_예약과_시간을_조회하고_날짜와_시간을_수정한_뒤_예약을_반환한다() {
+    void 예약을_변경하면_예약과_시간을_조회하고_변경된_예약을_저장한_뒤_반환한다() {
         ReservationTime originalTime = new ReservationTime(1L, LocalTime.of(10, 0));
         ReservationTime newTime = new ReservationTime(2L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
         Reservation reservation = new Reservation(7L, "브라운", LocalDate.of(2026, 5, 10), originalTime, theme);
 
-        when(reservationRepository.findByIdAndName(7L, "브라운")).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
         when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(newTime));
         when(reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
                 7L, LocalDate.of(2026, 5, 11), 2L, 1L)).thenReturn(false);
-        when(reservationRepository.updateDateAndTimeByIdAndName(
-                7L, "브라운", LocalDate.of(2026, 5, 11), 2L)).thenReturn(1);
 
         Reservation result = reservationService.updateReservation(7L, "브라운", LocalDate.of(2026, 5, 11), 2L);
 
-        verify(reservationRepository).findByIdAndName(7L, "브라운");
+        verify(reservationRepository).findById(7L);
         verify(reservationTimeRepository).findById(2L);
-        verify(reservationRepository).updateDateAndTimeByIdAndName(7L, "브라운", LocalDate.of(2026, 5, 11), 2L);
+        verify(reservationRepository).update(any(Reservation.class));
         assertThat(result.getId()).isEqualTo(7L);
         assertThat(result.getName()).isEqualTo("브라운");
         assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 11));
@@ -174,8 +174,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않거나_이름이_일치하지_않는_예약을_변경하면_예외가_발생한다() {
-        when(reservationRepository.findByIdAndName(999L, "브라운")).thenReturn(Optional.empty());
+    void 존재하지_않는_예약을_변경하면_예외가_발생한다() {
+        when(reservationRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.updateReservation(999L, "브라운", LocalDate.of(2026, 5, 11), 2L))
                 .isInstanceOf(BusinessException.class)
@@ -183,7 +183,23 @@ class ReservationServiceTest {
                 .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
 
         verify(reservationTimeRepository, never()).findById(any());
-        verify(reservationRepository, never()).updateDateAndTimeByIdAndName(any(), any(), any(), any());
+        verify(reservationRepository, never()).update(any(Reservation.class));
+    }
+
+    @Test
+    void 본인의_예약이_아닌_경우_변경하면_도메인_충돌_예외가_발생한다() {
+        ReservationTime originalTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(12, 0));
+        Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
+        Reservation reservation = new Reservation(7L, "브라운", LocalDate.of(2026, 5, 10), originalTime, theme);
+
+        when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(newTime));
+
+        assertThatThrownBy(() -> reservationService.updateReservation(7L, "어셔", LocalDate.of(2026, 5, 11), 2L))
+                .isInstanceOf(DomainConflictException.class);
+
+        verify(reservationRepository, never()).update(any(Reservation.class));
     }
 
     @Test
@@ -195,7 +211,7 @@ class ReservationServiceTest {
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "공포방", "무서운방입니다.", "image-url")
         );
-        when(reservationRepository.findByIdAndName(7L, "브라운")).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
         when(reservationTimeRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.updateReservation(7L, "브라운", LocalDate.of(2026, 5, 11), 999L))
@@ -203,7 +219,7 @@ class ReservationServiceTest {
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND);
 
-        verify(reservationRepository, never()).updateDateAndTimeByIdAndName(any(), any(), any(), any());
+        verify(reservationRepository, never()).update(any(Reservation.class));
     }
 
     @Test
@@ -216,7 +232,7 @@ class ReservationServiceTest {
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "공포방", "무서운방입니다.", "image-url")
         );
-        when(reservationRepository.findByIdAndName(7L, "브라운")).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
         when(reservationTimeRepository.findById(2L)).thenReturn(Optional.of(newTime));
         when(reservationRepository.existsByDateAndTimeIdAndThemeIdAndIdNot(
                 7L, LocalDate.of(2026, 5, 11), 2L, 1L)).thenReturn(true);
@@ -226,23 +242,51 @@ class ReservationServiceTest {
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.DUPLICATE_RESERVATION);
 
-        verify(reservationRepository, never()).updateDateAndTimeByIdAndName(any(), any(), any(), any());
+        verify(reservationRepository, never()).update(any(Reservation.class));
     }
 
     @Test
     void 사용자_예약_삭제를_요청하면_Repository_deleteByIdAndName에_id와_이름을_전달한다() {
-        when(reservationRepository.deleteByIdAndName(any(), any())).thenReturn(1);
+        Reservation reservation = new Reservation(
+                7L,
+                "레서",
+                LocalDate.of(2026, 5, 10),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "공포방", "무서운방입니다.", "image-url")
+        );
+        when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
 
         reservationService.deleteUserReservation(7L, "레서");
+
         verify(reservationRepository).deleteByIdAndName(7L, "레서");
     }
 
     @Test
-    void 사용자가_존재하지_않는_예약을_삭제해도_예외가_발생하지_않는다() {
-        when(reservationRepository.deleteByIdAndName(any(), any())).thenReturn(0);
+    void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+        when(reservationRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatNoException()
-                .isThrownBy(() -> reservationService.deleteUserReservation(999L, "레서"));
-        verify(reservationRepository).deleteByIdAndName(999L, "레서");
+        assertThatThrownBy(() -> reservationService.deleteUserReservation(999L, "레서"))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
+
+        verify(reservationRepository, never()).deleteByIdAndName(any(), any());
+    }
+
+    @Test
+    void 본인의_예약이_아닌_예약을_삭제하면_도메인_충돌_예외가_발생한다() {
+        Reservation reservation = new Reservation(
+                7L,
+                "브라운",
+                LocalDate.of(2026, 5, 10),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "공포방", "무서운방입니다.", "image-url")
+        );
+        when(reservationRepository.findById(7L)).thenReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> reservationService.deleteUserReservation(7L, "레서"))
+                .isInstanceOf(DomainConflictException.class);
+
+        verify(reservationRepository, never()).deleteByIdAndName(any(), any());
     }
 }
