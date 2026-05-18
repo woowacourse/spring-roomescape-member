@@ -35,9 +35,23 @@ public class Reservation {
     public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime now) {
         validateRequired(name, date, time, theme);
         validateNow(now);
-        validateNotPast(date, time, now);
+        validateCreatableDateTime(date, time, now);
 
         return new Reservation(name, date, time, theme);
+    }
+
+    public Reservation updateDateAndTime(LocalDate date, ReservationTime time, LocalDateTime now) {
+        validateDate(date);
+        validateTime(time);
+        validateNow(now);
+
+        if (isPast(now)) {
+            throw new PastReservationException("지난 예약은 변경할 수 없습니다.");
+        }
+
+        validateUpdatableDateTime(date, time, now);
+
+        return new Reservation(id, name, date, time, theme);
     }
 
     public Long getTimeId() {
@@ -59,9 +73,15 @@ public class Reservation {
         validateTheme(theme);
     }
 
-    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
+    private static void validateCreatableDateTime(LocalDate date, ReservationTime time, LocalDateTime now) {
         if (time.isPast(date, now)) {
             throw new PastReservationException("지난 날짜 또는 시간은 예약할 수 없습니다.");
+        }
+    }
+
+    private static void validateUpdatableDateTime(LocalDate date, ReservationTime time, LocalDateTime now) {
+        if (time.isPast(date, now)) {
+            throw new PastReservationException("지난 날짜 또는 시간으로 변경할 수 없습니다.");
         }
     }
 
@@ -98,5 +118,4 @@ public class Reservation {
             throw new InvalidInputException("현재 시각은 필수입니다.");
         }
     }
-
 }

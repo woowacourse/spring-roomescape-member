@@ -81,27 +81,30 @@ public class ReservationService {
 
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
-        LocalDateTime now = LocalDateTime.now(clock);
-
-        if (reservation.isPast(now)) {
-            throw new PastReservationException("지난 예약은 변경할 수 없습니다.");
-        }
 
         ReservationTime newTime = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
 
-        if (newTime.isPast(date, now)) {
-            throw new PastReservationException("지난 날짜 또는 시간으로 변경할 수 없습니다.");
-        }
+        LocalDateTime now = LocalDateTime.now(clock);
+        Reservation updatedReservation = reservation.updateDateAndTime(date, newTime, now);
 
-        if (reservationDao.existByDateAndTimeAndThemeId(date, timeId, reservation.getThemeId())) {
+        if (reservationDao.existByDateAndTimeAndThemeId(
+                updatedReservation.getDate(),
+                updatedReservation.getTimeId(),
+                updatedReservation.getThemeId()
+        )) {
             throw new DuplicateResourceException(
                     "DUPLICATE_RESERVATION",
                     "이미 존재하는 예약입니다."
             );
         }
 
-        reservationDao.updateDateAndTime(id, date, timeId);
+        reservationDao.updateDateAndTime(
+                updatedReservation.getId(),
+                updatedReservation.getDate(),
+                updatedReservation.getTimeId()
+        );
+
         return reservationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
     }
