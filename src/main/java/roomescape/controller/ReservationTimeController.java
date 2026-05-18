@@ -10,7 +10,8 @@ import roomescape.controller.dto.reservationTime.AvailableReservationTimesRespon
 import roomescape.controller.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.controller.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.controller.dto.reservationTime.ReservationTimesResponseDto;
-import roomescape.exception.ForbiddenAccessException;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
@@ -41,27 +42,27 @@ public class ReservationTimeController {
             @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("시간 추가는 관리자만 가능합니다.");
+            throw new BusinessException(ErrorCode.ADMIN_ROLE_REQUIRED, "시간 추가는 관리자만 가능합니다.");
         }
 
         ReservationTime time = reservationService.addReservationTime(ReservationTime.from(requestDto.startAt()));
         return new ResourceIdResponseDto(time.getId());
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationTime(
             @PathVariable Long id,
             @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("시간 삭제는 관리자만 가능합니다.");
+            throw new BusinessException(ErrorCode.ADMIN_ROLE_REQUIRED, "시간 삭제는 관리자만 가능합니다.");
         }
 
         reservationService.deleteReservationTime(id);
     }
 
-    @GetMapping("available")
+    @GetMapping("/available")
     @ResponseStatus(HttpStatus.OK)
     public AvailableReservationTimesResponseDto getAvailableTimes(
             @RequestParam("date") LocalDate date,

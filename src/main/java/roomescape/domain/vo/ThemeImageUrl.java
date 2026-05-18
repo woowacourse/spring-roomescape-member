@@ -3,6 +3,8 @@ package roomescape.domain.vo;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.validation.constraints.NotBlank;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,14 +27,14 @@ public record ThemeImageUrl(
 
     private void validateNotBlank(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("빈 문자열은 이미지 URL로 사용할 수 없습니다.");
+            throw new BusinessException(ErrorCode.BLANK_INPUT, "빈 문자열은 이미지 URL로 사용할 수 없습니다.");
         }
     }
 
     private void validatePattern(String value) {
         Matcher matcher = PATTERN.matcher(value);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("올바른 이미지 URL 형식이 아닙니다.");
+            throw new BusinessException(ErrorCode.INVALID_FORMAT, "올바른 이미지 URL 형식이 아닙니다.");
         }
     }
 

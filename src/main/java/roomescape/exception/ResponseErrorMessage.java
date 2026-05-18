@@ -5,17 +5,17 @@ public class ResponseErrorMessage {
     private String code;
     private String message;
 
-    public ResponseErrorMessage(ErrorCode code) {
-        this.code = code.name();
-        this.message = code.getMessage();
+    public ResponseErrorMessage(String code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
-    public static ResponseErrorMessage of(ErrorCode code) {
-        return new ResponseErrorMessage(code);
+    public static ResponseErrorMessage of(ErrorCode errorCode) {
+        return new ResponseErrorMessage(errorCode.name(), errorCode.getMessage());
     }
 
-    public String getCode() {
-        return code;
+    public static ResponseErrorMessage of(ErrorCode errorCode, String customMessage) {
+        return new ResponseErrorMessage(errorCode.name(), customMessage);
     }
 
     public String getMessage() {
