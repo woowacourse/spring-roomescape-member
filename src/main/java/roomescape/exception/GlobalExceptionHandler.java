@@ -6,16 +6,20 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.response.ErrorResponse;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleBusiness(RuntimeException e) {
@@ -36,12 +40,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
-        String message = exception.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .findFirst()
-                .orElse("유효하지 않은 요청입니다.");
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+        if (fieldErrors.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("유효하지 않은 요청입니다."));
+        }
+
+        String fields = fieldErrors.stream()
+                .map(error -> error.getField() + " (" + error.getDefaultMessage() + ")")
+                .collect(Collectors.joining(", "));
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse(message));
+                .body(new ErrorResponse("유효하지 않은 값입니다: " + fields));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -52,7 +61,7 @@ public class GlobalExceptionHandler {
                     .findFirst()
                     .orElse("알 수 없는 필드");
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(fieldName + ": 형식이 올바르지 않습니다."));
+                    .body(new ErrorResponse("요청 형식이 올바르지 않습니다: " + fieldName));
         }
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("요청 형식이 올바르지 않습니다."));
