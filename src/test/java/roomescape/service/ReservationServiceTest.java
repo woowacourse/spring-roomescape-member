@@ -133,7 +133,7 @@ class ReservationServiceTest {
 
     @Test
     void 예약_수정시_ID가_없으면_예외가_발생한다() {
-        ReservationUpdateRequest request = new ReservationUpdateRequest(1L, "zeze", LocalDate.parse("2099-04-06"), 1L,
+        ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2099-04-06"), 1L,
                 1L);
         given(reservationRepository.findById(999L)).willReturn(Optional.empty());
 
@@ -144,7 +144,7 @@ class ReservationServiceTest {
 
     @Test
     void 예약_수정시_과거_날짜의_예약이면_예외가_발생한다() {
-        ReservationUpdateRequest request = new ReservationUpdateRequest(1L, "zeze", LocalDate.parse("2000-04-06"), 1L,
+        ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2000-04-06"), 1L,
                 1L);
         given(reservationRepository.findById(1L)).willReturn(Optional.of(DUMMY));
 
@@ -155,7 +155,7 @@ class ReservationServiceTest {
 
     @Test
     void 예약_수정시_시간을_찾을_수_없으면_예외가_발생한다() {
-        ReservationUpdateRequest request = new ReservationUpdateRequest(1L, "zeze", LocalDate.parse("2099-04-06"), 1L,
+        ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2099-04-06"), 1L,
                 1L);
         given(reservationRepository.findById(1L)).willReturn(Optional.of(DUMMY));
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.empty());
@@ -169,7 +169,7 @@ class ReservationServiceTest {
     void 예약_수정시_사용_불가능한_날짜가_들어오면_예외가_발생한다() {
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.parse("11:00"));
 
-        ReservationUpdateRequest request = new ReservationUpdateRequest(1L, "zeze", LocalDate.parse("2099-04-06"), 1L,
+        ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2099-04-06"), 1L,
                 1L);
         given(reservationRepository.findById(1L)).willReturn(Optional.of(DUMMY));
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(reservationTime));

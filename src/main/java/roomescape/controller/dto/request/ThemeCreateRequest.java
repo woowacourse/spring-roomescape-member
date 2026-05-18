@@ -1,7 +1,6 @@
 package roomescape.controller.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.URL;
 
 public class ThemeCreateRequest {
     @NotNull(message = "이름은 필수로 입력해야 합니다")
@@ -11,7 +10,6 @@ public class ThemeCreateRequest {
     private final String description;
 
     @NotNull(message = "URL은 필수로 입력해야 합니다")
-    @URL
     private final String thumbnailUrl;
 
     public ThemeCreateRequest(String name, String description, String thumbnailUrl) {
