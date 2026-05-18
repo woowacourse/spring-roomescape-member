@@ -25,13 +25,13 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
-    public Optional<ReservationTime> findBy(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?;";
         List<ReservationTime> result = jdbcTemplate.query(sql, timeRowMapper, id);
         return result.stream().findAny();
     }
 
-    public Long insert(ReservationTime reservationTime) {
+    public ReservationTime insert(ReservationTime reservationTime) {
         String sql = "INSERT INTO reservation_time(start_at) VALUES (?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -42,7 +42,7 @@ public class ReservationTimeRepository {
             return pstmt;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
     }
 
     public int delete(Long id) {
@@ -56,10 +56,15 @@ public class ReservationTimeRepository {
         return count != null && count > 0;
     }
 
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = "SELECT count(*) FROM reservation_time WHERE start_at = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
+        return count != null && count > 0;
+    }
+
     private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> {
-        ReservationTime reservationTime = new ReservationTime(
+        return new ReservationTime(
                 resultSet.getLong("id"),
                 resultSet.getObject("start_at", LocalTime.class));
-        return reservationTime;
     };
 }

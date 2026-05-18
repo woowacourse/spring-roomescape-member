@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS reservation_time (
 CREATE TABLE IF NOT EXISTS theme (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
-    description VARCHAR(255),
-    thumbnail VARCHAR(255),
+    description VARCHAR(255) NOT NULL,
+    thumbnail VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE(name)
 );
@@ -25,3 +25,5 @@ CREATE TABLE IF NOT EXISTS reservation (
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     UNIQUE (date, time_id, theme_id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_reservation_name ON reservation (name);

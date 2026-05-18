@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -24,7 +26,7 @@ class ReservationServiceTest {
     private JdbcTemplate jdbcTemplate;
     private ReservationService reservationService;
 
-    private LocalDate date = LocalDate.parse("2023-08-05");
+    private LocalDate date = LocalDate.parse("2099-08-05");
 
     @BeforeEach
     void setup() {
@@ -58,10 +60,24 @@ class ReservationServiceTest {
         reservationService.create("구구", date, 2L, 1L);
 
         // when
-        List<Reservation> result = reservationService.findAll();
+        List<Reservation> result = reservationService.findAll(null);
 
         // then
         assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void 사용자_이름으로_예약_조회_테스트() {
+        // given
+        reservationService.create("브라운", date, 1L, 1L);
+        reservationService.create("브라운", date, 2L, 1L);
+        reservationService.create("브라운", date, 3L, 1L);
+
+        // when
+        List<Reservation> result = reservationService.findAll("브라운");
+
+        // then
+        assertThat(result).hasSize(3);
     }
 
     @Test
@@ -73,31 +89,31 @@ class ReservationServiceTest {
         reservationService.delete(created.getId());
 
         // then
-        assertThat(reservationService.findAll()).isEmpty();
+        assertThat(reservationService.findAll(null)).isEmpty();
     }
 
     @Test
     void 존재하지않는_timeId로_예약_생성_시_예외_발생() {
         // when & then
         assertThatThrownBy(() -> reservationService.create("홍길동", date, 999L, 1L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("[ERROR] 존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약 시간입니다. 시간대를 확인해주세요.");
     }
 
     @Test
     void 존재하지않는_themeId로_예약_생성_시_예외_발생() {
         // when & then
         assertThatThrownBy(() -> reservationService.create("홍길동", date, 1L, 999L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("[ERROR] 존재하지 않는 테마입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다. 테마를 확인해주세요.");
     }
 
     @Test
     void 존재하지않는_id의_예약_삭제_시_예외_발생() {
         // when & then
         assertThatThrownBy(() -> reservationService.delete(999L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다. 예약을 확인해주세요.");
     }
 
     @Test
@@ -107,7 +123,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create("브라운", date, 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 예약된 시간입니다.");
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("이미 예약된 시간입니다. 다른 날짜 혹은 테마를 선택해주세요.");
     }
 }

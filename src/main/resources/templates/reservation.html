@@ -411,26 +411,118 @@
             margin: 2rem 0;
         }
 
-        /* 토스트 */
-        .toast {
+        /* ─── MODAL COMMON ─── */
+        .modal-overlay {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.9rem 1.25rem;
-            font-size: 0.82rem;
-            color: var(--text-primary);
-            transform: translateY(8px);
+            inset: 0;
+            background: rgba(13, 13, 15, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             opacity: 0;
+            visibility: hidden;
             transition: all 0.3s ease;
-            z-index: 100;
         }
 
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { border-color: var(--success); color: var(--success); }
-        .toast.error { border-color: var(--danger); color: var(--danger); }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            word-break: keep-all;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+
+        .btn-ghost {
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid var(--border-hover);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        /* ─── ERROR MODAL THEME ─── */
+        .modal-content.error-theme {
+            border-top: 2px solid var(--danger);
+        }
+        .modal-content.error-theme .modal-title {
+            color: var(--danger);
+        }
+        .modal-status {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.75rem;
+            color: var(--danger);
+            letter-spacing: 0.1em;
+            background: rgba(224, 82, 82, 0.12);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        /* ─── SUCCESS MODAL THEME ─── */
+        .modal-content.success-theme {
+            border-top: 2px solid var(--success);
+        }
+        .modal-content.success-theme .modal-title {
+            color: var(--success);
+        }
+        .btn-ghost.success-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--success);
+            background: rgba(76, 175, 125, 0.1); /* --success-dim 느낌 */
+        }
 
         @media (max-width: 600px) {
             header { padding: 1.5rem; }
@@ -450,7 +542,6 @@
 
 <main>
 
-    <!-- 스텝 인디케이터 -->
     <div class="steps" id="step-indicator">
         <div class="step active" id="step-1">
             <div class="step-dot">1</div>
@@ -470,7 +561,6 @@
         </div>
     </div>
 
-    <!-- 1. 테마 선택 -->
     <div class="section">
         <div class="section-header">
             <div class="section-num">1</div>
@@ -485,7 +575,6 @@
 
     <div class="divider"></div>
 
-    <!-- 2. 날짜 선택 -->
     <div class="section">
         <div class="section-header">
             <div class="section-num">2</div>
@@ -496,7 +585,6 @@
 
     <div class="divider"></div>
 
-    <!-- 3. 예약 가능 시간 -->
     <div class="section">
         <div class="section-header">
             <div class="section-num">3</div>
@@ -509,7 +597,6 @@
 
     <div class="divider"></div>
 
-    <!-- 4. 예약 확정 -->
     <div class="section" id="booking-section" style="display: none;">
         <div class="section-header">
             <div class="section-num">4</div>
@@ -524,9 +611,68 @@
 
 </main>
 
-<div class="toast" id="toast"></div>
+<div id="error-modal" class="modal-overlay">
+    <div class="modal-content error-theme">
+        <div class="modal-header">
+            <span class="modal-title">System Error</span>
+            <span class="modal-status" id="error-status">400</span>
+        </div>
+        <div class="modal-body" id="error-message">
+            에러 메시지가 여기에 표시됩니다.
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ghost" onclick="closeErrorAlert()">확인</button>
+        </div>
+    </div>
+</div>
+
+<div id="success-modal" class="modal-overlay">
+    <div class="modal-content success-theme">
+        <div class="modal-header">
+            <span class="modal-title">Reservation Confirmed</span>
+        </div>
+        <div class="modal-body" id="success-message">
+            예약이 완료되었습니다.
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ghost success-btn" id="success-confirm-btn">확인</button>
+        </div>
+    </div>
+</div>
 
 <script>
+    // ── MODAL 제어 ────────────────────────────────────
+    function showErrorAlert(errorResponse) {
+        const statusEl = document.getElementById('error-status');
+        const messageEl = document.getElementById('error-message');
+        const modalEl = document.getElementById('error-modal');
+
+        statusEl.innerText = `ERROR ${errorResponse.status || 500}`;
+        messageEl.innerText = errorResponse.message || '서버와 통신 중 문제가 발생했습니다.';
+
+        modalEl.classList.add('active');
+    }
+
+    function closeErrorAlert() {
+        document.getElementById('error-modal').classList.remove('active');
+    }
+
+    function showSuccessAlert(message, callback) {
+        const messageEl = document.getElementById('success-message');
+        const modalEl = document.getElementById('success-modal');
+        const confirmBtn = document.getElementById('success-confirm-btn');
+
+        messageEl.innerText = message || '완료되었습니다.';
+        modalEl.classList.add('active');
+
+        // 확인 버튼을 누르면 모달을 닫고 콜백(메인 화면 이동 등) 실행
+        confirmBtn.onclick = function() {
+            modalEl.classList.remove('active');
+            if(callback) callback();
+        }
+    }
+    // ────────────────────────────────────────────────
+
     let allThemes = [];
     let selectedThemeId = null;
     let selectedTimeId = null;
@@ -537,11 +683,9 @@
     const timeContainer = document.getElementById('time-container');
     const bookingSection = document.getElementById('booking-section');
 
-    // 오늘 날짜를 min으로 설정
     const today = new Date().toISOString().split('T')[0];
     dateSelect.min = today;
 
-    // 페이지 로드 시 테마 목록 불러오기
     window.onload = function () {
         fetch('/themes')
             .then(res => res.json())
@@ -556,7 +700,6 @@
                 }
             })
             .catch(() => {
-                // 로컬 테스트용 더미 데이터
                 const dummy = [
                     { id: 1, name: '저주받은 저택', description: '오래된 저택에 숨겨진 비밀을 밝혀라', thumbnail: '' },
                     { id: 2, name: '우주 정거장', description: '고장난 우주선에서 지구로 귀환하라', thumbnail: '' },
@@ -617,13 +760,12 @@
             .then(res => res.json())
             .then(times => renderTimes(times))
             .catch(() => {
-                // 더미 데이터
                 renderTimes([
-                    { id: 1, startAt: '10:00' },
-                    { id: 2, startAt: '12:00' },
-                    { id: 3, startAt: '14:00' },
-                    { id: 4, startAt: '16:00' },
-                    { id: 5, startAt: '18:00' },
+                    { id: 1, startAt: '10:00', available: true },
+                    { id: 2, startAt: '12:00', available: true },
+                    { id: 3, startAt: '14:00', available: false },
+                    { id: 4, startAt: '16:00', available: true },
+                    { id: 5, startAt: '18:00', available: true },
                 ]);
             });
     }
@@ -637,8 +779,6 @@
         const grid = document.createElement('div');
         grid.className = 'time-grid';
         times.forEach(item => {
-            // AvailableTimeDto: { time: { id, startAt }, available }
-            // flat 구조: { id, startAt } 둘 다 대응
             const id = item.time ? item.time.id : item.id;
             const rawStartAt = item.time ? item.time.startAt : item.startAt;
             const startAt = rawStartAt ? rawStartAt.slice(0, 5) : rawStartAt;
@@ -691,10 +831,6 @@
 
     function makeReservation() {
         const name = document.getElementById('user-name').value.trim();
-        if (!name) {
-            showToast('성함을 입력해주세요', 'error');
-            return;
-        }
 
         const btn = document.getElementById('btn-reserve');
         btn.disabled = true;
@@ -712,16 +848,22 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         })
-            .then(res => {
-                if (res.ok) {
-                    showToast('예약이 완료되었습니다', 'success');
-                    setTimeout(() => window.location.href = '/', 1500);
-                } else {
-                    throw new Error();
+            .then(async (res) => {
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({
+                        status: res.status,
+                        message: '예약을 처리하는 도중 서버 오류가 발생했습니다.'
+                    }));
+                    throw errorData;
                 }
+
+                // 성공 시 성공 모달 호출 후, '확인' 버튼 클릭 시 메인으로 이동
+                showSuccessAlert('예약이 성공적으로 완료되었습니다.', () => {
+                    window.location.href = '/';
+                });
             })
-            .catch(() => {
-                showToast('예약 중 오류가 발생했습니다', 'error');
+            .catch((error) => {
+                showErrorAlert(error);
                 btn.disabled = false;
                 btn.textContent = '예약하기';
             });
@@ -747,13 +889,6 @@
             if (i < activeIndex) el.classList.add('done');
             else if (i === activeIndex) el.classList.add('active');
         });
-    }
-
-    function showToast(msg, type = '') {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.className = `toast ${type} show`;
-        setTimeout(() => toast.className = 'toast', 2800);
     }
 </script>
 </body>

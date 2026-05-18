@@ -1,13 +1,15 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -27,42 +29,57 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(String name) {
+        if (name != null) {
+            return reservationRepository.findByName(name);
+        }
         return reservationRepository.findAll();
     }
 
     @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
-        validateAlreadyReserved(date, timeId, themeId);
+        validateDuplicateReservation(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
-        Reservation reservation = new Reservation(name, date, time, theme);
-        Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다."));
+        Reservation reservation = new Reservation(name, date, time, theme, LocalDateTime.now());
+        return reservationRepository.insert(reservation);
     }
 
-    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
+    private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeAndTheme(date, timeId, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
+            throw new ConflictException("이미 예약된 시간입니다. 다른 날짜 혹은 테마를 선택해주세요.");
         }
     }
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
-        }
-        reservationRepository.delete(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다. 예약을 확인해주세요."));
+
+        Long cancelId = reservation.getCancelId(LocalDateTime.now());
+        reservationRepository.delete(cancelId);
     }
 
     private ReservationTime findReservationTime(Long timeId) {
-        return reservationTimeRepository.findBy(timeId)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간입니다."));
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다. 시간대를 확인해주세요."));
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다. 테마를 확인해주세요."));
+    }
+
+    @Transactional
+    public Reservation update(Long id, LocalDate date, Long timeId) {
+        Reservation nowReservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다. 예약을 확인해주세요."));
+
+        ReservationTime updateTime = findReservationTime(timeId);
+        validateDuplicateReservation(date, timeId, nowReservation.getTheme().getId());
+
+        Reservation updateReservation = nowReservation.update(date, updateTime, LocalDateTime.now());
+        reservationRepository.updateByDateAndTime(id, date, timeId);
+        return updateReservation;
     }
 }

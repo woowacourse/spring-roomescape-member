@@ -15,4 +15,14 @@ public class ViewController {
     public String getReservation() {
         return "reservation";
     }
+
+    @GetMapping("/admin")
+    public String getAdmin() {
+        return "admin";
+    }
+
+    @GetMapping("/my-reservation")
+    public String getMyReservation() {
+        return "my-reservation";
+    }
 }

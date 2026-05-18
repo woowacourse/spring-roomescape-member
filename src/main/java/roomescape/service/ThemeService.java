@@ -2,13 +2,13 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -36,19 +36,24 @@ public class ThemeService {
 
     @Transactional
     public Theme create(String name, String description, String thumbnail) {
+        validateDuplicateName(name);
         Theme theme = new Theme(name, description, thumbnail);
-        Long id = themeRepository.insert(theme);
-        return themeRepository.findBy(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마입니다."));
+        return themeRepository.insert(theme);
+    }
+
+    private void validateDuplicateName(String name) {
+        if (themeRepository.existsByName(name)) {
+            throw new ConflictException("이미 추가된 테마입니다. 다른 테마 이름을 입력해주세요.");
+        }
     }
 
     @Transactional
     public void delete(Long id) {
         if (!themeRepository.existsById(id)) {
-            throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
+            throw new NotFoundException("존재하지 않는 테마입니다. 테마를 확인해주세요.");
         }
         if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마의 예약이 존재합니다.");
+            throw new ConflictException("해당 테마의 예약이 존재하여 삭제할 수 없습니다. 예약을 확인해주세요.");
         }
         themeRepository.delete(id);
     }

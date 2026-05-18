@@ -50,7 +50,7 @@ public class MissionStepTest {
     void 예약_추가_및_삭제() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -111,7 +111,7 @@ public class MissionStepTest {
     void DB_추가_삭제_API_전환() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -164,7 +164,7 @@ public class MissionStepTest {
     void 예약과_시간_연결() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -180,6 +180,35 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    @Test
+    void 예약변경_테스트() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2030-08-06");
+        params.put("timeId", "3");
+        params.put("themeId", "2");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @Test
@@ -245,7 +274,18 @@ public class MissionStepTest {
                 .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/my-reservation")
+                .then().log().all()
+                .statusCode(200);
     }
+
 
     @ParameterizedTest
     @NullSource
@@ -322,10 +362,10 @@ public class MissionStepTest {
     }
 
     @Test
-    void 중복_예약_시_400_에러_발생() {
+    void 중복_예약_시_409_에러_발생() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -340,14 +380,14 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 
     @Test
     void 존재하지_않는_timeId로_예약_시_404_에러_발생() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", 999);
         params.put("themeId", 1);
 
@@ -363,7 +403,7 @@ public class MissionStepTest {
     void 존재하지_않는_themeId로_예약_시_404_에러_발생() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("timeId", 1);
         params.put("themeId", 999);
 
@@ -373,5 +413,237 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @Test
+    void 지난_시간으로의_예약_시_422_에러_발생() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2000-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 날짜_형식_오류_400_에러_발생() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2099-081-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 예약이_존재하는_시간_삭제_시_409_에러_발생() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2099-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 존재하지_않는_시간_삭제_시_404_에러_발생() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/times/999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 중복된_시간_추가_시_409_에러_발생() {
+        jdbcTemplate.update("DELETE FROM reservation_time;");
+        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;");
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 예약이_존재하는_테마_삭제_시_409_에러_발생() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2099-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 존재하지_않는_테마_삭제_시_404_에러_발생() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 중복된_테마_추가_시_409_에러_발생() {
+        jdbcTemplate.update("DELETE FROM theme;");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;");
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "테마 이름");
+        params.put("description", "테마 설명");
+        params.put("thumbnail", "썸네일 주소");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    void 지난_날짜의_예약_삭제_시_422_에러_발생() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2020-08-05", 1, 1
+        );
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2025-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 지난_시간으로의_예약변경_시_422_에러_발생() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2030-08-05", 1, 1
+        );
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2000-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 지난_날짜의_예약_변경_요청_시_422_에러_발생() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2000-08-05", 1, 1
+        );
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2099-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    void 변경하려는_시간이_이미_예약되어있는_경우_409_에러_발생() {
+        // 1. 기존 예약
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2030-08-05", 1, 1
+        );
+
+        // 2. 변경할 기존 예약
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "대길", "2030-08-05", 2, 1
+        );
+
+        // 3. 예약 변경 (1번 예약과 중복)
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "대길");
+        params.put("date", "2030-08-05");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/2")
+                .then().log().all()
+                .statusCode(409);
     }
 }

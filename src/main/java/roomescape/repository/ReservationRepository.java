@@ -39,10 +39,11 @@ public class ReservationRepository {
                 "  ON r.time_id = rt.id\n" +
                 "INNER JOIN theme as t\n" +
                 "  ON r.theme_id = t.id\n";
+
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Optional<Reservation> findById(Long id) {
+    public List<Reservation> findByName(String name) {
         String sql = "SELECT\n" +
                 "    r.id as reservation_id,\n" +
                 "    r.name as username,\n" +
@@ -58,12 +59,12 @@ public class ReservationRepository {
                 "  ON r.time_id = rt.id\n" +
                 "INNER JOIN theme as t\n" +
                 "  ON r.theme_id = t.id\n" +
-                "WHERE r.id = ?";
-        List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
-        return result.stream().findAny();
+                "WHERE r.name = ?\n";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
-    public Long insert(Reservation reservation) {
+    public Reservation insert(Reservation reservation) {
         String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -77,7 +78,8 @@ public class ReservationRepository {
             return pstmt;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return new Reservation(keyHolder.getKey().longValue(), reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     public int delete(Long id) {
@@ -113,6 +115,27 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
+    public Optional<Reservation> findById(Long id) {
+        String sql = "SELECT\n" +
+                "    r.id as reservation_id,\n" +
+                "    r.name as username,\n" +
+                "    r.date,\n" +
+                "    rt.id as time_id,\n" +
+                "    rt.start_at as time_value,\n" +
+                "    t.id as theme_id,\n" +
+                "    t.name as theme_name,\n" +
+                "    t.description,\n" +
+                "    t.thumbnail\n" +
+                "FROM reservation as r\n" +
+                "INNER JOIN reservation_time as rt\n" +
+                "  ON r.time_id = rt.id\n" +
+                "INNER JOIN theme as t\n" +
+                "  ON r.theme_id = t.id\n" +
+                "WHERE r.id = ?";
+        List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
+        return result.stream().findAny();
+    }
+
     public boolean existsById(Long id) {
         String sql = "SELECT count(*) FROM reservation WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
@@ -131,6 +154,11 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
+    public void updateByDateAndTime(Long id, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, date, timeId, id);
+    }
+
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),
@@ -141,12 +169,11 @@ public class ReservationRepository {
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail"));
 
-        Reservation reservation = new Reservation(
+        return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("username"),
                 resultSet.getObject("date", LocalDate.class),
                 time,
                 theme);
-        return reservation;
     };
 }
