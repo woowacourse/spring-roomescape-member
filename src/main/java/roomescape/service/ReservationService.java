@@ -47,17 +47,10 @@ public class ReservationService {
     }
 
     public ReservationResult create(ReservationCreateCommand command) {
-        ReservationTimeEntity timeEntity = reservationTimeRepository.findById(command.getTimeId())
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
+        ReservationTimeEntity timeEntity = findTimeOrThrow(command.getTimeId());
+        ThemeEntity themeEntity = findThemeOrThrow(command.getThemeId());
 
-        ThemeEntity themeEntity = themeRepository.findById(command.getThemeId())
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
-
-        validateNotPast(
-                command.getDate().atTime(timeEntity.getTime().getStartAt()),
-                "지나간 날짜, 시간으로는 예약할 수 없습니다."
-        );
-
+        validateCreateNotPast(command.getDate().atTime(timeEntity.getTime().getStartAt()));
         validateNotDuplicated(command.getDate(), timeEntity.getId(), themeEntity.getId());
 
         Reservation reservation = new Reservation(
@@ -87,46 +80,37 @@ public class ReservationService {
 
     public void deleteByOwner(Long id, String name) {
         ReservationEntity entity = findByIdAndName(id, name);
-
-        validateNotPast(
-                entity.getReservation().getDate().atTime(entity.getReservation().getTime().getStartAt()),
-                "이미 지난 예약은 취소할 수 없습니다."
-        );
+        validateCancelNotPast(entity);
         reservationRepository.deleteById(id);
     }
 
-    //TODO 생성과 비슷한 검증이 많지만, 컨텍스트가 달라 메시지가 달라지느 부분 고려.
-    // 우선은 검증을 위한 추상화 보다 직관적으로... 이후 리팩토링 고려
     public ReservationResult updateByOwner(ReservationUpdateCommand command) {
         ReservationEntity entity = findByIdAndName(command.getId(), command.getName());
+        validateCurrentReservationNotPast(entity);
 
-        validateNotPast(
-                entity.getReservation().getDate().atTime(entity.getReservation().getTime().getStartAt()),
-                "이미 지난 예약은 변경할 수 없습니다."
-        );
+        ReservationTimeEntity newTimeEntity = findTimeOrThrow(command.getTimeId());
+        validateUpdateNotPast(command.getDate().atTime(newTimeEntity.getTime().getStartAt()));
 
-        ReservationTimeEntity newTimeEntity = reservationTimeRepository.findById(command.getTimeId())
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
-
-        validateNotPast(
-                command.getDate().atTime(newTimeEntity.getTime().getStartAt()),
-                "지나간 날짜, 시간으로는 변경할 수 없습니다."
-        );
-
-        Long themeId = entity.getThemeId();
-        if (reservationRepository.existsByDateAndTimeAndThemeExcludingId(
-                command.getDate(), command.getTimeId(), themeId, command.getId())) {
-            throw new BusinessRuleViolationException(
-                    "해당 시간은 이미 예약되었습니다. 다른 시간을 선택해 주세요."
-            );
-        }
-
+        validateNotDuplicatedExcludingSelf(command, entity.getThemeId());
         reservationRepository.updateDateAndTime(command.getId(), command.getDate(), command.getTimeId());
+        return ReservationResult.from(findUpdatedReservationOrThrow(command.getId()));
+    }
 
-        return ReservationResult.from(
-                reservationRepository.findById(command.getId())
-                        .orElseThrow(() -> new DataInconsistencyException("Update 직후 조회 실패"))
-        );
+    private ReservationTimeEntity findTimeOrThrow(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다."));
+    }
+
+    private ThemeEntity findThemeOrThrow(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
+    }
+
+    private ReservationEntity findUpdatedReservationOrThrow(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new DataInconsistencyException(
+                        "저장된 예약을 찾을 수 없습니다. 데이터 정합성 문제가 의심됩니다."
+                ));
     }
 
     private ReservationEntity findByIdAndName(Long id, String name) {
@@ -142,13 +126,51 @@ public class ReservationService {
         }
     }
 
-
     private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeAndTheme(date, timeId, themeId)) {
             throw new BusinessRuleViolationException(
                     "해당 시간은 이미 예약되었습니다. 다른 시간을 선택해 주세요."
             );
         }
+    }
+
+    private void validateCurrentReservationNotPast(ReservationEntity entity) {
+        LocalDateTime reservedAt = entity.getReservation().getDate()
+                .atTime(entity.getReservation().getTime().getStartAt());
+        validateNotPast(reservedAt, "이미 지난 예약은 변경할 수 없습니다.");
+    }
+
+    private void validateNotDuplicatedExcludingSelf(ReservationUpdateCommand command, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeAndThemeExcludingId(
+                command.getDate(), command.getTimeId(), themeId, command.getId())) {
+            throw new BusinessRuleViolationException(
+                    "해당 시간은 이미 예약되었습니다. 다른 시간을 선택해 주세요."
+            );
+        }
+    }
+
+    private void validateCreateNotPast(LocalDateTime requestedAt) {
+        if (isPast(requestedAt)) {
+            throw new BusinessRuleViolationException("지나간 날짜, 시간으로는 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateUpdateNotPast(LocalDateTime requestedAt) {
+        if (isPast(requestedAt)) {
+            throw new BusinessRuleViolationException("지나간 날짜, 시간으로는 변경할 수 없습니다.");
+        }
+    }
+
+    private void validateCancelNotPast(ReservationEntity entity) {
+        LocalDateTime reservedAt = entity.getReservation().getDate()
+                .atTime(entity.getReservation().getTime().getStartAt());
+        if (isPast(reservedAt)) {
+            throw new BusinessRuleViolationException("이미 지난 예약은 취소할 수 없습니다.");
+        }
+    }
+
+    private boolean isPast(LocalDateTime dateTime) {
+        return !dateTime.isAfter(LocalDateTime.now(clock));
     }
 
 }
