@@ -3,16 +3,17 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.DomainValidationException;
 import roomescape.theme.domain.Theme;
 
 public class Reservation {
-    private Long id;
-    private String name;
-    private LocalDate date;
-    private LocalTime time;
-    private Theme theme;
-    private ReservationStatus status;
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final LocalTime time;
+    private final Theme theme;
+    private final ReservationStatus status;
 
     private Reservation(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {
         validate(name, date, time, theme);
@@ -94,12 +95,19 @@ public class Reservation {
         return status;
     }
 
-    public void updateStatus(ReservationStatus status) {
-        this.status = status;
+    public Reservation cancel() {
+        return new Reservation(id, name, date, time, theme, ReservationStatus.CANCELED);
     }
 
-    public void updateDateAndTime(LocalDate date, LocalTime time) {
-        this.date = date;
-        this.time = time;
+    public Reservation rescheduled(LocalDate date, LocalTime time) {
+        validateChangeable();
+        validatePast(date, time);
+        return new Reservation(id, name, date, time, theme, status);
+    }
+
+    private void validateChangeable() {
+        if(status == ReservationStatus.CANCELED){
+            throw new ConflictException("이미 취소된 예약은 수정할 수 없습니다.");
+        }
     }
 }

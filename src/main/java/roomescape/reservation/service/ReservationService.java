@@ -1,7 +1,5 @@
 package roomescape.reservation.service;
 
-import static roomescape.reservation.domain.ReservationStatus.CANCELED;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -69,10 +67,10 @@ public class ReservationService {
         Reservation reservation = getReservation(id);
         validateNotPastReservation(reservation, "취소");
 
-        reservation.updateStatus(CANCELED);
-        Reservation canceledReservation =  reservationRepository.updateStatus(reservation);
-        log.info("Reservation canceled: id={}", canceledReservation.id());
-        return canceledReservation;
+        Reservation canceledReservation = reservation.cancel();
+        Reservation updatedReservation = reservationRepository.updateStatus(canceledReservation);
+        log.info("Reservation canceled: id={}", updatedReservation.id());
+        return updatedReservation;
     }
 
     @Transactional
@@ -82,13 +80,12 @@ public class ReservationService {
 
         ReservationTime newTime = getReservationTime(newTimeId);
         validateNotClosedDate(newDate);
-        validateNotPastDateTime(newDate, newTime.startAt());
         validateNotAlreadyBookedByOthers(newDate, newTime.startAt(), reservation.theme(), id);
 
-        reservation.updateDateAndTime(newDate, newTime.startAt());
-        Reservation changedReservation = reservationRepository.updateDateAndTime(reservation);
-        log.info("Reservation changed: id={}, date={}, time={}", changedReservation.id(), changedReservation.date(), changedReservation.time());
-        return changedReservation;
+        Reservation rescheduledReservation = reservation.rescheduled(newDate, newTime.startAt());
+        Reservation updatedReservation = reservationRepository.updateDateAndTime(rescheduledReservation);
+        log.info("Reservation changed: id={}, date={}, time={}", updatedReservation.id(), updatedReservation.date(), updatedReservation.time());
+        return updatedReservation;
     }
 
     @NonNull
@@ -129,13 +126,6 @@ public class ReservationService {
         if (closedDateRepository.existsByDate(date)) {
             log.warn("Cannot reserve closed date: date={}", date);
             throw new IllegalArgumentException("예약 불가능한 날짜입니다.");
-        }
-    }
-
-    private void validateNotPastDateTime(LocalDate date, LocalTime time) {
-        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
-            log.warn("Cannot reserve past date/time: date={}, time={}", date, time);
-            throw new IllegalArgumentException("과거 날짜/시간으로는 예약할 수 없습니다.");
         }
     }
 
