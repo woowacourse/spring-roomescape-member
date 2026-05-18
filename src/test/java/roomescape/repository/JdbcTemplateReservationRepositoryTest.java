@@ -115,4 +115,6 @@ class JdbcTemplateReservationRepositoryTest {
         count = reservationRepository.countReservationsOf(LocalDate.of(2026, 5, 2), TIME_ID, THEME_ID);
         assertThat(count).isEqualTo(0);
     }
+
+
 }
