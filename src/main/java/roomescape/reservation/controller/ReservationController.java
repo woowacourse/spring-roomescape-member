@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ import roomescape.reservation.service.ReservationFacade;
 
 @Controller
 @RestController
+@RequestMapping("/reservations")
 public class ReservationController {
 
   private final ReservationFacade reservationFacade;
@@ -31,7 +33,7 @@ public class ReservationController {
   }
 
   @ResponseBody
-  @PostMapping("/reservations")
+  @PostMapping
   public ResponseEntity<ReservationCreateResponse> create(
       @RequestBody ReservationRequest request) {
     ReservationCreateResponse reservationCreateResponse = reservationFacade.createReservation(
@@ -40,37 +42,37 @@ public class ReservationController {
   }
 
   @ResponseBody
-  @GetMapping("/reservations")
+  @GetMapping
   public ResponseEntity<List<ReservationResponse>> findAll() {
     return ResponseEntity.ok(reservationFacade.findAllReservation());
   }
 
   @ResponseBody
-  @GetMapping("/reservations/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<ReservationResponse> findById(@PathVariable Long id) {
     return ResponseEntity.ok(reservationFacade.findReservationById(id));
   }
 
   @ResponseBody
-  @GetMapping("/reservations/my")
+  @GetMapping("/my")
   public ResponseEntity<List<ReservationResponse>> findByName(@RequestParam String name) {
     return ResponseEntity.ok(reservationFacade.findReservationByName(name));
   }
 
-  @DeleteMapping("/reservations/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     reservationFacade.deleteReservation(id);
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("/reservations/my")
+  @DeleteMapping("/my")
   public ResponseEntity<Void> deleteMyReservationById(@RequestParam String name,
       @RequestParam Long reservationId) {
     reservationFacade.deleteReservationByNameAndReservationId(name, reservationId);
     return ResponseEntity.noContent().build();
   }
 
-  @PatchMapping("/reservations")
+  @PatchMapping
   public ResponseEntity<Void> updateMyReservation(
       @RequestBody UpdateMyReservation updateMyReservation,
       @RequestParam String name,
