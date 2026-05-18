@@ -68,7 +68,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findTimesByDateAndThemeId(ReservationDate date, Long themeId) {
+    public List<ReservationTime> findAvailableTimes(ReservationDate date, Long themeId) {
         String formattedDate = DATE_FORMATTER.format(date.value());
 
         return template.query(
