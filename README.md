@@ -220,7 +220,7 @@ Content-Type: application/json
 | 테마 삭제        | `DELETE /admin/themes/{id}`                  |                                     |                                                                                                     |
 | (유저)         |                                              |                                     |
 | 예약 추가        | `POST /reservations`                         | `{name, date, timeId, themeId}`     | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
-| 예약 시간 수정     | `PATCH /reservations/{id}/schedule`          | `{date, timeId}`                    | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
+| 예약 시간 수정     | `PATCH /reservations/{id}/schedule?name={}`  | `{date, timeId}`                    | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
 | 이름으로 예약 조회   | `GET /reservations?name={}`                  |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
 | 본인의 예약 삭제    | `DELETE /reservations/{id}?name={}`          |                                     |                                                                                                     |
 | 시간 조회        | `GET /times`                                 |                                     | `[{id, startAt}, ...]`                                                                              |

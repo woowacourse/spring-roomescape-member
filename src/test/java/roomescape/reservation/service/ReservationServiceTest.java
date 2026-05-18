@@ -166,18 +166,41 @@ class ReservationServiceTest {
                 theme.getId()
         );
         Reservation savedReservation = reservationService.save(reservationRequest);
-
         LocalDate date2 = date1.plusDays(1);
 
         // when
         Reservation updateReservation = reservationService.update(
                 savedReservation.getId(),
+                DEFAULT_RESERVATION_NAME,
                 reservationupdateRequest(date2, reservationTime.getId())
         );
 
         // then
         assertThat(updateReservation.getDate()).isEqualTo(date2);
         assertThat(updateReservation.getTime().getId()).isEqualTo(reservationTime.getId());
+    }
+
+    @Test
+    void 예약의_주인이_아니면_수정이_불가능하다() {
+        // given
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(DEFAULT_START_AT));
+        Theme theme = themeService.save(themeRequest(DEFAULT_THEME_NAME));
+        LocalDate date1 = futureReservationDate(clock);
+        ReservationRequest reservationRequest = reservationRequest(
+                DEFAULT_RESERVATION_NAME,
+                date1,
+                reservationTime.getId(),
+                theme.getId()
+        );
+        Reservation savedReservation = reservationService.save(reservationRequest);
+        LocalDate date2 = date1.plusDays(1);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(
+                savedReservation.getId(),
+                OTHER_RESERVATION_NAME,
+                reservationupdateRequest(date2, reservationTime.getId()))
+        ).isInstanceOf(AccessDeniedException.class);
     }
 
     @Test

@@ -116,7 +116,7 @@ class ReservationControllerTest {
         );
 
         // when
-        ResultActions result = mockMvc.perform(patch("/reservations/{id}/schedule", id)
+        ResultActions result = mockMvc.perform(patch("/reservations/{id}/schedule?name={name}", id, RESERVATION_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)));
 

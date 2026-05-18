@@ -57,8 +57,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation update(Long id, ReservationUpdateRequest request) {
+    public Reservation update(Long id, String name, ReservationUpdateRequest request) {
         Reservation reservation = getById(id);
+        if (!reservation.isOwner(name)) {
+            throw new AccessDeniedException(DomainType.RESERVATION, id);
+        }
         validatePastReservation(reservation.getDate(), reservation.getTime().getStartAt());
 
         ReservationTime reservationTime = reservationTimeService.getById(request.timeId());

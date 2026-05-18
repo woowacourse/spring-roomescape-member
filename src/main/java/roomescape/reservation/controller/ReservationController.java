@@ -44,9 +44,10 @@ public class ReservationController {
     @PatchMapping("/{id}/schedule")
     public ResponseEntity<ReservationResponse> updateReservationSchedule(
             @PathVariable Long id,
+            @RequestParam(name = "name") String name,
             @Valid @RequestBody ReservationUpdateRequest request
     ) {
-        Reservation reservation = reservationService.update(id, request);
+        Reservation reservation = reservationService.update(id, name, request);
         URI location = URI.create("/reservations/" + reservation.getId());
 
         return ResponseEntity.ok().location(location)
