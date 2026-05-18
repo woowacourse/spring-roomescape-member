@@ -7,6 +7,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReferenceException;
 import roomescape.exception.PastReservationException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
@@ -14,7 +15,6 @@ import roomescape.repository.ThemeDao;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class ReservationCommandService {
     private ReservationTime findTimeReference(long timeId) {
         try {
             return reservationTimeDao.findById(timeId);
-        } catch (NoSuchElementException e) {
+        } catch (ResourceNotFoundException e) {
             throw new InvalidReferenceException("존재하지 않는 예약 시간입니다.");
         }
     }
@@ -36,7 +36,7 @@ public class ReservationCommandService {
     private void findThemeReference(long themeId) {
         try {
             themeDao.findById(themeId);
-        } catch (NoSuchElementException e) {
+        } catch (ResourceNotFoundException e) {
             throw new InvalidReferenceException("존재하지 않는 테마입니다.");
         }
     }

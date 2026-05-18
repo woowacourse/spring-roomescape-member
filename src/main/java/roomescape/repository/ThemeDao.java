@@ -9,9 +9,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.exception.ResourceNotFoundException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class ThemeDao {
@@ -54,7 +54,7 @@ public class ThemeDao {
         int affected = jdbcTemplate.update(sql, themeId);
 
         if(affected == 0) {
-            throw new NoSuchElementException("요청한 테마를 찾을 수 없습니다.");
+            throw new ResourceNotFoundException("요청한 테마를 찾을 수 없습니다.");
         }
     }
 
@@ -65,7 +65,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper, themeId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("요청한 테마를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("요청한 테마를 찾을 수 없습니다."));
     }
 
     public List<Theme> findAllThemes() {

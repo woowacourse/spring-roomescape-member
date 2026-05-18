@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class ReservationDao {
@@ -86,7 +86,7 @@ public class ReservationDao {
         int affected = jdbcTemplate.update(sql, reservationId);
 
         if (affected == 0) {
-            throw new NoSuchElementException("요청한 예약을 찾을 수 없습니다.");
+            throw new ResourceNotFoundException("요청한 예약을 찾을 수 없습니다.");
         }
     }
 
@@ -132,7 +132,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper, reservationId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("요청한 예약을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("요청한 예약을 찾을 수 없습니다."));
     }
 
     public List<Reservation> findByName(String name) {
