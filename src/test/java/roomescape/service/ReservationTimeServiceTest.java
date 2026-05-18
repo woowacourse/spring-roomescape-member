@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.InvalidDeleteException;
+import roomescape.common.exception.ResourceNotFoundException;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
@@ -72,9 +74,9 @@ class ReservationTimeServiceTest {
 
         reservationTimeService.deleteReservationTime(saveId);
 
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> reservationTimeService.getReservationTime(saveId))
-                .withMessageContaining("존재하지 않는 예약 ID입니다.");
+        assertThatThrownBy(() -> reservationTimeService.getReservationTime(saveId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
     @Test
@@ -92,8 +94,8 @@ class ReservationTimeServiceTest {
                 theme.get()
         ));
 
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> reservationTimeService.deleteReservationTime(reservationTime.getId()))
-                .withMessageContaining("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(reservationTime.getId()))
+                .isInstanceOf(InvalidDeleteException.class)
+                .hasMessage("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

@@ -91,6 +91,19 @@ class ReservationTimeApiTest {
     }
 
     @Test
+    void 예약이_존재하는_시간은_삭제할_수_없다() {
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer timeId = createTime("10:00");
+        createReservation("브라운", FUTURE_FIRST_DATE, timeId, themeId);
+
+        RestAssured.given().log().all()
+                .when().delete("/times/" + timeId)
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("해당 시간을 사용 중인 예약이 존재하여 삭제할 수 없습니다."));
+    }
+
+    @Test
     void 잘못된_시간_형식으로_추가하면_400() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "25:00");

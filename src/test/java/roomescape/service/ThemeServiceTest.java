@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.InvalidDeleteException;
+import roomescape.common.exception.ResourceNotFoundException;
 import roomescape.dto.ThemeRequest;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
@@ -100,9 +102,9 @@ class ThemeServiceTest {
 
         themeService.deleteTheme(saveId);
 
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> themeService.getTheme(saveId))
-                .withMessageContaining("존재하지 않는 테마 ID입니다.");
+        assertThatThrownBy(() -> themeService.getTheme(saveId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
     }
 
     @Test
@@ -122,9 +124,9 @@ class ThemeServiceTest {
                 theme
         ));
 
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> themeService.deleteTheme(theme.getId()))
-                .withMessageContaining("해당 테마를 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
+        assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
+                .isInstanceOf(InvalidDeleteException.class)
+                .hasMessage("해당 테마를 사용 중인 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test
