@@ -9,9 +9,13 @@ import io.restassured.path.json.JsonPath;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -20,6 +24,17 @@ class ReservationApiTest {
     private final String userName = "브라운";
     private final Long timeId = 1L;
     private final Long themeId = 1L;
+    private int initialReservationSize;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        String sql = "SELECT COUNT(*) FROM reservation";
+        Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
+        initialReservationSize = Optional.ofNullable(result).orElse(0);
+    }
 
     @Test
     void 예약_사용자_API() {
@@ -44,7 +59,7 @@ class ReservationApiTest {
                 .extract().jsonPath().getList("id", Long.class);
 
         assertThat(allIds)
-                .hasSize(26)
+                .hasSize(initialReservationSize + 1)
                 .contains(generatedId);
 
         JsonPath jsonPath = RestAssured.given().log().all()
@@ -57,7 +72,7 @@ class ReservationApiTest {
         List<String> names = jsonPath.getList("name", String.class);
 
         assertThat(idsByUserName)
-                .hasSize(26)
+                .hasSize(initialReservationSize + 1)
                 .contains(generatedId);
 
         assertThat(names).containsOnly(userName);
