@@ -67,7 +67,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<Long> findBookedTimeIdsByDateAndTheme(LocalDate date, Long themeId) {
+    public List<Long> findIdsByDateAndTheme(LocalDate date, Long themeId) {
         return jdbcTemplate.query(FIND_BOOKED_TIME_IDS_BY_DATE_AND_THEME_SQL,
                 (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 date,

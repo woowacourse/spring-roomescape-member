@@ -14,5 +14,5 @@ public interface ThemeRepository {
 
     void delete(Long id);
 
-    List<Theme> findRanking(LocalDate startDate, LocalDate endDate, int limit);
+    List<Theme> findAllByOrderByReservationCountDesc(LocalDate startDate, LocalDate endDate, int limit);
 }

@@ -48,7 +48,7 @@ public class ReservationTimeService {
         Theme theme = findTheme(themeId);
 
         List<ReservationTime> allReservationTimes = reservationTimeRepository.findAll();
-        List<Long> bookedTimeIds = reservationTimeRepository.findBookedTimeIdsByDateAndTheme(date, theme.getId());
+        List<Long> bookedTimeIds = reservationTimeRepository.findIdsByDateAndTheme(date, theme.getId());
 
         return allReservationTimes.stream()
                 .map(reservationTime -> {

@@ -73,7 +73,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findRanking(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findAllByOrderByReservationCountDesc(LocalDate startDate, LocalDate endDate, int limit) {
         return jdbcTemplate.query(FIND_RANKING_SQL, this::mapToTheme, startDate, endDate, limit);
     }
 

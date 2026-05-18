@@ -37,7 +37,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDto> findRanking(LocalDate startDate, LocalDate endDate) {
-        return themeRepository.findRanking(startDate, endDate, RANKING_LIMIT).stream()
+        return themeRepository.findAllByOrderByReservationCountDesc(startDate, endDate, RANKING_LIMIT).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }
