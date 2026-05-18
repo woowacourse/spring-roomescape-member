@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,13 +41,18 @@ public class ReservationService {
 
     public List<ReservationResponse> getReservations() {
         List<Reservation> reservations = reservationDao.findAllReservations();
+        List<Long> timeIds = reservations.stream().map(Reservation::getTimeId).toList();
+        List<Long> themeIds = reservations.stream().map(Reservation::getThemeId).toList();
+        Map<Long, ReservationTime> timeMap = reservationTimeDao.findAllByIds(timeIds)
+                .stream().collect(Collectors.toMap(ReservationTime::getId, Function.identity()));
+        Map<Long, Theme> themeMap = themeDao.findAllByIds(themeIds)
+                .stream().collect(Collectors.toMap(Theme::getId, Function.identity()));
         return reservations.stream()
-                .map(reservation -> {
-                    ReservationTime time = reservationTimeDao.findById(reservation.getTimeId());
-                    Theme theme = themeDao.findById(reservation.getThemeId());
-                    return ReservationResponse.from(reservation, time, theme);
-                })
-                .toList();
+                .map(reservation -> ReservationResponse.from(
+                            reservation,
+                            timeMap.get(reservation.getTimeId()),
+                            themeMap.get(reservation.getThemeId())
+                )).toList();
     }
 
     @Transactional

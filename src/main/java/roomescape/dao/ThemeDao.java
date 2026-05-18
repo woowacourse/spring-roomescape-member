@@ -4,10 +4,13 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -20,6 +23,7 @@ import roomescape.exception.ThemeNotFoundException;
 public class ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
@@ -37,8 +41,10 @@ public class ThemeDao {
             resultSet.getLong("reservation_count")
     );
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public ThemeDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public Theme findById(Long id) {
@@ -48,6 +54,12 @@ public class ThemeDao {
         } catch (EmptyResultDataAccessException e) {
             throw new ThemeNotFoundException("해당 테마를 찾을 수 없습니다.");
         }
+    }
+
+    public List<Theme> findAllByIds(List<Long> themeIds) {
+        String sql = "SELECT * FROM theme WHERE id IN (:themeIds)";
+        MapSqlParameterSource parameters = new MapSqlParameterSource("themeIds", themeIds);
+        return namedParameterJdbcTemplate.query(sql, parameters, themeRowMapper);
     }
 
     public List<Theme> findAllThemes() {
