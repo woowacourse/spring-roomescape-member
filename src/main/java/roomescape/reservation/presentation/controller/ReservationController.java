@@ -1,9 +1,11 @@
 package roomescape.reservation.presentation.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +21,7 @@ import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.presentation.dto.ReservationUpdateRequest;
 import roomescape.reservation.presentation.dto.ReservationsResponse;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
@@ -33,7 +36,7 @@ public class ReservationController {
 
     @GetMapping("/mine")
     public ResponseEntity<ReservationsResponse> getMyReservations(
-            @RequestParam String name
+            @RequestParam @NotBlank(message = "이름은 필수입니다.") String name
     ) {
         return ResponseEntity.ok().body(service.getMyReservations(name));
     }
@@ -53,7 +56,7 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(
             @PathVariable Long id,
-            @RequestParam String name) {
+            @RequestParam @NotBlank(message = "이름은 필수입니다.") String name) {
         service.cancelReservation(id, name);
         return ResponseEntity.noContent().build();
     }

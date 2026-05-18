@@ -2,6 +2,8 @@ package roomescape.common.advice;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
@@ -118,6 +120,25 @@ public class GlobalExceptionHandler extends ApiExceptionHandlerSupport {
                 e
         );
         return badRequest(e.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException e, HttpServletRequest request) {
+        String message = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(", "));
+        if (message.isBlank()) {
+            message = INVALID_REQUEST_VALUE_MESSAGE;
+        }
+        log.warn(
+                "Constraint violation [{} {}]: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                message,
+                e
+        );
+        return badRequest(message);
     }
 
     private String toValidationMessage(FieldError error) {
