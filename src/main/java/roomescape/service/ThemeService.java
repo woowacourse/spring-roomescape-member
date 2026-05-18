@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeProjection;
+import roomescape.dto.PopularThemeResult;
 import roomescape.exception.ThemeInUseException;
 import roomescape.exception.ThemeNotFoundException;
 
@@ -40,8 +40,10 @@ public class ThemeService {
         return themeDao.findAllThemes();
     }
 
-    public List<PopularThemeProjection> getPopularThemes(LocalDate from, LocalDate to) {
-        return themeDao.findPopularThemes(from, to);
+    public List<PopularThemeResult> getPopularThemes(LocalDate from, LocalDate to) {
+        return themeDao.findPopularThemes(from, to).stream()
+                .map(PopularThemeResult::from)
+                .toList();
     }
 
     private void validateDeleted(int deleteCount) {
