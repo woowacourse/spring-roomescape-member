@@ -32,7 +32,8 @@ public class ReservationDao {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns("id")
+                .usingColumns("name", "date", "time_id", "theme_id");
     }
 
     public List<ReservationEntity> findAll() {
@@ -58,9 +59,7 @@ public class ReservationDao {
                 .addValue("name", name)
                 .addValue("date", date)
                 .addValue("time_id", timeId)
-                .addValue("theme_id", themeId)
-                .addValue("is_deleted", false)
-                .addValue("is_cancelled", false);
+                .addValue("theme_id", themeId);
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
