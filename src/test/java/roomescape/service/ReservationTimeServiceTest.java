@@ -3,6 +3,7 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.NotFoundException;
+import roomescape.domain.exception.ReservationTimeInUseException;
 import roomescape.service.dto.request.ReservationTimeCreateRequest;
 import roomescape.service.dto.response.ReservationTimeResponse;
 import roomescape.service.support.FakeReservationTimeRepository;
@@ -46,6 +47,16 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void 해당_시간에_예약이_있으면_예약_시간_삭제시_예외가_발생한다() {
+        // given
+        reservationTimeRepository.failToDeleteByInUse();
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isInstanceOf(ReservationTimeInUseException.class);
     }
 
 }

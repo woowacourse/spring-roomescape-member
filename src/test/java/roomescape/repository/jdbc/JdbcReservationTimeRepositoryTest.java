@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.common.exception.ConflictException;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
@@ -95,6 +95,6 @@ class JdbcReservationTimeRepositoryTest {
         );
 
         assertThatThrownBy(() -> reservationTimeRepository.delete(savedTime.getId()))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

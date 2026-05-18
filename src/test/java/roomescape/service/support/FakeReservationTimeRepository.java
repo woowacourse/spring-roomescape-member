@@ -1,5 +1,6 @@
 package roomescape.service.support;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -12,6 +13,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     private final List<ReservationTime> times = new ArrayList<>();
     private ReservationTime savedTime;
     private boolean deleteResult = true;
+    private RuntimeException deleteException;
 
     @Override
     public List<ReservationTime> findAll() {
@@ -38,6 +40,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public boolean delete(final Long timeId) {
+        if (deleteException != null) {
+            throw deleteException;
+        }
+
         return deleteResult;
     }
 
@@ -51,5 +57,9 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     public void failToDelete() {
         deleteResult = false;
+    }
+
+    public void failToDeleteByInUse() {
+        deleteException = new DataIntegrityViolationException("time in use");
     }
 }

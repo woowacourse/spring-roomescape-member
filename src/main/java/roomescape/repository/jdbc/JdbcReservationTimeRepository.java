@@ -1,14 +1,12 @@
 package roomescape.repository.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.exception.ReservationTimeInUseException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.entity.ReservationTimeEntity;
 
@@ -79,11 +77,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 WHERE id = ?
                 """;
 
-        try {
-            return jdbcTemplate.update(sql, timeId) > 0;
-        } catch (DataIntegrityViolationException exception) {
-            throw new ReservationTimeInUseException(exception);
-        }
+        return jdbcTemplate.update(sql, timeId) > 0;
     }
 
     private long insertReservationTime(final ReservationTimeEntity reservationTimeEntity) {
