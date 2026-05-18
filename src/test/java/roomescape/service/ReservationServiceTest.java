@@ -150,7 +150,7 @@ class ReservationServiceTest {
 
     @Nested
     @DisplayName("예약을 삭제할 때: ")
-    class Delete {
+    class DeleteById {
 
         @Test
         void 정상_요청이면_삭제된다() {
@@ -183,6 +183,56 @@ class ReservationServiceTest {
         @Test
         void 삭제하려는_id가_존재하지_않으면_예외() {
             assertThatThrownBy(() -> reservationService.delete(NOT_EXISTS_ID))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("예약을 삭제할 때: ")
+    class DeleteByIdAndName {
+
+        @Test
+        void 정상_요청이면_삭제된다() {
+            TimeRow time = givenTime(14);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), theme.id());
+            ReservationResponseDto created = reservationService.create(request);
+
+            reservationService.delete(created.id(), "유저1");
+
+            assertThatThrownBy(() -> reservationService.findById(created.id()))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 이미_지난_예약이면_삭제할_수_없습니다() {
+            TimeRow time = givenTime(14);
+            ThemeRow theme = givenTheme("방탈출");
+            LocalDate pastDate = TODAY.minusDays(1);
+            ReservationRequestDto request = requestOf("유저1", pastDate, time.id(), theme.id());
+
+            ReservationRow saved = reservationDao.create(
+                    new ReservationRow(null, "유저1", pastDate, time, theme)
+            );
+
+            assertThatThrownBy(() -> reservationService.delete(saved.id(), "유저1"))
+                    .isInstanceOf(ConflictException.class);
+        }
+
+        @Test
+        void 삭제하려는_id가_존재하지_않으면_예외() {
+            assertThatThrownBy(() -> reservationService.delete(NOT_EXISTS_ID, "유저1"))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 삭제하려는_name이_존재하지_않으면_예외() {
+            TimeRow time = givenTime(14);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), theme.id());
+            ReservationResponseDto created = reservationService.create(request);
+
+            assertThatThrownBy(() -> reservationService.delete(created.id(), "없는유저"))
                     .isInstanceOf(NotFoundException.class);
         }
     }

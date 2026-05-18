@@ -121,4 +121,11 @@ public class FakeReservationDao implements ReservationDao {
 
         return reservation;
     }
+
+    @Override
+    public Optional<ReservationRow> findByIdAndName(Long id, String name) {
+        return reservations.values().stream()
+                .filter(row -> row.id().equals(id) && row.name().equals(name))
+                .findFirst();
+    }
 }

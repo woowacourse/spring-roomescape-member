@@ -103,6 +103,19 @@ public class ReservationService {
     }
 
     @Transactional
+    public void delete(Long id, String name) {
+        Reservation reservation = reservationDao.findByIdAndName(id, name)
+                .map(ReservationRow::toDomain)
+                .orElseThrow(() -> new NotFoundException(ReservationErrorCode.NOT_FOUND));
+
+        if (!reservation.isDeletable(LocalDateTime.now(clock))) {
+            throw new ConflictException(ReservationErrorCode.DUPLICATE);
+        }
+
+        reservationDao.delete(id);
+    }
+
+    @Transactional
     public ReservationResponseDto update(Long id, ReservationUpdateDto reservationUpdate) {
         Time time = timeDao.findById(reservationUpdate.timeId())
                 .map(TimeRow::toDomain)

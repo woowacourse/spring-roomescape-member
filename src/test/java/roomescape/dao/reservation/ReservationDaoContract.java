@@ -196,6 +196,29 @@ public abstract class ReservationDaoContract {
     }
 
     @Nested
+    @DisplayName("findByIdAndName는")
+    class FindByIdAndName {
+
+        @Test
+        void 존재하면_Optional로_감싸_반환한다() {
+            TimeRow time = givenTime(10);
+            ThemeRow theme = givenTheme("방탈출");
+            ReservationRow saved = reservationDao().create(row("달수", DATE, time, theme));
+
+            Optional<ReservationRow> found = reservationDao().findByIdAndName(saved.id(), saved.name());
+
+            assertThat(found).isPresent()
+                    .get()
+                    .isEqualTo(saved);
+        }
+
+        @Test
+        void 존재하지_않으면_Optional_empty() {
+            assertThat(reservationDao().findByIdAndName(NOT_EXISTS_ID, "없는이름")).isEmpty();
+        }
+    }
+
+    @Nested
     @DisplayName("existsBy는")
     class ExistsBy {
 

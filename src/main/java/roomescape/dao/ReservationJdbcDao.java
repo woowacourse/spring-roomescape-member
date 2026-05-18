@@ -213,6 +213,33 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
+    public Optional<ReservationRow> findByIdAndName(Long id, String name) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.thumbnail_url AS theme_thumbnail_url,
+                    th.description AS theme_description
+                FROM reservations r
+                INNER JOIN times t ON r.time_id = t.id
+                INNER JOIN themes th ON r.theme_id = th.id
+                WHERE r.id = :id AND r.name = :name
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("name", name);
+
+        return jdbcTemplate.query(sql, params, ROW_MAPPER).stream()
+                .findFirst();
+    }
+
+    @Override
     public List<ReservationRow> findByName(String name) {
         String sql = """
                 SELECT

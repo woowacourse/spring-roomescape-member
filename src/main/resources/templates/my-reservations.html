@@ -701,7 +701,7 @@
     async function doCancel() {
         if (!cancelTarget) return;
         try {
-            const r = await fetch(`/reservations/${cancelTarget.id}`, {method: 'DELETE'});
+            const r = await fetch(`/reservations/${cancelTarget.id}?name=${encodeURIComponent(currentName)}`, {method: 'DELETE'});
             if (!r.ok) {
                 let msg = '취소에 실패했습니다';
                 try {
