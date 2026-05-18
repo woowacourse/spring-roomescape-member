@@ -6,17 +6,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.service.AvailableTimes;
 import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
-import roomescape.theme.service.TimeAvailability;
+import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,11 +47,12 @@ class ThemeControllerTest {
 
     @Test
     void 특정테마와_날짜를_통해_예약_가능한_시간을_조회한다() throws Exception {
-        List<TimeAvailability> timeAvailabilities = List.of(
-                new TimeAvailability(1L, LocalTime.of(13, 0), true),
-                new TimeAvailability(2L, LocalTime.of(15, 0), false),
-                new TimeAvailability(3L, LocalTime.of(17, 0), true));
-        when(themeService.findAvailableTimes(anyLong(), any())).thenReturn(timeAvailabilities);
+        List<ReservationTime> reservationTimes = List.of(
+                new ReservationTime(1L, LocalTime.of(13, 0)),
+                new ReservationTime(2L, LocalTime.of(15, 0)),
+                new ReservationTime(3L, LocalTime.of(17, 0)));
+        AvailableTimes availableTimes = AvailableTimes.from(reservationTimes, List.of(2L));
+        when(themeService.findAvailableTimes(anyLong(), any())).thenReturn(availableTimes);
 
         mockMvc.perform(get("/themes/1/available-times")
                         .param("date", "2025-05-06"))

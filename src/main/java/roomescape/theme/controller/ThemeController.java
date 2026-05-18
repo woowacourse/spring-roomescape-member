@@ -7,9 +7,9 @@ import roomescape.theme.controller.dto.PopularThemesResponse;
 import roomescape.theme.controller.dto.ThemeAvailableTimesResponse;
 import roomescape.theme.controller.dto.ThemesResponse;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.service.AvailableTimes;
 import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
-import roomescape.theme.service.TimeAvailability;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,8 +33,8 @@ public class ThemeController {
 
     @GetMapping("/{id}/available-times")
     public ResponseEntity<ThemeAvailableTimesResponse> findAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
-        List<TimeAvailability> timeAvailabilities = themeService.findAvailableTimes(id, date);
-        ThemeAvailableTimesResponse response = ThemeAvailableTimesResponse.from(timeAvailabilities);
+        AvailableTimes availableTimes = themeService.findAvailableTimes(id, date);
+        ThemeAvailableTimesResponse response = ThemeAvailableTimesResponse.from(availableTimes);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

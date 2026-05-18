@@ -27,16 +27,11 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<TimeAvailability> findAvailableTimes(long themeId, LocalDate date) {
+    public AvailableTimes findAvailableTimes(long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Long> reservedTimeIds = themeRepository.findReservedTimeIds(themeId, date);
 
-        return reservationTimes.stream()
-                .map(t -> TimeAvailability.of(
-                        t.getId(),
-                        t.getStartAt(),
-                        !reservedTimeIds.contains(t.getId())))
-                .toList();
+        return AvailableTimes.from(reservationTimes, reservedTimeIds);
     }
 
     public List<PopularTheme> findPopularThemes(LocalDate endDate, int days, int limit) {

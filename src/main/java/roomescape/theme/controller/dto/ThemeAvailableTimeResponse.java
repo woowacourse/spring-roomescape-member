@@ -15,7 +15,7 @@ public record ThemeAvailableTimeResponse(
         return new ThemeAvailableTimeResponse(
                 timeAvailability.id(),
                 timeAvailability.startAt(),
-                timeAvailability.isAvailable()
+                timeAvailability.available()
         );
     }
 }
