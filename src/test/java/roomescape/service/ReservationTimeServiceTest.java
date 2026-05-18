@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationTimeCreateRequest;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ConflictException;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -96,13 +96,13 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약이_존재하는_시간_삭제시_ConflictException이_발생한다() {
+    void 예약이_존재하는_시간_삭제시_BusinessRuleViolationException이_발생한다() {
         ReservationTime time = ReservationTime.of(1L, "10:00");
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(time));
         given(reservationRepository.existsByTimeId(1L)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

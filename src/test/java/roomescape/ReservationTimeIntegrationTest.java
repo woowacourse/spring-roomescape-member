@@ -103,7 +103,7 @@ public class ReservationTimeIntegrationTest {
     }
 
     @Test
-    void 예약이_존재하는_시간_삭제시_409를_반환한다() {
+    void 예약이_존재하는_시간_삭제시_422를_반환한다() {
         ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
         Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
         reservationRepository.save(Reservation.of("아이큐", FUTURE_DATE, time, theme));
@@ -111,7 +111,7 @@ public class ReservationTimeIntegrationTest {
         Map<String, Object> response = RestAssured.given().log().all()
                 .when().delete("/admin/times/" + time.getId())  // /times → /admin/times
                 .then().log().all()
-                .statusCode(409)
+                .statusCode(422)
                 .extract().jsonPath().getMap(".");
 
         assertThat(response.get("message")).isEqualTo("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");

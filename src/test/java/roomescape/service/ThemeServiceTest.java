@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
 import roomescape.domain.Theme;
-import roomescape.exception.ConflictException;
+import roomescape.exception.BusinessRuleViolationException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -90,13 +90,13 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 예약이_존재하는_테마_삭제시_ConflictException이_발생한다() {
+    void 예약이_존재하는_테마_삭제시_BusinessRuleViolationException이_발생한다() {
         Theme theme = Theme.of(1L, "공포", "desc", "url");
         given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
         given(reservationRepository.existsByThemeId(1L)).willReturn(true);
 
         assertThatThrownBy(() -> themeService.delete(1L))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 
