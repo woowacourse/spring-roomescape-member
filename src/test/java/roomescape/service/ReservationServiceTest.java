@@ -172,6 +172,41 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 자신의_이름으로_예약_목록을_조회한다() {
+        ReservationTime tenClock = createReservationTime(TEN);
+        ReservationTime twelveClock = createReservationTime(LocalTime.of(12, 0));
+        Theme theme = createTheme();
+
+        String name = "브라운";
+        String anotherName = "브리";
+        ReservationRequest requestBrown = new ReservationRequest(
+                name,
+                FUTURE_SECOND_DATE,
+                tenClock.getId(),
+                theme.getId()
+        );
+        ReservationRequest requestBrie = new ReservationRequest(
+                anotherName,
+                FUTURE_SECOND_DATE,
+                twelveClock.getId(),
+                theme.getId()
+        );
+
+        reservationService.addReservation(requestBrown);
+        reservationService.addReservation(requestBrie);
+
+        List<Reservation> reservations = reservationService.getReservationsByName(name);
+
+        assertThat(reservations).hasSize(1);
+
+        Reservation result = reservations.getFirst();
+        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getDate()).isEqualTo(FUTURE_SECOND_DATE);
+        assertThat(result.getTime().getId()).isEqualTo(tenClock.getId());
+        assertThat(result.getTheme().getId()).isEqualTo(theme.getId());
+    }
+
+    @Test
     void id에_맞는_예약을_조회한다() {
         ReservationTime reservationTime = createReservationTime(TEN);
         Theme theme = createTheme();

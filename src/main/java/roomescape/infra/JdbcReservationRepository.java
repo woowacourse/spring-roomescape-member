@@ -63,6 +63,23 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT r.id as reservation_id, r.name, r.date,
+                       t.id as time_id, t.start_at as time_value,
+                       th.id as theme_id, th.name as theme_name,
+                       th.description as theme_description, th.thumbnail_image_url as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.name = ?
+                ORDER BY r.date DESC, time_value ASC;
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
+    @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT r.id as reservation_id, r.name, r.date,
