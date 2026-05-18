@@ -46,17 +46,17 @@ public class DatabaseMissionStepTest {
         );
         jdbcTemplate.update(
                 "INSERT INTO reservation_time (start_time, end_time) VALUES (?, ?)",
-                "15:40", "16:00"
+                "2023-08-05 15:40:00", "2023-08-05 16:00:00"
         );
         Long timeId = jdbcTemplate.queryForObject(
                 "SELECT id FROM reservation_time WHERE start_time = ?",
                 Long.class,
-                "15:40"
+                "2023-08-05 15:40:00"
         );
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", timeId, 1L
+                "INSERT INTO reservation (name, time_id, theme_id) VALUES (?, ?, ?)",
+                "브라운", timeId, 1L
         );
 
         List<?> reservations = RestAssured.given().log().all()
@@ -73,8 +73,8 @@ public class DatabaseMissionStepTest {
     @Test
     void DB_추가_삭제_API_전환() {
         Map<String, String> time = new HashMap<>();
-        time.put("startAt", "10:00");
-        time.put("endAt", "12:00");
+        time.put("startAt", "2030-06-01T10:00");
+        time.put("endAt", "2030-06-01T12:00");
 
         Map<String, String> theme = new HashMap<>();
         theme.put("name", "테마");
@@ -97,7 +97,6 @@ public class DatabaseMissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2027-08-05");
         params.put("themeId", 1);
         params.put("timeId", 1);
 

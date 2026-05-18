@@ -18,8 +18,8 @@ public class TimeTest {
   @Test
   void 시간_관리_API() {
     Map<String, String> params = new HashMap<>();
-    params.put("startAt", "10:00");
-    params.put("endAt", "16:00");
+    params.put("startAt", "2030-06-01T10:00");
+    params.put("endAt", "2030-06-01T16:00");
 
     RestAssured.given().log().all()
         .contentType(ContentType.JSON)
@@ -65,8 +65,8 @@ public class TimeTest {
         .statusCode(201);
 
     Map<String, String> time = new HashMap<>();
-    time.put("startAt", "10:00");
-    time.put("endAt", "16:00");
+    time.put("startAt", "2030-06-01T10:00");
+    time.put("endAt", "2030-06-01T16:00");
 
     RestAssured.given().log().all()
         .contentType(ContentType.JSON)
@@ -77,7 +77,6 @@ public class TimeTest {
 
     Map<String, Object> reservation = new HashMap<>();
     reservation.put("name", "브라운");
-    reservation.put("date", "2027-08-05");
     reservation.put("themeId", 1);
     reservation.put("timeId", 1);
 
@@ -94,5 +93,4 @@ public class TimeTest {
         .statusCode(200)
         .body("size()", is(1));
   }
-
 }

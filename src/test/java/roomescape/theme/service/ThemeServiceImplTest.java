@@ -1,7 +1,7 @@
 package roomescape.theme.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,12 +128,12 @@ class ThemeServiceImplTest {
         when(holidayRepository.existsByDate(date)).thenReturn(false);
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(2L));
 
-        List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0)),
-                new ReservationTime(2L, LocalTime.of(12, 0), LocalTime.of(14, 0)),
-                new ReservationTime(3L, LocalTime.of(14, 0), LocalTime.of(16, 0))
+        List<ReservationTime> timesForDate = List.of(
+                new ReservationTime(1L, LocalDateTime.of(2026, 5, 6, 10, 0), LocalDateTime.of(2026, 5, 6, 12, 0)),
+                new ReservationTime(2L, LocalDateTime.of(2026, 5, 6, 12, 0), LocalDateTime.of(2026, 5, 6, 14, 0)),
+                new ReservationTime(3L, LocalDateTime.of(2026, 5, 6, 14, 0), LocalDateTime.of(2026, 5, 6, 16, 0))
         );
-        when(timeService.findAll()).thenReturn(allTimes);
+        when(timeService.findByDate(date)).thenReturn(timesForDate);
 
         List<ReservationTime> results = themeService.getAvailableTimes(1L, date);
 
@@ -148,13 +148,13 @@ class ThemeServiceImplTest {
         when(holidayRepository.existsByDate(date)).thenReturn(false);
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(Collections.emptyList());
 
-        List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0)),
-                new ReservationTime(2L, LocalTime.of(12, 0), LocalTime.of(14, 0))
+        List<ReservationTime> timesForDate = List.of(
+                new ReservationTime(1L, LocalDateTime.of(2026, 5, 6, 10, 0), LocalDateTime.of(2026, 5, 6, 12, 0)),
+                new ReservationTime(2L, LocalDateTime.of(2026, 5, 6, 12, 0), LocalDateTime.of(2026, 5, 6, 14, 0))
         );
-        when(timeService.findAll()).thenReturn(allTimes);
+        when(timeService.findByDate(date)).thenReturn(timesForDate);
 
         assertThat(themeService.getAvailableTimes(1L, date))
-                .isEqualTo(allTimes);
+                .isEqualTo(timesForDate);
     }
 }

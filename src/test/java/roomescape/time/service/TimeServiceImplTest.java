@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +42,8 @@ class TimeServiceImplTest {
     @Test
     void create_정상_저장하고_반환() {
         // given
-        LocalTime start = LocalTime.of(10, 0);
-        LocalTime end = LocalTime.of(12, 0);
+        LocalDateTime start = LocalDateTime.of(2030, 6, 1, 10, 0);
+        LocalDateTime end = LocalDateTime.of(2030, 6, 1, 12, 0);
         ReservationTime saved = new ReservationTime(1L, start, end);
         when(timeRepository.save(start, end)).thenReturn(saved);
 
@@ -60,8 +60,8 @@ class TimeServiceImplTest {
     void findAll_전체_목록_반환() {
         // given
         List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0)),
-                new ReservationTime(2L, LocalTime.of(13, 0), LocalTime.of(15, 0))
+                new ReservationTime(1L, LocalDateTime.of(2030, 6, 1, 10, 0), LocalDateTime.of(2030, 6, 1, 12, 0)),
+                new ReservationTime(2L, LocalDateTime.of(2030, 6, 1, 13, 0), LocalDateTime.of(2030, 6, 1, 15, 0))
         );
         when(timeRepository.findAll()).thenReturn(times);
 
@@ -76,7 +76,7 @@ class TimeServiceImplTest {
     @Test
     void findById_정상_조회() {
         // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        ReservationTime time = new ReservationTime(1L, LocalDateTime.of(2030, 6, 1, 10, 0), LocalDateTime.of(2030, 6, 1, 12, 0));
         when(timeRepository.findById(1L)).thenReturn(Optional.of(time));
 
         // when

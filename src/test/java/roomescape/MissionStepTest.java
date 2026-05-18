@@ -20,7 +20,7 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 0개
+                .body("size()", is(0));
     }
 
     @Test
@@ -39,8 +39,8 @@ public class MissionStepTest {
             .body("id", is(1));
 
         Map<String, String> time = new HashMap<>();
-        time.put("startAt", "15:40");
-        time.put("endAt", "18:00");
+        time.put("startAt", "2030-08-05T15:40");
+        time.put("endAt", "2030-08-05T18:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -52,7 +52,6 @@ public class MissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2027-08-05");
         params.put("themeId", 1);
         params.put("timeId", 1);
 
@@ -111,8 +110,8 @@ public class MissionStepTest {
                 .body("id", is(2));
 
         Map<String, String> time = new HashMap<>();
-        time.put("startAt", "10:00");
-        time.put("endAt", "16:00");
+        time.put("startAt", "2030-08-05T10:00");
+        time.put("endAt", "2030-08-05T16:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -124,7 +123,6 @@ public class MissionStepTest {
 
         Map<String, Object> reservation1 = new HashMap<>();
         reservation1.put("name", "브라운");
-        reservation1.put("date", "2027-08-05");
         reservation1.put("themeId", 1);
         reservation1.put("timeId", 1);
 
@@ -138,7 +136,6 @@ public class MissionStepTest {
 
         Map<String, Object> reservation2 = new HashMap<>();
         reservation2.put("name", "초코");
-        reservation2.put("date", "2027-08-05");
         reservation2.put("themeId", 2);
         reservation2.put("timeId", 1);
 
@@ -168,8 +165,8 @@ public class MissionStepTest {
     @Test
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-        params.put("endAt", "16:00");
+        params.put("startAt", "2030-06-01T10:00");
+        params.put("endAt", "2030-06-01T16:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -204,8 +201,8 @@ public class MissionStepTest {
                 .statusCode(201);
 
         Map<String, String> time = new HashMap<>();
-        time.put("startAt", "10:00");
-        time.put("endAt", "16:00");
+        time.put("startAt", "2030-06-01T10:00");
+        time.put("endAt", "2030-06-01T16:00");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
@@ -215,7 +212,6 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2027-08-05");
         reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
@@ -232,14 +228,13 @@ public class MissionStepTest {
                 .statusCode(200)
                 .body("size()", is(1))
                 .body("[0].time.id", is(1))
-                .body("[0].time.startAt", is("10:00"));
+                .body("[0].time.startAt", is("2030-06-01T10:00"));
     }
 
     @Test
     void 예약_시간이_없으면_400_에러_응답() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2027-08-05");
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
@@ -251,5 +246,4 @@ public class MissionStepTest {
                 .body("code", is("INVALID_REQUEST"))
                 .body("message", is("입력값이 유효하지 않습니다."));
     }
-
 }

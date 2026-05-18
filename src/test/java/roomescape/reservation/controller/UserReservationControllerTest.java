@@ -6,8 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +38,9 @@ class UserReservationControllerTest {
     @Test
     void 이름으로_예약_목록_조회_테스트() throws Exception {
         // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        ReservationTime time = new ReservationTime(1L, LocalDateTime.of(2030, 6, 1, 10, 0), LocalDateTime.of(2030, 6, 1, 12, 0));
         Theme theme = new Theme("테마", "설명", "https://img.test/a.png").withId(1L);
-        Reservation reservation = new Reservation("라이", LocalDate.of(2026, 5, 20), time, 1L)
+        Reservation reservation = new Reservation("라이", time, 1L)
                 .withId(1L)
                 .withTheme(theme);
         Mockito.when(reservationService.getByName("라이")).thenReturn(List.of(reservation));
@@ -92,16 +91,15 @@ class UserReservationControllerTest {
     @Test
     void 예약_변경_테스트() throws Exception {
         // given
-        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(14, 0), LocalTime.of(16, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalDateTime.of(2030, 6, 1, 14, 0), LocalDateTime.of(2030, 6, 1, 16, 0));
         Theme theme = new Theme("테마", "설명", "https://img.test/a.png").withId(1L);
-        Reservation updated = new Reservation("라이", LocalDate.of(2026, 6, 1), newTime, 1L)
+        Reservation updated = new Reservation("라이", newTime, 1L)
                 .withId(1L)
                 .withTheme(theme);
-        Mockito.when(reservationService.update(1L, LocalDate.of(2026, 6, 1), 2L)).thenReturn(updated);
+        Mockito.when(reservationService.update(1L, 2L)).thenReturn(updated);
 
         String requestBody = """
                 {
-                    "date": "2026-06-01",
                     "timeId": 2
                 }
                 """;
@@ -119,12 +117,11 @@ class UserReservationControllerTest {
     @Test
     void 존재하지_않는_예약_변경_404_반환_테스트() throws Exception {
         // given
-        Mockito.when(reservationService.update(Mockito.anyLong(), Mockito.any(), Mockito.anyLong()))
+        Mockito.when(reservationService.update(Mockito.anyLong(), Mockito.anyLong()))
                 .thenThrow(new ReservationNotFoundException(999L));
 
         String requestBody = """
                 {
-                    "date": "2026-06-01",
                     "timeId": 2
                 }
                 """;
@@ -136,16 +133,15 @@ class UserReservationControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @DisplayName("변경하려는 날짜 및 시간이 과거인 경우, 400을 반환한다.")
+    @DisplayName("변경하려는 시간 슬롯이 과거인 경우, 400을 반환한다.")
     @Test
-    void 과거_날짜로_예약_변경_400_반환_테스트() throws Exception {
+    void 과거_슬롯으로_예약_변경_400_반환_테스트() throws Exception {
         // given
-        Mockito.when(reservationService.update(Mockito.anyLong(), Mockito.any(), Mockito.anyLong()))
-                .thenThrow(PastReservationException.pastDate());
+        Mockito.when(reservationService.update(Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(PastReservationException.pastReservation());
 
         String requestBody = """
                 {
-                    "date": "2024-01-01",
                     "timeId": 1
                 }
                 """;
@@ -161,12 +157,11 @@ class UserReservationControllerTest {
     @Test
     void 이미_찬_시간으로_예약_변경_409_반환_테스트() throws Exception {
         // given
-        Mockito.when(reservationService.update(Mockito.anyLong(), Mockito.any(), Mockito.anyLong()))
+        Mockito.when(reservationService.update(Mockito.anyLong(), Mockito.anyLong()))
                 .thenThrow(new DuplicateReservationException());
 
         String requestBody = """
                 {
-                    "date": "2026-06-01",
                     "timeId": 1
                 }
                 """;
@@ -178,12 +173,11 @@ class UserReservationControllerTest {
                 .andExpect(status().isConflict());
     }
 
-    @DisplayName("date 없이 변경 요청하는 경우, 400을 반환한다.")
+    @DisplayName("timeId 없이 변경 요청하는 경우, 400을 반환한다.")
     @Test
-    void date_누락_예약_변경_400_반환_테스트() throws Exception {
+    void timeId_누락_예약_변경_400_반환_테스트() throws Exception {
         String requestBody = """
                 {
-                    "timeId": 1
                 }
                 """;
 

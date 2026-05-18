@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -40,8 +40,8 @@ class TimeControllerTest {
         LocalDate date = LocalDate.of(2026, 5, 6);
 
         List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0)),
-                new ReservationTime(2L, LocalTime.of(12, 0), LocalTime.of(14, 0))
+                new ReservationTime(1L, LocalDateTime.of(2026, 5, 6, 10, 0), LocalDateTime.of(2026, 5, 6, 12, 0)),
+                new ReservationTime(2L, LocalDateTime.of(2026, 5, 6, 12, 0), LocalDateTime.of(2026, 5, 6, 14, 0))
         );
         Mockito.when(themeService.getAvailableTimes(themeId, date)).thenReturn(times);
 
@@ -67,7 +67,7 @@ class TimeControllerTest {
     void startAt_누락_시간_생성_400() throws Exception {
         String requestBody = """
                 {
-                    "endAt": "12:00"
+                    "endAt": "2030-06-01T12:00"
                 }
                 """;
 
@@ -82,7 +82,7 @@ class TimeControllerTest {
     void endAt_누락_시간_생성_400() throws Exception {
         String requestBody = """
                 {
-                    "startAt": "10:00"
+                    "startAt": "2030-06-01T10:00"
                 }
                 """;
 
@@ -92,13 +92,13 @@ class TimeControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("잘못된 시간 형식으로 시간 생성 요청인 경우, 400을 반환한다.")
+    @DisplayName("잘못된 날짜시간 형식으로 시간 생성 요청인 경우, 400을 반환한다.")
     @Test
-    void 잘못된_시간_형식_시간_생성_400() throws Exception {
+    void 잘못된_형식_시간_생성_400() throws Exception {
         String requestBody = """
                 {
                     "startAt": "10시",
-                    "endAt": "12:00"
+                    "endAt": "2030-06-01T12:00"
                 }
                 """;
 

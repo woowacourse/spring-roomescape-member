@@ -6,8 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,9 +33,9 @@ public class ReservationControllerTest {
     @Test
     void 예약_목록_조회_테스트() throws Exception {
         // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        ReservationTime time = new ReservationTime(1L, LocalDateTime.of(2030, 6, 1, 10, 0), LocalDateTime.of(2030, 6, 1, 12, 0));
         Theme theme = new Theme("테마", "설명", "https://img.test/a.png").withId(1L);
-        Reservation reservation = new Reservation("라이", LocalDate.of(2026, 5, 20), time, 1L)
+        Reservation reservation = new Reservation("라이", time, 1L)
                 .withId(1L)
                 .withTheme(theme);
         Mockito.when(reservationService.getAll()).thenReturn(List.of(reservation));
@@ -53,9 +52,9 @@ public class ReservationControllerTest {
     @Test
     void 예약_생성_테스트() throws Exception {
         // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0));
+        ReservationTime time = new ReservationTime(1L, LocalDateTime.of(2030, 6, 1, 10, 0), LocalDateTime.of(2030, 6, 1, 12, 0));
         Theme theme = new Theme("테마", "설명", "https://img.test/a.png").withId(1L);
-        Reservation saved = new Reservation("라이", LocalDate.of(2026, 5, 20), time, 1L)
+        Reservation saved = new Reservation("라이", time, 1L)
                 .withId(1L)
                 .withTheme(theme);
         Mockito.when(reservationService.create(Mockito.any())).thenReturn(saved);
@@ -63,7 +62,6 @@ public class ReservationControllerTest {
         String requestBody = """
                 {
                     "name": "라이",
-                    "date": "2026-05-20",
                     "themeId": 1,
                     "timeId": 1
                 }
@@ -84,7 +82,6 @@ public class ReservationControllerTest {
         String requestBody = """
                 {
                     "name": "",
-                    "date": "2026-05-20",
                     "themeId": 1,
                     "timeId": 1
                 }
@@ -102,7 +99,6 @@ public class ReservationControllerTest {
         String requestBody = """
                 {
                     "name": "   ",
-                    "date": "2026-05-20",
                     "themeId": 1,
                     "timeId": 1
                 }
@@ -114,32 +110,13 @@ public class ReservationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("잘못된 날짜 형식으로 예약 요청인 경우, HttpMessageNotReadableException이 발생한다.")
+    @DisplayName("timeId 없이 예약 요청인 경우, MethodArgumentNotValidException이 발생한다.")
     @Test
-    void 잘못된_날짜_형식_예약_생성_400_반환_테스트() throws Exception {
+    void timeId_누락_예약_생성_400_반환_테스트() throws Exception {
         String requestBody = """
                 {
                     "name": "라이",
-                    "date": "2026/05/20",
-                    "themeId": 1,
-                    "timeId": 1
-                }
-                """;
-
-        mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isBadRequest());
-    }
-
-    @DisplayName("날짜 없이 예약 요청인 경우, MethodArgumentNotValidException이 발생한다.")
-    @Test
-    void 날짜_누락_예약_생성_400_반환_테스트() throws Exception {
-        String requestBody = """
-                {
-                    "name": "라이",
-                    "themeId": 1,
-                    "timeId": 1
+                    "themeId": 1
                 }
                 """;
 
