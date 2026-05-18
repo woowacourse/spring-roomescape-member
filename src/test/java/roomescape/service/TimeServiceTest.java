@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.RestApiException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.dao.row.ReservationRow;
@@ -60,7 +59,7 @@ class TimeServiceTest {
     @Test
     void 조회하려는_id가_존재하지_않으면_예외_처리한다() {
         assertThatThrownBy(() -> timeService.findById(NOT_EXISTS_ID))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(RestApiException.class);
     }
 
     @Nested
@@ -81,7 +80,7 @@ class TimeServiceTest {
             givenTime(10);
 
             assertThatThrownBy(() -> timeService.create(requestOf(10)))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(RestApiException.class);
         }
     }
 
@@ -96,13 +95,13 @@ class TimeServiceTest {
             timeService.delete(time.id());
 
             assertThatThrownBy(() -> timeService.findById(time.id()))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
         void 삭제하려는_id가_존재하지_않으면_예외_처리한다() {
             assertThatThrownBy(() -> timeService.delete(NOT_EXISTS_ID))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -111,7 +110,7 @@ class TimeServiceTest {
             givenReservationAt(time);
 
             assertThatThrownBy(() -> timeService.delete(time.id()))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(RestApiException.class);
         }
     }
 }

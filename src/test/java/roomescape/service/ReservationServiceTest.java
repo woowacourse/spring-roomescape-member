@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.RestApiException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
@@ -74,7 +73,7 @@ class ReservationServiceTest {
     @Test
     void 조회할_id가_존재하지_않으면_예외처리한다() {
         assertThatThrownBy(() -> reservationService.findById(NOT_EXISTS_ID))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(RestApiException.class);
     }
 
     @Nested
@@ -99,7 +98,7 @@ class ReservationServiceTest {
             ReservationRequestDto request = requestOf("유저1", TODAY, null, theme.id());
 
             assertThatThrownBy(() -> reservationService.create(request))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -108,7 +107,7 @@ class ReservationServiceTest {
             ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), null);
 
             assertThatThrownBy(() -> reservationService.create(request))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -119,7 +118,7 @@ class ReservationServiceTest {
             reservationService.create(request);
 
             assertThatThrownBy(() -> reservationService.create(request))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -162,7 +161,7 @@ class ReservationServiceTest {
             reservationService.delete(created.id());
 
             assertThatThrownBy(() -> reservationService.findById(created.id()))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -177,13 +176,13 @@ class ReservationServiceTest {
             );
 
             assertThatThrownBy(() -> reservationService.delete(saved.id()))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
         void 삭제하려는_id가_존재하지_않으면_예외() {
             assertThatThrownBy(() -> reservationService.delete(NOT_EXISTS_ID))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
     }
 
@@ -201,7 +200,7 @@ class ReservationServiceTest {
             reservationService.delete(created.id(), "유저1");
 
             assertThatThrownBy(() -> reservationService.findById(created.id()))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -216,13 +215,13 @@ class ReservationServiceTest {
             );
 
             assertThatThrownBy(() -> reservationService.delete(saved.id(), "유저1"))
-                    .isInstanceOf(ConflictException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
         void 삭제하려는_id가_존재하지_않으면_예외() {
             assertThatThrownBy(() -> reservationService.delete(NOT_EXISTS_ID, "유저1"))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -233,7 +232,7 @@ class ReservationServiceTest {
             ReservationResponseDto created = reservationService.create(request);
 
             assertThatThrownBy(() -> reservationService.delete(created.id(), "없는유저"))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
     }
 
@@ -248,7 +247,7 @@ class ReservationServiceTest {
             ReservationRequestDto request = requestOf("유저1", TODAY, time.id(), theme.id());
             ReservationResponseDto created = reservationService.create(request);
             assertThatThrownBy(() -> reservationService.update(created.id(), updateOf(created.name(), created.date(), created.timeDto().id(), NOT_EXISTS_ID)))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -259,7 +258,7 @@ class ReservationServiceTest {
             ReservationResponseDto created = reservationService.create(request);
 
             assertThatThrownBy(() -> reservationService.update(created.id(), updateOf(created.name(), created.date(), NOT_EXISTS_ID, created.themeResponseDto().id())))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -270,7 +269,7 @@ class ReservationServiceTest {
             ReservationResponseDto created = reservationService.create(request);
 
             assertThatThrownBy(() -> reservationService.update(NOT_EXISTS_ID, updateOf(created.name(), created.date(), created.timeDto().id(), created.themeResponseDto().id())))
-                    .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(RestApiException.class);
         }
 
         @Test
@@ -286,7 +285,7 @@ class ReservationServiceTest {
             assertThatThrownBy(() -> reservationService.update(
                     mine.id(),
                     updateOf("나", TODAY.plusDays(1), time.id(), theme.id())
-            )).isInstanceOf(ConflictException.class);
+            )).isInstanceOf(RestApiException.class);
         }
     }
 }
