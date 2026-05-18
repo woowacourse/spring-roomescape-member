@@ -55,7 +55,7 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.rescheduleReservation(
                 RescheduleReservationInfo.of(id, updateReservationRequest)
         );
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(reservation);
     }
 
