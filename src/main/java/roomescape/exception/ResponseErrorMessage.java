@@ -1,24 +1,20 @@
 package roomescape.exception;
 
-public class ResponseErrorMessage {
-
-    private String code;
-    private String message;
-
-    public ResponseErrorMessage(String code, String message) {
-        this.code = code;
-        this.message = message;
-    }
+public record ResponseErrorMessage(String code, int status, String message) {
 
     public static ResponseErrorMessage of(ErrorCode errorCode) {
-        return new ResponseErrorMessage(errorCode.name(), errorCode.getMessage());
+        return new ResponseErrorMessage(
+                errorCode.name(),
+                errorCode.getStatus().value(), 
+                errorCode.getMessage()
+        );
     }
 
     public static ResponseErrorMessage of(ErrorCode errorCode, String customMessage) {
-        return new ResponseErrorMessage(errorCode.name(), customMessage);
-    }
-
-    public String getMessage() {
-        return message;
+        return new ResponseErrorMessage(
+                errorCode.name(),
+                errorCode.getStatus().value(),
+                customMessage
+        );
     }
 }
