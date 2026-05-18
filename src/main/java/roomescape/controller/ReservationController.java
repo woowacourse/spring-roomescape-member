@@ -18,7 +18,6 @@ import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
-
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -63,9 +62,9 @@ public class ReservationController {
         return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @DeleteMapping(value = "/{id}", params = "userName")
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestParam("userName") String userName) {
         reservationService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
