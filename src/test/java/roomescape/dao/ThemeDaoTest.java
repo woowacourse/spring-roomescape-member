@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularTheme;
 import roomescape.exception.ThemeInUseException;
+import roomescape.exception.ThemeNotFoundException;
 
 @JdbcTest
 @ActiveProfiles("test")
@@ -60,6 +60,13 @@ public class ThemeDaoTest {
         int deleteCount = themeDao.delete(id);
 
         assertThat(deleteCount).isEqualTo(1);
+    }
+
+    @Test
+    void 예약이_존재하지_않는_테마_조회_시_예외_발생() {
+        assertThatThrownBy(() -> themeDao.findById(1L))
+                .isInstanceOf(ThemeNotFoundException.class)
+                .hasMessage("해당 테마를 찾을 수 없습니다.");
     }
 
     @Test
