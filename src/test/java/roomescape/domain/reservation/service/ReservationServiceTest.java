@@ -11,6 +11,7 @@ import roomescape.domain.reservation.exception.PastReservationDateException;
 import roomescape.domain.reservation.exception.ReservationOwnerMismatchException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
+import roomescape.domain.reservation.request.ReservationUpdateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
@@ -311,5 +312,145 @@ class ReservationServiceTest {
                 .hasMessageContaining("본인의 예약만 취소할 수 있습니다.");
 
         verify(reservationRepository).findById(reservationId);
+    }
+
+    @Test
+    @DisplayName("사용자는 본인 예약의 날짜와 시간을 변경한다.")
+    void updateReservationSchedule() {
+        // given
+        Long reservationId = 1L;
+        String username = "브라운";
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime originalTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(13, 0));
+        LocalDate newDate = LocalDate.of(9999, 5, 10);
+        Reservation reservation = new Reservation(
+                reservationId,
+                username,
+                theme,
+                LocalDate.of(9999, 5, 9),
+                originalTime
+        );
+        Reservation updatedReservation = new Reservation(reservationId, username, theme, newDate, newTime);
+        ReservationUpdateRequest request = new ReservationUpdateRequest(newDate, newTime.getId());
+
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(newTime.getId()))
+                .thenReturn(Optional.of(newTime));
+        when(reservationRepository.update(any(Reservation.class)))
+                .thenReturn(updatedReservation);
+
+        // when
+        ReservationResponse response = reservationService.updateReservationSchedule(reservationId, username, request);
+
+        // then
+        assertThat(response.id()).isEqualTo(reservationId);
+        assertThat(response.username()).isEqualTo(username);
+        assertThat(response.theme()).isEqualTo(ThemeResponse.from(theme));
+        assertThat(response.date()).isEqualTo(newDate);
+        assertThat(response.time()).isEqualTo(ReservationTimeResponse.from(newTime));
+
+        verify(reservationRepository).findById(reservationId);
+        verify(reservationTimeRepository).findById(newTime.getId());
+        verify(reservationRepository).exists(any(Reservation.class));
+        verify(reservationRepository).update(any(Reservation.class));
+    }
+
+    @Test
+    @DisplayName("사용자는 다른 사람의 예약을 변경할 수 없다.")
+    void updateReservationSchedule_throwsException_whenUsernameDoesNotMatch() {
+        // given
+        Long reservationId = 1L;
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation reservation = new Reservation(1L, "브라운", theme, LocalDate.of(9999, 4, 30), time);
+        ReservationUpdateRequest request = new ReservationUpdateRequest(LocalDate.of(9999, 5, 10), 2L);
+
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(reservationId, "다른사용자", request))
+                .isInstanceOf(ReservationOwnerMismatchException.class)
+                .hasMessageContaining("본인의 예약만 취소할 수 있습니다.");
+
+        verify(reservationRepository).findById(reservationId);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 시간으로 예약 변경 시 예외가 발생한다.")
+    void updateReservationSchedule_throwsException_whenTimeNotFound() {
+        // given
+        Long reservationId = 1L;
+        Long invalidTimeId = 999L;
+        String username = "브라운";
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Reservation reservation = new Reservation(reservationId, username, theme, LocalDate.of(9999, 4, 30), time);
+        ReservationUpdateRequest request = new ReservationUpdateRequest(LocalDate.of(9999, 5, 10), invalidTimeId);
+
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(invalidTimeId))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(reservationId, username, request))
+                .isInstanceOf(ReservationTimeNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 예약 시간입니다.");
+
+        verify(reservationRepository).findById(reservationId);
+        verify(reservationTimeRepository).findById(invalidTimeId);
+    }
+
+    @Test
+    @DisplayName("지난 날짜로 예약 변경 시 예외가 발생한다.")
+    void updateReservationSchedule_throwsException_whenBeforeDate() {
+        // given
+        Long reservationId = 1L;
+        String username = "브라운";
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime originalTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(13, 0));
+        Reservation reservation = new Reservation(reservationId, username, theme, LocalDate.of(9999, 4, 30), originalTime);
+        ReservationUpdateRequest request = new ReservationUpdateRequest(LocalDate.of(1000, 5, 10), newTime.getId());
+
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(newTime.getId()))
+                .thenReturn(Optional.of(newTime));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(reservationId, username, request))
+                .isInstanceOf(PastReservationDateException.class)
+                .hasMessageContaining("과거 날짜로 예약할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("변경하려는 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.")
+    void updateReservationSchedule_throwsException_whenDuplicateReservation() {
+        // given
+        Long reservationId = 1L;
+        String username = "브라운";
+        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime originalTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(13, 0));
+        Reservation reservation = new Reservation(reservationId, username, theme, LocalDate.of(9999, 4, 30), originalTime);
+        ReservationUpdateRequest request = new ReservationUpdateRequest(LocalDate.of(9999, 5, 10), newTime.getId());
+
+        when(reservationRepository.findById(reservationId))
+                .thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(newTime.getId()))
+                .thenReturn(Optional.of(newTime));
+        when(reservationRepository.exists(any(Reservation.class)))
+                .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(reservationId, username, request))
+                .isInstanceOf(DuplicateReservationException.class)
+                .hasMessageContaining("이미 예약된 시간입니다.");
+
+        verify(reservationRepository).exists(any(Reservation.class));
     }
 }
