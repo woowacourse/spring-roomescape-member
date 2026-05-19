@@ -171,7 +171,7 @@ class ReservationTimeRepositoryTest {
     private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
         UUID uuid = resultSet.getObject(column, UUID.class);
 
-        return EntityId.fromString(uuid.toString());
+        return EntityId.fromUuid(uuid);
     }
 
     private static void skipIfPersistTestFailed() {

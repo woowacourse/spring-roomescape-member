@@ -2,6 +2,8 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidDomainStateException;
 
 public record ReservationTime(
         EntityId id,
@@ -15,13 +17,19 @@ public record ReservationTime(
 
     private void validateId(EntityId id) {
         if (id == null) {
-            throw new IllegalArgumentException("예약 시간엔 식별자가 존재해야 합니다.");
+            throw new InvalidDomainStateException(
+                    ErrorCode.INVALID_RESERVATION_TIME,
+                    "예약 시간엔 식별자가 존재해야 합니다."
+            );
         }
     }
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시간엔 시간 정보가 존재해야 합니다.");
+            throw new InvalidDomainStateException(
+                    ErrorCode.INVALID_RESERVATION_TIME,
+                    "예약 시간엔 시간 정보가 존재해야 합니다."
+            );
         }
     }
 

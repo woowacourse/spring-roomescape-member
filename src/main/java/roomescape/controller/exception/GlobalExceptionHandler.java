@@ -2,6 +2,7 @@ package roomescape.controller.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingPathVariableException;
@@ -9,20 +10,77 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import roomescape.exception.CodeException;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.InUseEntityException;
+import roomescape.exception.InvalidDomainStateException;
+import roomescape.exception.NotAcceptableReservationException;
+
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleInternalServerError(Exception exception) {
+        log.error("[Internal Server Error]", exception);
+
+        ErrorResponse response = new ErrorResponse("예상하지 못한 예외가 발생했습니다.", ErrorCode.INTERNAL_SERVER_ERROR);
+
+        return ResponseEntity.internalServerError()
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidDomainStateException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(InvalidDomainStateException exception) {
+        log.warn("[Bad Request]", exception);
+        ErrorResponse response = new ErrorResponse(exception.getMessage(), exception.getErrorCode());
+
+        return ResponseEntity.badRequest()
+                .body(response);
+    }
+
+    @ExceptionHandler(NotAcceptableReservationException.class)
+    public ResponseEntity<ErrorResponse> handleForbidden(NotAcceptableReservationException exception) {
+        log.warn("[Forbidden]", exception);
+        ErrorResponse response = new ErrorResponse(exception.getMessage(), exception.getErrorCode());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(response);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(EntityNotFoundException exception) {
+        log.warn("[Not Found]", exception);
+        ErrorResponse response = new ErrorResponse(exception.getMessage(), exception.getErrorCode());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+    @ExceptionHandler({
+            InUseEntityException.class,
+            DuplicateReservationException.class
+    })
+    public ResponseEntity<ErrorResponse> handleConflict(CodeException exception) {
+        log.warn("[Conflict]", exception);
+        ErrorResponse response = new ErrorResponse(exception.getMessage(), exception.getErrorCode());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
     @ExceptionHandler(MissingPathVariableException.class)
     public ResponseEntity<ErrorResponse> handleMissingPathVariable(
             MissingPathVariableException exception
     ) {
+        log.warn("[Missing Path Variable]", exception);
+
         String message = "필수 경로 변수가 누락되었습니다: "
                 + exception.getVariableName();
-        ErrorResponse response = new ErrorResponse(message);
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
                 .body(response);
@@ -34,10 +92,8 @@ public class GlobalExceptionHandler {
     ) {
         log.warn("[Missing Request Parameter]", exception);
 
-        ErrorResponse response = new ErrorResponse(
-                "필수 파라미터가 누락되었습니다: "
-                        + exception.getParameterName()
-        );
+        String message = "필수 파라미터가 누락되었습니다: " + exception.getParameterName();
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
                 .body(response);
@@ -53,7 +109,7 @@ public class GlobalExceptionHandler {
                 + " 필드명: " + exception.getName()
                 + " 입력값: " + exception.getValue()
                 + " 기대 타입: " + exception.getRequiredType();
-        ErrorResponse response = new ErrorResponse(message);
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
                 .body(response);
@@ -71,32 +127,9 @@ public class GlobalExceptionHandler {
                     + ", 기대 타입" + invalidFormat.getTargetType()
                     + ")";
         }
-        ErrorResponse response = new ErrorResponse(message);
+        ErrorResponse response = new ErrorResponse(message, ErrorCode.INVALID_REQUEST);
 
         return ResponseEntity.badRequest()
-                .body(response);
-    }
-
-    @ExceptionHandler({
-            IllegalArgumentException.class,
-            IllegalStateException.class,
-            EntityNotFoundException.class,
-            InUseEntityException.class
-    })
-    public ResponseEntity<ErrorResponse> handleBadRequest(Exception exception) {
-        log.warn("[Bad Request]", exception);
-        ErrorResponse response = new ErrorResponse(exception.getMessage());
-
-        return ResponseEntity.badRequest()
-                .body(response);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleInternalServerError(Exception exception) {
-        log.error("[Internal Server Error]", exception);
-        ErrorResponse response = new ErrorResponse("예상하지 못한 예외가 발생했습니다.");
-
-        return ResponseEntity.internalServerError()
                 .body(response);
     }
 }

@@ -2,6 +2,8 @@ package roomescape.domain;
 
 import java.util.Objects;
 import org.springframework.util.StringUtils;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidDomainStateException;
 
 public record Theme(
         EntityId id,
@@ -19,25 +21,37 @@ public record Theme(
 
     private void validateId(EntityId id) {
         if (id == null) {
-            throw new IllegalArgumentException("테마엔 식별자가 존재해야 합니다.");
+            throw new InvalidDomainStateException(
+                    ErrorCode.INVALID_THEME,
+                    "테마엔 식별자가 존재해야 합니다."
+            );
         }
     }
 
     private void validateName(String name) {
         if (!StringUtils.hasText(name)) {
-            throw new IllegalArgumentException("테마엔 이름이 존재해야 합니다.");
+            throw new InvalidDomainStateException(
+                    ErrorCode.INVALID_THEME,
+                    "테마엔 이름이 존재해야 합니다."
+            );
         }
     }
 
     private void validateDescription(String description) {
         if (!StringUtils.hasText(description)) {
-            throw new IllegalArgumentException("테마엔 설명이 존재해야 합니다.");
+            throw new InvalidDomainStateException(
+                    ErrorCode.INVALID_THEME,
+                    "테마엔 설명이 존재해야 합니다."
+            );
         }
     }
 
     private void validateImageUrl(String imageUrl) {
         if (!StringUtils.hasText(imageUrl)) {
-            throw new IllegalArgumentException("테마엔 이미지가 존재해야 합니다.");
+            throw new InvalidDomainStateException(
+                    ErrorCode.INVALID_THEME,
+                    "테마엔 이미지가 존재해야 합니다."
+            );
         }
     }
 

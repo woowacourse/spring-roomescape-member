@@ -2,12 +2,16 @@ package roomescape.domain;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import java.util.UUID;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidDomainStateException;
 
 public final class EntityId {
 
     private final UUID uuid;
 
     private EntityId(UUID uuid) {
+        validateValueExist(uuid);
+
         this.uuid = uuid;
     }
 
@@ -15,8 +19,17 @@ public final class EntityId {
         return new EntityId(UuidCreator.getTimeOrderedEpoch());
     }
 
-    public static EntityId fromString(String value) {
-        return new EntityId(UUID.fromString(value));
+    public static EntityId fromUuid(UUID uuid) {
+        return new EntityId(uuid);
+    }
+
+    private void validateValueExist(Object value) {
+        if (value == null) {
+            throw new InvalidDomainStateException(
+                    ErrorCode.INVALID_ID,
+                    "EntityId는 빈 값을 지닐 수 없습니다."
+            );
+        }
     }
 
     public UUID getValueAsUuid() {

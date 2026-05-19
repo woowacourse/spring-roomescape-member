@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.InvalidDomainStateException;
 
 class ThemeTest {
 
@@ -22,7 +23,7 @@ class ThemeTest {
                     DEFAULT_NAME,
                     DEFAULT_DESCRIPTION,
                     DEFAULT_IMAGE_URL
-            )).isInstanceOf(IllegalArgumentException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("테마엔 식별자가 존재해야 합니다.");
         }
 
@@ -33,7 +34,7 @@ class ThemeTest {
                     null,
                     DEFAULT_DESCRIPTION,
                     DEFAULT_IMAGE_URL
-            )).isInstanceOf(IllegalArgumentException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("테마엔 이름이 존재해야 합니다.");
         }
 
@@ -44,7 +45,7 @@ class ThemeTest {
                     DEFAULT_NAME,
                     null,
                     DEFAULT_IMAGE_URL
-            )).isInstanceOf(IllegalArgumentException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("테마엔 설명이 존재해야 합니다.");
         }
 
@@ -55,7 +56,7 @@ class ThemeTest {
                     DEFAULT_NAME,
                     DEFAULT_DESCRIPTION,
                     null
-            )).isInstanceOf(IllegalArgumentException.class)
+            )).isInstanceOf(InvalidDomainStateException.class)
                     .hasMessage("테마엔 이미지가 존재해야 합니다.");
         }
     }

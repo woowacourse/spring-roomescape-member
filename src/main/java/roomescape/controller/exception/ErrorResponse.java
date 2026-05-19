@@ -1,6 +1,9 @@
 package roomescape.controller.exception;
 
+import roomescape.exception.ErrorCode;
+
 public record ErrorResponse(
-        String message
+        String message,
+        ErrorCode errorCode
 ) {
 }

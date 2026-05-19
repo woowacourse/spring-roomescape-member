@@ -2,11 +2,13 @@ package roomescape.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/view")
 public class WebViewController {
 
-    @GetMapping("/")
+    @GetMapping({"", "/"})
     public String welcome() {
         return "index";
     }
@@ -39,6 +41,11 @@ public class WebViewController {
     @GetMapping("/user/reserve")
     public String userReserve() {
         return "user/reserve";
+    }
+
+    @GetMapping("/user/reservations")
+    public String userReservations() {
+        return "user/reservations";
     }
 
     @GetMapping("/user/popular")

@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Duration;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.test.util.TestDatabaseUtils;
 
 @JdbcTest
@@ -36,10 +37,12 @@ class ReservationRepositoryTest {
     private static final EntityId DEFAULT_RESERVATION_ID = EntityId.random();
     private static final EntityId NOT_EXIST_ID = EntityId.random();
     private static final String DEFAULT_RESERVATION_NAME = "name";
-    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2025, 1, 1);
+    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.now().plusYears(1);
 
-    private static final EntityId DEFAULT_TIME_ID = EntityId.random();
-    private static final LocalTime DEFAULT_TIME_START_AT = LocalTime.of(1, 1);
+    private static final ReservationTime DEFAULT_TIME = new ReservationTime(
+            EntityId.random(),
+            LocalTime.of(1, 1)
+    );
 
     private static final EntityId DEFAULT_THEME_ID = EntityId.random();
     private static final String DEFAULT_THEME_NAME = "themeName";
@@ -56,10 +59,7 @@ class ReservationRepositoryTest {
         TestDatabaseUtils.clearTables(jdbcTemplate);
         this.reservationRepository = new ReservationRepository(jdbcTemplate);
 
-        persistTime(
-                DEFAULT_TIME_ID,
-                DEFAULT_TIME_START_AT
-        );
+        persistTime(DEFAULT_TIME);
         persistTheme(
                 DEFAULT_THEME_ID,
                 DEFAULT_THEME_NAME,
@@ -72,11 +72,11 @@ class ReservationRepositoryTest {
     @Test
     void 새로운_예약_정보를_저장하고_저장한_정보를_반환한다() {
         // given
-        Reservation transientReservation = new Reservation(
+        Reservation transientReservation = Reservation.create(
                 DEFAULT_RESERVATION_ID,
                 DEFAULT_RESERVATION_NAME,
                 DEFAULT_RESERVATION_DATE,
-                DEFAULT_TIME_ID,
+                DEFAULT_TIME,
                 DEFAULT_THEME_ID
         );
 
@@ -84,8 +84,9 @@ class ReservationRepositoryTest {
         Reservation persistedReservation = reservationRepository.persist(transientReservation);
 
         // then
-        String selectSql = "SELECT id, name, date, time_id, theme_id"
-                + " FROM reservation r";
+        String selectSql = "SELECT r.id, r.name, r.date, r.canceled, r.time_id, rt.start_at, r.theme_id"
+                + " FROM reservation r"
+                + " JOIN reservation_time rt ON r.time_id = rt.id";
         List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
 
         assertThat(foundReservations).hasSize(1);
@@ -100,11 +101,11 @@ class ReservationRepositoryTest {
         skipIfPersistTestFailed();
 
         // given
-        Reservation reservation = new Reservation(
+        Reservation reservation = Reservation.create(
                 DEFAULT_RESERVATION_ID,
                 DEFAULT_RESERVATION_NAME,
                 DEFAULT_RESERVATION_DATE,
-                DEFAULT_TIME_ID,
+                DEFAULT_TIME,
                 DEFAULT_THEME_ID
         );
 
@@ -131,23 +132,23 @@ class ReservationRepositoryTest {
         @Test
         void 기간_내_예약_정보를_조회한다() {
             // given
-            LocalDate startDate = LocalDate.of(2000, 1, 1);
-            LocalDate endDate = LocalDate.of(3000, 1, 1);
+            LocalDate startDate = LocalDate.now().plusYears(1000);
+            LocalDate endDate = LocalDate.now().plusYears(2000);
 
-            Reservation outOfDurationReservation = new Reservation(
+            Reservation outOfDurationReservation = Reservation.create(
                     EntityId.random(),
                     "outReservationName",
-                    LocalDate.of(1000, 1, 1),
-                    DEFAULT_TIME_ID,
+                    endDate.plusDays(1),
+                    DEFAULT_TIME,
                     DEFAULT_THEME_ID
             );
             reservationRepository.persist(outOfDurationReservation);
 
-            Reservation withinDurationReservation = new Reservation(
+            Reservation withinDurationReservation = Reservation.create(
                     EntityId.random(),
                     "withinReservationName",
-                    LocalDate.of(2500, 1, 1),
-                    DEFAULT_TIME_ID,
+                    endDate.minusDays(1),
+                    DEFAULT_TIME,
                     DEFAULT_THEME_ID
             );
             Reservation expectedReservation = reservationRepository.persist(withinDurationReservation);
@@ -167,19 +168,19 @@ class ReservationRepositoryTest {
             @Test
             void 일치하는_예약을_반환한다() {
                 // given
-                LocalDate targetDate = LocalDate.of(2000, 1, 1);
+                LocalDate targetDate = LocalDate.now().plusYears(1);
 
-                Reservation sameDateReservation = new Reservation(
+                Reservation sameDateReservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
                         targetDate,
-                        DEFAULT_TIME_ID,
+                        DEFAULT_TIME,
                         DEFAULT_THEME_ID
                 );
                 Reservation persistedReservation = reservationRepository.persist(sameDateReservation);
 
                 // when
-                List<Reservation> foundReservations = reservationRepository.findByDateAndThemeId(
+                List<Reservation> foundReservations = reservationRepository.findNotCanceledByDateAndThemeId(
                         targetDate,
                         DEFAULT_THEME_ID
                 );
@@ -191,19 +192,19 @@ class ReservationRepositoryTest {
             @Test
             void 일치하는_예약이_없다면_빈_리스트를_반환한다() {
                 // given
-                LocalDate targetDate = LocalDate.of(2000, 1, 1);
+                LocalDate targetDate = LocalDate.now().plusYears(1);
 
-                Reservation differentDateReservation = new Reservation(
+                Reservation differentDateReservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
-                        LocalDate.of(1000, 1, 1),
-                        DEFAULT_TIME_ID,
+                        targetDate.plusDays(1),
+                        DEFAULT_TIME,
                         DEFAULT_THEME_ID
                 );
                 reservationRepository.persist(differentDateReservation);
 
                 // when
-                List<Reservation> foundReservations = reservationRepository.findByDateAndThemeId(
+                List<Reservation> foundReservations = reservationRepository.findNotCanceledByDateAndThemeId(
                         targetDate,
                         DEFAULT_THEME_ID
                 );
@@ -219,18 +220,18 @@ class ReservationRepositoryTest {
             @Test
             void ID_기반으로_예약을_제거한다() {
                 // given
-                Reservation reservation = new Reservation(
+                Reservation reservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
                         DEFAULT_RESERVATION_DATE,
-                        DEFAULT_TIME_ID,
+                        DEFAULT_TIME,
                         DEFAULT_THEME_ID
                 );
 
                 Reservation persistedReservation = reservationRepository.persist(reservation);
 
                 // when
-                reservationRepository.delete(persistedReservation.id());
+                reservationRepository.delete(persistedReservation.getId());
 
                 // then
                 List<Reservation> reservations = reservationRepository.findAll();
@@ -241,18 +242,18 @@ class ReservationRepositoryTest {
             @Test
             void 레코드가_제거됐다면_true를_반환한다() {
                 // given
-                Reservation reservation = new Reservation(
+                Reservation reservation = Reservation.create(
                         DEFAULT_RESERVATION_ID,
                         DEFAULT_RESERVATION_NAME,
                         DEFAULT_RESERVATION_DATE,
-                        DEFAULT_TIME_ID,
+                        DEFAULT_TIME,
                         DEFAULT_THEME_ID
                 );
 
                 Reservation persistedReservation = reservationRepository.persist(reservation);
 
                 // when
-                boolean deleted = reservationRepository.delete(persistedReservation.id());
+                boolean deleted = reservationRepository.delete(persistedReservation.getId());
 
                 // then
                 assertThat(deleted).isTrue();
@@ -267,13 +268,13 @@ class ReservationRepositoryTest {
         }
     }
 
-    private void persistTime(EntityId id, LocalTime startAt) {
+    private void persistTime(ReservationTime time) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time");
 
         simpleJdbcInsert.execute(Map.of(
-                "id", UUID.fromString(id.getValueAsString()),
-                "start_at", startAt
+                "id", time.id().getValueAsUuid(),
+                "start_at", time.startAt()
         ));
     }
 
@@ -295,19 +296,26 @@ class ReservationRepositoryTest {
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> new Reservation(
-                readEntityId(resultSet, "id"),
-                resultSet.getString("name"),
-                resultSet.getObject("date", LocalDate.class),
-                readEntityId(resultSet, "time_id"),
-                readEntityId(resultSet, "theme_id")
-        );
+        return (resultSet, rowNum) -> {
+            EntityId timeId = readEntityId(resultSet, "time_id");
+            LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+            ReservationTime time = new ReservationTime(timeId, startAt);
+
+            return Reservation.retrieve(
+                    readEntityId(resultSet, "id"),
+                    resultSet.getString("name"),
+                    resultSet.getObject("date", LocalDate.class),
+                    resultSet.getBoolean("canceled"),
+                    time,
+                    readEntityId(resultSet, "theme_id")
+            );
+        };
     }
 
     private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
         UUID uuid = resultSet.getObject(column, UUID.class);
 
-        return EntityId.fromString(uuid.toString());
+        return EntityId.fromUuid(uuid);
     }
 
     private static void skipIfPersistTestFailed() {

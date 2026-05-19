@@ -11,17 +11,60 @@
 <header th:replace="~{fragments/site :: siteHeader}"></header>
 <main>
     <h1>인기 테마 TOP 10</h1>
-    <p class="muted"><a th:href="@{/user}">← 사용자 홈</a></p>
+    <p class="muted"><a th:href="@{/view/user}">← 사용자 홈</a></p>
     <p id="range" class="muted"></p>
     <div id="list" class="popular-list"></div>
     <p id="empty" class="muted" style="display:none;">해당 기간에 집계된 테마가 없습니다.</p>
     <p id="err" class="status-msg err" style="display:none;"></p>
+    <details class="dev-panel">
+        <summary>🧪 에러 응답 테스트</summary>
+        <p class="trigger-desc">시작일이 종료일보다 미래인 잘못된 기간으로 조회를 시도합니다. → <code>INVALID_DURATION</code></p>
+        <div class="form-row">
+            <button type="button" class="btn btn-test" id="triggerErrBtn">잘못된 기간으로 인기 테마 조회 시도</button>
+        </div>
+        <p id="testErr" class="status-msg" style="display:none;"></p>
+    </details>
 </main>
+<div th:replace="~{fragments/site :: errorModal}"></div>
+<script th:src="@{/js/common.js}"></script>
 <script>
     const listEl = document.getElementById('list');
     const rangeEl = document.getElementById('range');
     const empty = document.getElementById('empty');
     const err = document.getElementById('err');
+
+    const ERROR_MESSAGES = {
+        BAD_REQUEST: '잘못된 요청입니다.',
+        INVALID_INPUT: '입력값이 올바르지 않습니다.',
+        INVALID_REQUEST: '요청 형식이 올바르지 않습니다.',
+        INVALID_ID: 'ID 형식이 올바르지 않습니다.',
+        INVALID_DURATION: '조회 기간이 올바르지 않습니다. 시작일은 종료일보다 늦을 수 없습니다.',
+        INVALID_RESERVATION: '예약 정보가 올바르지 않습니다.',
+        INVALID_RESERVATION_TIME: '예약 시간 정보가 올바르지 않습니다.',
+        INVALID_THEME: '테마 정보가 올바르지 않습니다.',
+        TIME_IN_USE: '해당 시간은 예약에 사용 중이라 삭제할 수 없습니다.',
+        THEME_IN_USE: '해당 테마는 예약에 사용 중이라 삭제할 수 없습니다.',
+        DATA_INTEGRITY_VIOLATION: '데이터 처리 중 오류가 발생했습니다.',
+        PAST_RESERVATION: '지난 시간의 예약은 생성·변경·취소할 수 없습니다.',
+        NOT_RESERVATION_OWNER: '본인의 예약만 변경하거나 취소할 수 있습니다.',
+        RESERVATION_NOT_FOUND: '해당 예약을 찾을 수 없습니다.',
+        RESERVATION_TIME_NOT_FOUND: '해당 예약 시간을 찾을 수 없습니다.',
+        THEME_NOT_FOUND: '해당 테마를 찾을 수 없습니다.',
+        DUPLICATE_RESERVATION: '이미 같은 날짜·시간·테마에 예약이 존재합니다.',
+        DATABASE_ERROR: '데이터베이스 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+        INTERNAL_SERVER_ERROR: '서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+    };
+
+    async function readApiError(res) {
+        const text = await res.text();
+        if (!text) return '요청 실패 (' + res.status + ')';
+        try {
+            const j = JSON.parse(text);
+            if (j && j.errorCode && ERROR_MESSAGES[j.errorCode]) return ERROR_MESSAGES[j.errorCode];
+            if (j && j.message) return j.message;
+        } catch (_) {}
+        return text || '요청 실패 (' + res.status + ')';
+    }
 
     function localYmd(d) {
         const y = d.getFullYear();
@@ -55,7 +98,7 @@
         err.style.display = 'none';
         try {
             const res = await fetch(url);
-            if (!res.ok) throw new Error('조회에 실패했습니다.');
+            if (!res.ok) throw new Error(await readApiError(res));
             const items = await res.json();
             listEl.innerHTML = '';
             const withCount = items.filter(x => x.reservationCount > 0);
@@ -75,10 +118,24 @@
                 listEl.appendChild(div);
             }
         } catch (e) {
-            err.textContent = e.message;
-            err.style.display = 'block';
+            showErrorModal(e.message);
         }
     })();
+
+    document.getElementById('triggerErrBtn').addEventListener('click', async () => {
+        const testErr = document.getElementById('testErr');
+        testErr.style.display = 'none';
+        try {
+            // 시작일 > 종료일로 전달 → INVALID_DURATION
+            const res = await fetch('/themes/most-reserved?limit=10&startDate=2099-12-31&endDate=2099-01-01');
+            if (!res.ok) throw new Error(await readApiError(res));
+            testErr.textContent = '성공 응답을 받았습니다.';
+            testErr.className = 'status-msg ok';
+            testErr.style.display = 'block';
+        } catch (e) {
+            showErrorModal(e.message);
+        }
+    });
 </script>
 </body>
 </html>

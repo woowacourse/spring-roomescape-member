@@ -20,11 +20,12 @@ public class ReservationResponseMapper {
             Reservation reservation
     ) {
         return new ReservationSummaryResponse(
-                reservation.id().getValueAsString(),
-                reservation.name(),
-                reservation.date(),
-                reservation.timeId().getValueAsString(),
-                reservation.themeId().getValueAsString()
+                reservation.getId().getValueAsString(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.isCanceled(),
+                reservation.getTimeId().getValueAsString(),
+                reservation.getThemeId().getValueAsString()
         );
     }
 
@@ -36,9 +37,11 @@ public class ReservationResponseMapper {
         ThemeResponse theme = themeResponseMapper.map(assembledReservation.theme());
 
         return new ReservationDetailResponse(
-                reservation.id().getValueAsString(),
-                reservation.name(),
-                reservation.date(),
+                reservation.getId().getValueAsString(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.isCanceled(),
+                reservation.isCancelable(),
                 time,
                 theme
         );
