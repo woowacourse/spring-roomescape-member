@@ -16,7 +16,8 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
-    void updateCancelled(Long id);
+
+    int relocateToCanceledReservation(Long id);
 
     List<Reservation> findReservationsByName(String name);
 

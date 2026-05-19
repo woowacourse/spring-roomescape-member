@@ -117,15 +117,11 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
-    public void updateCancelled(Long id) {
-        int archived = jdbcTemplate.update(
+    public int relocateToCanceledReservation(Long id) {
+        return jdbcTemplate.update(
                 "INSERT INTO canceled_reservation (id, name, date, time_id, theme_id) " +
                         "SELECT id, name, date, time_id, theme_id FROM reservation WHERE id = ?",
                 id);
-        if (archived == 0) {
-            throw new EmptyResultDataAccessException(1);
-        }
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     @Override

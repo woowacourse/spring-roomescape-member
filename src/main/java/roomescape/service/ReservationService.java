@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,15 +43,15 @@ public class ReservationService {
     }
 
     @Transactional
-    public void updateCancelled(Long id, LocalDateTime now, ReservationCancelPolicy policy) {
-        try {
-            Reservation reservation = reservationRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
-            policy.validate(reservation, now);
-            reservationRepository.updateCancelled(id);
-        } catch (EmptyResultDataAccessException e) {
+    public void updateCanceled(Long id, LocalDateTime now, ReservationCancelPolicy policy) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
+        policy.validate(reservation, now);
+        int archived = reservationRepository.relocateToCanceledReservation(id);
+        if (archived == 0) {
             throw new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND);
         }
+        reservationRepository.deleteById(id);
     }
 
     @Transactional

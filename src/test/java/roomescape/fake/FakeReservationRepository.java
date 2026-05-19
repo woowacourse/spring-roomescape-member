@@ -45,11 +45,8 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void updateCancelled(Long id) {
-        boolean removed = reservations.removeIf(reservation -> Objects.equals(reservation.id(), id));
-        if (!removed) {
-            throw new EmptyResultDataAccessException(1);
-        }
+    public int relocateToCanceledReservation(Long id) {
+        return 0;
     }
 
     @Override

@@ -147,10 +147,11 @@ class ReservationServiceTest {
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
         Reservation past = new Reservation(1L, "브라운", FIXED_TODAY.minusDays(1), time, theme);
         given(reservationRepository.findById(1L)).willReturn(Optional.of(past));
+        given(reservationRepository.relocateToCanceledReservation(1L)).willReturn(1);
 
-        reservationService.updateCancelled(1L, NOW, adminCancelPolicy);
+        reservationService.updateCanceled(1L, NOW, adminCancelPolicy);
 
-        verify(reservationRepository).updateCancelled(eq(1L));
+        verify(reservationRepository).relocateToCanceledReservation(eq(1L));
     }
 
     @Test
@@ -218,17 +219,18 @@ class ReservationServiceTest {
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
         Reservation future = new Reservation(1L, "브라운", FIXED_TODAY.plusDays(1), time, theme);
         given(reservationRepository.findById(1L)).willReturn(Optional.of(future));
+        given(reservationRepository.relocateToCanceledReservation(1L)).willReturn(1);
 
-        reservationService.updateCancelled(1L, NOW, userCancelPolicy);
+        reservationService.updateCanceled(1L, NOW, userCancelPolicy);
 
-        verify(reservationRepository).updateCancelled(eq(1L));
+        verify(reservationRepository).relocateToCanceledReservation(eq(1L));
     }
 
     @Test
     void 존재하지_않는_예약을_취소하면_404_예외가_발생한다() {
         given(reservationRepository.findById(999L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.updateCancelled(999L, NOW, userCancelPolicy))
+        assertThatThrownBy(() -> reservationService.updateCanceled(999L, NOW, userCancelPolicy))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(NotFoundCode.RESERVATION_NOT_FOUND.getMessage());
     }
@@ -240,7 +242,7 @@ class ReservationServiceTest {
         Reservation past = new Reservation(7L, "브라운", FIXED_TODAY.minusDays(1), time, theme);
         given(reservationRepository.findById(7L)).willReturn(Optional.of(past));
 
-        assertThatThrownBy(() -> reservationService.updateCancelled(7L, NOW, userCancelPolicy))
+        assertThatThrownBy(() -> reservationService.updateCanceled(7L, NOW, userCancelPolicy))
                 .isInstanceOf(UnprocessableException.class)
                 .hasMessage(UnprocessableCode.RESERVATION_ALREADY_STARTED.getMessage());
     }

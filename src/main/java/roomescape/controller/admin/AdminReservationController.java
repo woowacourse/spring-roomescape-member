@@ -59,7 +59,7 @@ public class AdminReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.updateCancelled(id, LocalDateTime.now(clock), CANCEL_POLICY);
+        reservationService.updateCanceled(id, LocalDateTime.now(clock), CANCEL_POLICY);
 
         return ResponseEntity.noContent().build();
     }
