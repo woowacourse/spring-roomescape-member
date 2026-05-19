@@ -32,13 +32,13 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    void readAllTest() {
+    void findAllTest() {
         ReservationTimeResponseDto firstResponse = reservationTimeService.create(
                 new ReservationTimeRequestDto(LocalTime.of(10, 0)));
         ReservationTimeResponseDto secondResponse = reservationTimeService.create(
                 new ReservationTimeRequestDto(LocalTime.of(11, 0)));
 
-        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
+        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.findAll();
 
         assertThat(responseDtos.getFirst()).isEqualTo(firstResponse);
         assertThat(responseDtos.get(1)).isEqualTo(secondResponse);
@@ -46,8 +46,8 @@ public class ReservationTimeServiceTest {
 
     @Test
     @Sql(scripts = "/available-time-test-data.sql")
-    void readAvailabilityByDateAndThemeTest() {
-        List<ReservationTimeAvailabilityResponseDto> responseDtos = reservationTimeService.readAvailabilityByDateAndTheme(
+    void findAvailabilityByDateAndThemeTest() {
+        List<ReservationTimeAvailabilityResponseDto> responseDtos = reservationTimeService.findAvailabilityByDateAndTheme(
                 LocalDate.of(2026, 5, 1), 1L);
 
         assertThat(responseDtos.getFirst().available()).isFalse();
@@ -60,7 +60,7 @@ public class ReservationTimeServiceTest {
                 new ReservationTimeRequestDto(LocalTime.of(10, 0)));
         reservationTimeService.delete(responseDto.id());
 
-        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
+        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.findAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
     }

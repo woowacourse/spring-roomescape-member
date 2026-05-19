@@ -25,7 +25,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
         }
     }
 
@@ -35,5 +35,9 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return startAt;
+    }
+
+    public boolean isBefore(LocalTime other) {
+        return startAt.isBefore(other);
     }
 }

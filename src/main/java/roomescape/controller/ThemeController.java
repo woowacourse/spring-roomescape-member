@@ -20,17 +20,17 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> readAll() {
-        List<ThemeResponseDto> themeResponseDtos = themeService.readAll();
+    public ResponseEntity<List<ThemeResponseDto>> findAll() {
+        List<ThemeResponseDto> themeResponseDtos = themeService.findAll();
         return ResponseEntity.ok(themeResponseDtos);
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResponseDto>> readRanking(
-            @RequestParam("start-date") LocalDate startDate,
-            @RequestParam("end-date") LocalDate endDate
+    public ResponseEntity<List<ThemeResponseDto>> findRanking(
+            @RequestParam("startDate") LocalDate startDate,
+            @RequestParam("endDate") LocalDate endDate
     ) {
-        List<ThemeResponseDto> responseDtos = themeService.readRanking(startDate, endDate);
+        List<ThemeResponseDto> responseDtos = themeService.findRanking(startDate, endDate);
         return ResponseEntity.ok(responseDtos);
     }
 }

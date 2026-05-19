@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,18 +13,21 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
-@Primary
 @Repository
-public class JdbcThemeDao implements ThemeDao {
+public class JdbcThemeRepository implements ThemeRepository {
+
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public Theme create(Theme themeWithoutId) {
-        String sql = "INSERT INTO `theme`(`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
+        String sql = """
+                INSERT INTO theme(name, description, thumbnail_url)
+                VALUES (?, ?, ?)
+                """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -42,15 +44,15 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Optional<Theme> read(Long id) {
-        String sql = "SELECT * FROM `theme` WHERE `id` = (?)";
+    public Optional<Theme> findById(Long id) {
+        String sql = """
+                SELECT *
+                FROM theme
+                WHERE id = ?
+                """;
 
         try {
-            Theme theme = jdbcTemplate.queryForObject(
-                    sql,
-                    this::mapToTheme,
-                    id
-            );
+            Theme theme = jdbcTemplate.queryForObject(sql, this::mapToTheme, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -58,31 +60,40 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> readAll() {
-        String sql = "SELECT * FROM `theme`";
+    public List<Theme> findAll() {
+        String sql = """
+                SELECT *
+                FROM theme
+                """;
 
         return jdbcTemplate.query(sql, this::mapToTheme);
     }
 
     @Override
-    public List<Theme> readRanking(LocalDate startDate, LocalDate endDate, int limit) {
-        String sql = "SELECT th.id AS id, th.name, th.description, "
-                + "th.thumbnail_url, COUNT(r.id) AS reservation_count "
-                + "FROM theme th "
-                + "LEFT JOIN reservation r "
-                + "ON r.theme_id = th.id "
-                + "AND r.date BETWEEN (?) AND (?) "
-                + "GROUP BY th.id, th.name, th.description, th.thumbnail_url "
-                + "ORDER BY reservation_count DESC, th.id ASC "
-                + "LIMIT (?)";
+    public List<Theme> findAllByOrderByReservationCountDesc(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = """
+                SELECT th.id AS id, th.name, th.description,
+                       th.thumbnail_url, COUNT(r.id) AS reservation_count
+                FROM theme th
+                LEFT JOIN reservation r
+                       ON r.theme_id = th.id
+                      AND r.date BETWEEN ? AND ?
+                GROUP BY th.id, th.name, th.description, th.thumbnail_url
+                ORDER BY reservation_count DESC, th.id ASC
+                LIMIT ?
+                """;
 
-        return jdbcTemplate.query(
-                sql,
-                this::mapToTheme,
-                startDate,
-                endDate,
-                limit
-        );
+        return jdbcTemplate.query(sql, this::mapToTheme, startDate, endDate, limit);
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = """
+                DELETE FROM theme
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, id);
     }
 
     private Theme mapToTheme(ResultSet resultSet, int rowNumber) throws SQLException {
@@ -92,12 +103,5 @@ public class JdbcThemeDao implements ThemeDao {
         String thumbnailUrl = resultSet.getString("thumbnail_url");
 
         return new Theme(id, name, description, thumbnailUrl);
-    }
-
-    @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM theme WHERE id = (?)";
-
-        jdbcTemplate.update(sql, id);
     }
 }

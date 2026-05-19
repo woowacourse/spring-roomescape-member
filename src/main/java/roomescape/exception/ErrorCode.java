@@ -3,13 +3,23 @@ package roomescape.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-    NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, "[ERROR] 해당 ID의 예약을 찾을 수 없습니다."),
-    DUPLICATED_RESERVATION(HttpStatus.BAD_REQUEST, "[ERROR] 동일한 예약이 이미 존재합니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 ID의 예약을 찾을 수 없습니다."),
+    RESERVATION_DUPLICATED(HttpStatus.CONFLICT, "동일한 예약이 이미 존재합니다."),
+    RESERVATION_DATE_PASSED(HttpStatus.UNPROCESSABLE_ENTITY, "오늘보다 이전 날짜로 예약할 수 없습니다."),
+    RESERVATION_TIME_PASSED(HttpStatus.UNPROCESSABLE_ENTITY, "현재 시각보다 이전 시간으로 예약할 수 없습니다."),
+    RESERVATION_ALREADY_PAST(HttpStatus.UNPROCESSABLE_ENTITY, "이미 지난 예약은 변경하거나 취소할 수 없습니다."),
 
-    NOT_FOUND_RESERVATION_TIME(HttpStatus.NOT_FOUND, "[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다."),
-    NOT_FOUND_THEME(HttpStatus.NOT_FOUND, "[ERROR] 해당 ID의 테마를 찾을 수 없습니다."),
+    RESERVATION_TIME_DELETE_REFERENTIAL_INTEGRITY(HttpStatus.CONFLICT, "해당 시간에 예약이 존재하여 삭제할 수 없습니다."),
+    RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 ID의 예약 시간을 찾을 수 없습니다."),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "[ERROR] 서버 내부에서 에러가 발생했습니다.");
+    THEME_DELETE_REFERENTIAL_INTEGRITY(HttpStatus.CONFLICT, "해당 테마의 예약이 존재하여 삭제할 수 없습니다."),
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 ID의 테마를 찾을 수 없습니다."),
+
+    INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 잘못되었습니다."),
+    INVALID_ID_FORMAT(HttpStatus.BAD_REQUEST, "ID 형식이 잘못되었습니다."),
+    INVALID_REQUEST_FORMAT(HttpStatus.BAD_REQUEST, "요청 형식이 올바르지 않습니다."),
+
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에서 에러가 발생했습니다.");
 
     private final HttpStatus status;
     private final String message;

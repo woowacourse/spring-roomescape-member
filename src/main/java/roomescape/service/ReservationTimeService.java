@@ -3,8 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeAvailabilityResponseDto;
@@ -12,39 +11,48 @@ import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
+@Transactional(readOnly = true)
 @Service
 public class ReservationTimeService {
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
-        this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
+    public ReservationTimeService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository,
+                                  ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ReservationTimeResponseDto create(ReservationTimeRequestDto requestDto) {
-        ReservationTime reservationTime = reservationTimeDao.create(requestDto.toEntity());
+        ReservationTime reservationTime = reservationTimeRepository.create(requestDto.toEntity());
         return ReservationTimeResponseDto.from(reservationTime);
     }
 
-    public List<ReservationTimeResponseDto> readAll() {
-        List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
+    public List<ReservationTimeResponseDto> findAll() {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream()
                 .map(ReservationTimeResponseDto::from)
                 .toList();
     }
 
-    public List<ReservationTimeAvailabilityResponseDto> readAvailabilityByDateAndTheme(
+    public List<ReservationTimeAvailabilityResponseDto> findAvailabilityByDateAndTheme(
             LocalDate date, Long themeId) {
         Theme theme = findTheme(themeId);
 
-        List<ReservationTime> allReservationTimes = reservationTimeDao.readAll();
-        List<Long> bookedTimeIdByDateAndTheme = reservationTimeDao.bookedTimeIdByDateAndTheme(date, theme.getId());
+        List<ReservationTime> allReservationTimes = reservationTimeRepository.findAll();
+        List<Long> bookedTimeIds = reservationTimeRepository.findIdsByDateAndTheme(date, theme.getId());
 
         return allReservationTimes.stream()
                 .map(reservationTime -> {
-                    if (bookedTimeIdByDateAndTheme.contains(reservationTime.getId())) {
+                    if (bookedTimeIds.contains(reservationTime.getId())) {
                         return ReservationTimeAvailabilityResponseDto.from(reservationTime, false);
                     }
                     return ReservationTimeAvailabilityResponseDto.from(reservationTime, true);
@@ -52,11 +60,20 @@ public class ReservationTimeService {
     }
 
     private Theme findTheme(Long id) {
-        return themeDao.read(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_THEME));
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
+    @Transactional
     public void delete(Long id) {
-        reservationTimeDao.delete(id);
+        validateUnreferencedTime(id);
+
+        reservationTimeRepository.delete(id);
+    }
+
+    private void validateUnreferencedTime(Long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new CustomException(ErrorCode.RESERVATION_TIME_DELETE_REFERENTIAL_INTEGRITY);
+        }
     }
 }

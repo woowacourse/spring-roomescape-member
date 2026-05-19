@@ -93,8 +93,8 @@ class ThemeAcceptanceTest {
         @Test
         void 특정_기간_내_테마_랭킹_조회() {
             RestAssured.given().log().all()
-                    .param("start-date", "2026-05-01")
-                    .param("end-date", "2026-05-07")
+                    .param("startDate", "2026-05-01")
+                    .param("endDate", "2026-05-07")
                     .when().get("/themes/ranking")
                     .then().log().all()
                     .statusCode(200)

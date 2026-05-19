@@ -30,13 +30,13 @@ public class Theme {
 
     private void validate(String name, String description, String thumbnailUrl) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
         }
         if (description.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 설명은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("설명은 비어 있을 수 없습니다.");
         }
         if (thumbnailUrl.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 썸네일은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("썸네일은 비어 있을 수 없습니다.");
         }
     }
 

@@ -90,7 +90,38 @@
     </section>
   </main>
 
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <!-- 에러 모달 -->
+  <div id="error-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="error-modal-title" hidden>
+    <div class="modal">
+      <h2 id="error-modal-title" class="modal-title is-error">요청 실패</h2>
+      <p id="error-modal-body" class="modal-body"></p>
+      <div class="modal-actions">
+        <button id="error-modal-close" class="primary-button" type="button">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예약 변경 모달 -->
+  <div id="change-modal" class="modal-backdrop change-modal" role="dialog" aria-modal="true" aria-labelledby="change-modal-title" hidden>
+    <div class="modal">
+      <h2 id="change-modal-title" class="modal-title">예약 변경</h2>
+      <div class="change-modal-form">
+        <div class="field">
+          <label for="change-date">변경할 날짜</label>
+          <input id="change-date" type="date" required>
+        </div>
+        <div class="field">
+          <label>변경할 시간</label>
+          <div id="change-time-list" class="change-time-grid"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="change-modal-cancel" class="secondary-button" type="button">취소</button>
+        <button id="change-modal-confirm" class="primary-button" type="button" disabled>변경하기</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/app.js" defer></script>
 </body>
 </html>

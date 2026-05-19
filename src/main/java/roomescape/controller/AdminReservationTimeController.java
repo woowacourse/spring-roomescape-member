@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -18,7 +17,7 @@ import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
 @RestController
-@RequestMapping(value = "/admin/times")
+@RequestMapping("/admin/times")
 public class AdminReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
@@ -36,7 +35,6 @@ public class AdminReservationTimeController {
                 .body(response);
     }
 
-    @Nonnull
     private static URI buildLocationUri(ReservationTimeResponseDto responseDto) {
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -46,15 +44,15 @@ public class AdminReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponseDto>> readAll() {
-        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
+    public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
+        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.findAll();
         return ResponseEntity.ok(responseDtos);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-
         reservationTimeService.delete(id);
+
         return ResponseEntity
                 .noContent()
                 .build();

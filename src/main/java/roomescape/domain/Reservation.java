@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -34,17 +35,30 @@ public class Reservation {
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
         }
         if (date == null) {
-            throw new IllegalArgumentException("[ERROR] 날짜는 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("날짜는 비어 있을 수 없습니다.");
         }
         if (time == null) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
         }
         if (theme == null) {
-            throw new IllegalArgumentException("[ERROR] 테마는 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("테마는 비어 있을 수 없습니다.");
         }
+    }
+
+    public Reservation changeSchedule(LocalDate newDate, ReservationTime newTime) {
+        return new Reservation(this.id, this.name, newDate, newTime, this.theme);
+    }
+
+    public boolean isPast(LocalDateTime now) {
+        LocalDateTime reservedAt = LocalDateTime.of(date, time.getStartAt());
+        return reservedAt.isBefore(now);
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 
     public Long getId() {

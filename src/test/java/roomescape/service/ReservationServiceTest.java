@@ -12,8 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
@@ -30,16 +30,16 @@ public class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private ThemeDao themeDao;
+    private ThemeRepository themeRepository;
 
     @Test
     void notExistReservationTimeExceptionTest() {
-        ReservationTime createdTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(12, 34)));
+        ReservationTime createdTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 34)));
         Long testId = createdTime.getId();
-        reservationTimeDao.delete(testId);
+        reservationTimeRepository.delete(testId);
 
         ThemeResponseDto themeResponseDto = createTheme();
         ReservationRequestDto requestDto = new ReservationRequestDto(
@@ -55,12 +55,12 @@ public class ReservationServiceTest {
     }
 
     private ReservationTimeResponseDto createReservationTime() {
-        ReservationTime createdTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime createdTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         return ReservationTimeResponseDto.from(createdTime);
     }
 
     private ThemeResponseDto createTheme() {
-        Theme createdTheme = themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
+        Theme createdTheme = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
         return ThemeResponseDto.from(createdTheme);
     }
 
@@ -79,7 +79,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void readAllTest() {
+    void findAllTest() {
         ReservationTimeResponseDto reservationTimeResponseDto = createReservationTime();
         ThemeResponseDto themeResponseDto = createTheme();
         ReservationResponseDto firstResponse = reservationService.create(
@@ -89,7 +89,7 @@ public class ReservationServiceTest {
                 new ReservationRequestDto("fizz2", LocalDate.of(2026, 5, 3), reservationTimeResponseDto.id(),
                         themeResponseDto.id()));
 
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
+        List<ReservationResponseDto> responseDtos = reservationService.findAll();
 
         assertThat(responseDtos.getFirst()).isEqualTo(firstResponse);
         assertThat(responseDtos.get(1)).isEqualTo(secondResponse);
@@ -104,7 +104,7 @@ public class ReservationServiceTest {
                         themeResponseDto.id()));
         reservationService.delete(responseDto.id());
 
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
+        List<ReservationResponseDto> responseDtos = reservationService.findAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
     }
