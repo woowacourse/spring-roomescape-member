@@ -12,7 +12,14 @@ public class ReservationTime {
 
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
+        validateTime(startAt);
         this.startAt = startAt;
+    }
+
+    private void validateTime(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("시간이 유효하지 않습니다.");
+        }
     }
 
     public Long getId() {
