@@ -66,14 +66,14 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
-        validateTimeNotInUse(id);
+        validateUnreferencedTime(id);
 
         reservationTimeRepository.delete(id);
     }
 
-    private void validateTimeNotInUse(Long id) {
+    private void validateUnreferencedTime(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new CustomException(ErrorCode.RESERVATION_TIME_IN_USE);
+            throw new CustomException(ErrorCode.RESERVATION_TIME_DELETE_REFERENTIAL_INTEGRITY);
         }
     }
 }

@@ -43,6 +43,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             "SELECT EXISTS (SELECT 1 FROM `reservation` WHERE `date` = ? AND `time_id` = ? AND `theme_id` = ? AND `id` <> ?)";
     private static final String EXISTS_BY_TIME_ID_SQL =
             "SELECT EXISTS (SELECT 1 FROM `reservation` WHERE `time_id` = ?)";
+    private static final String EXISTS_BY_THEME_ID_SQL =
+            "SELECT EXISTS (SELECT 1 FROM `reservation` WHERE `theme_id` = ?)";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -120,6 +122,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByTimeId(Long timeId) {
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID_SQL, Boolean.class, timeId));
+    }
+
+    @Override
+    public boolean existsByThemeId(Long timeId) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_THEME_ID_SQL, Boolean.class, timeId));
     }
 
     private Reservation mapToReservation(ResultSet resultSet, int rowNum) throws SQLException {
