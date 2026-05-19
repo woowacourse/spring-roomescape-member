@@ -18,20 +18,6 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private static final String CREATE_SQL =
-            "INSERT INTO `reservation_time`(`start_at`) VALUES (?)";
-    private static final String FIND_BY_ID_SQL =
-            "SELECT * FROM `reservation_time` WHERE `id` = ?";
-    private static final String FIND_ALL_SQL =
-            "SELECT * FROM `reservation_time` ORDER BY `start_at` ASC";
-    private static final String FIND_BOOKED_TIME_IDS_BY_DATE_AND_THEME_SQL = """
-            SELECT t.id AS time_id
-            FROM `reservation_time` t
-            INNER JOIN `reservation` r ON r.time_id = t.id
-            WHERE r.date = ? AND r.theme_id = ?""";
-    private static final String DELETE_SQL =
-            "DELETE FROM `reservation_time` WHERE `id` = ?";
-
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
@@ -40,9 +26,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime create(ReservationTime reservationTimeWithoutId) {
+        String sql = """
+                INSERT INTO reservation_time(start_at)
+                VALUES (?)
+                """;
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(CREATE_SQL, new String[]{"id"});
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setTime(1, Time.valueOf(reservationTimeWithoutId.getStartAt()));
 
             return preparedStatement;
@@ -54,8 +45,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
+        String sql = """
+                SELECT *
+                FROM reservation_time
+                WHERE id = ?
+                """;
+
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_SQL, this::mapToReservationTime, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapToReservationTime, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
@@ -63,12 +60,26 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query(FIND_ALL_SQL, this::mapToReservationTime);
+        String sql = """
+                SELECT *
+                FROM reservation_time
+                ORDER BY start_at ASC
+                """;
+
+        return jdbcTemplate.query(sql, this::mapToReservationTime);
     }
 
     @Override
     public List<Long> findIdsByDateAndTheme(LocalDate date, Long themeId) {
-        return jdbcTemplate.query(FIND_BOOKED_TIME_IDS_BY_DATE_AND_THEME_SQL,
+        String sql = """
+                SELECT t.id AS time_id
+                FROM reservation_time t
+                INNER JOIN reservation r ON r.time_id = t.id
+                WHERE r.date = ?
+                  AND r.theme_id = ?
+                """;
+
+        return jdbcTemplate.query(sql,
                 (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 date,
                 themeId
@@ -77,7 +88,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void delete(Long id) {
-        jdbcTemplate.update(DELETE_SQL, id);
+        String sql = """
+                DELETE FROM reservation_time
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, id);
     }
 
     private ReservationTime mapToReservationTime(ResultSet resultSet, int rowNum) throws SQLException {

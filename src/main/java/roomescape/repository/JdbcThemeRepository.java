@@ -16,25 +16,6 @@ import roomescape.domain.Theme;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
-    private static final String CREATE_SQL =
-            "INSERT INTO `theme`(`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
-    private static final String FIND_BY_ID_SQL =
-            "SELECT * FROM `theme` WHERE `id` = ?";
-    private static final String FIND_ALL_SQL =
-            "SELECT * FROM `theme`";
-    private static final String FIND_RANKING_SQL = """
-            SELECT th.id AS id, th.name, th.description,
-                   th.thumbnail_url, COUNT(r.id) AS reservation_count
-            FROM `theme` th
-            LEFT JOIN `reservation` r
-              ON r.theme_id = th.id
-              AND r.date BETWEEN ? AND ?
-            GROUP BY th.id, th.name, th.description, th.thumbnail_url
-            ORDER BY reservation_count DESC, th.id ASC
-            LIMIT ?""";
-    private static final String DELETE_SQL =
-            "DELETE FROM `theme` WHERE `id` = ?";
-
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -43,9 +24,14 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme create(Theme themeWithoutId) {
+        String sql = """
+                INSERT INTO theme(name, description, thumbnail_url)
+                VALUES (?, ?, ?)
+                """;
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(CREATE_SQL, new String[]{"id"});
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, themeWithoutId.getName());
             preparedStatement.setString(2, themeWithoutId.getDescription());
             preparedStatement.setString(3, themeWithoutId.getThumbnailUrl());
@@ -59,8 +45,14 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(Long id) {
+        String sql = """
+                SELECT *
+                FROM theme
+                WHERE id = ?
+                """;
+
         try {
-            Theme theme = jdbcTemplate.queryForObject(FIND_BY_ID_SQL, this::mapToTheme, id);
+            Theme theme = jdbcTemplate.queryForObject(sql, this::mapToTheme, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -69,17 +61,39 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query(FIND_ALL_SQL, this::mapToTheme);
+        String sql = """
+                SELECT *
+                FROM theme
+                """;
+
+        return jdbcTemplate.query(sql, this::mapToTheme);
     }
 
     @Override
     public List<Theme> findAllByOrderByReservationCountDesc(LocalDate startDate, LocalDate endDate, int limit) {
-        return jdbcTemplate.query(FIND_RANKING_SQL, this::mapToTheme, startDate, endDate, limit);
+        String sql = """
+                SELECT th.id AS id, th.name, th.description,
+                       th.thumbnail_url, COUNT(r.id) AS reservation_count
+                FROM theme th
+                LEFT JOIN reservation r
+                       ON r.theme_id = th.id
+                      AND r.date BETWEEN ? AND ?
+                GROUP BY th.id, th.name, th.description, th.thumbnail_url
+                ORDER BY reservation_count DESC, th.id ASC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, this::mapToTheme, startDate, endDate, limit);
     }
 
     @Override
     public void delete(Long id) {
-        jdbcTemplate.update(DELETE_SQL, id);
+        String sql = """
+                DELETE FROM theme
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, id);
     }
 
     private Theme mapToTheme(ResultSet resultSet, int rowNumber) throws SQLException {
