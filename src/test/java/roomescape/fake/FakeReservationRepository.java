@@ -1,8 +1,6 @@
 package roomescape.fake;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.exception.ConflictException;
 import roomescape.exception.code.ConflictCode;
 import roomescape.repository.ReservationRepository;

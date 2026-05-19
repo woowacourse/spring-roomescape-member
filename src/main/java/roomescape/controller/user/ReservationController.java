@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.policy.ReservationCancelPolicy;
 import roomescape.policy.ReservationSavePolicy;
-import roomescape.policy.UserReservationCancelPolicy;
-import roomescape.policy.UserReservationSavePolicy;
 import roomescape.request.ReservationEditRequest;
 import roomescape.request.ReservationRequest;
 import roomescape.response.ReservationResponse;
