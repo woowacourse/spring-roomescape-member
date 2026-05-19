@@ -1,5 +1,6 @@
 package roomescape.policy;
 
+import org.springframework.stereotype.Component;
 import roomescape.domain.Reservation;
 import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.UnprocessableCode;
@@ -7,6 +8,7 @@ import roomescape.exception.code.UnprocessableCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Component
 public class UserReservationSavePolicy implements ReservationSavePolicy {
 
     @Override

@@ -1,11 +1,13 @@
 package roomescape.policy;
 
+import org.springframework.stereotype.Component;
 import roomescape.domain.Reservation;
 import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.UnprocessableCode;
 
 import java.time.LocalDateTime;
 
+@Component
 public class UserReservationCancelPolicy implements ReservationCancelPolicy {
 
     @Override
