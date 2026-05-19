@@ -4,9 +4,6 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public record ReservationTime(Long id, LocalTime startAt) {
-    public boolean isBefore(LocalTime time) {
-        return startAt.isBefore(time);
-    }
 
     @Override
     public boolean equals(Object o) {

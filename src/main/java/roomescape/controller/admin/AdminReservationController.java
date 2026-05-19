@@ -37,8 +37,8 @@ public class AdminReservationController {
     public AdminReservationController(
             ReservationService reservationService,
             Clock clock,
-            @Qualifier("adminReservationSavePolicy") AdminReservationSavePolicy savePolicy,
-            @Qualifier("adminReservationCancelPolicy") AdminReservationCancelPolicy cancelPolicy) {
+            @Qualifier("adminReservationSavePolicy") ReservationSavePolicy savePolicy,
+            @Qualifier("adminReservationCancelPolicy") ReservationCancelPolicy cancelPolicy) {
         this.reservationService = reservationService;
         this.clock = clock;
         this.savePolicy = savePolicy;
