@@ -89,7 +89,7 @@ public class ReservationService {
         ReservationTime time = getReservationTime(request.timeId());
         validateFutureDateTime(request.date(), time);
 
-        validateUniqueForUpdate(request.date(), time.getId(), reservation.getTheme().getId(), reservationId);
+        validateUniqueForUpdate(request.date(), time.getId(), reservation.getThemeId(), reservationId);
 
         Reservation updated = reservation.changeSchedule(request.date(), time);
         reservationRepository.update(updated);

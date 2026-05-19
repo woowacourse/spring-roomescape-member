@@ -57,6 +57,10 @@ public class Reservation {
         return reservedAt.isBefore(now);
     }
 
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
     public Long getId() {
         return id;
     }
