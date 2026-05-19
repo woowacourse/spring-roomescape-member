@@ -13,7 +13,7 @@ public interface ReservationRepository {
     List<Reservation> findByName(String name);
     boolean existsByReservationTimeId(Long reservationId);
     boolean existsByThemeId(Long themeId);
-    void updateScheduleByIdAndName(LocalDate date, Long timeId, Long id, String name);
+    void updateSchedule(Reservation targetReservation);
     void deleteById(Long id);
     void deleteByIdAndName(Long id, String name);
 }

@@ -204,13 +204,13 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
     }
 
     @Override
-    public void updateScheduleByIdAndName(LocalDate date, Long timeId, Long id, String name) {
+    public void updateSchedule(Reservation updateReservation) {
         jdbcTemplate.update(
                 UPDATE_SCHEDULE_BY_ID_AND_NAME_QUERY,
-                date,
-                timeId,
-                id,
-                name
+                updateReservation.getDate(),
+                updateReservation.getTime().getId(),
+                updateReservation.getId(),
+                updateReservation.getName()
         );
     }
 
