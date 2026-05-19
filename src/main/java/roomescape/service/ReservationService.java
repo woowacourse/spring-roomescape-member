@@ -78,7 +78,6 @@ public class ReservationService {
         checkReservationDuplication(reservationCount);
         ReservationTime updatedTime = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
-        command.validateNow(updatedTime, now);
 
         Reservation updated = new Reservation(
                 reservation.id(),
@@ -86,6 +85,7 @@ public class ReservationService {
                 command.date(),
                 updatedTime,
                 reservation.theme());
+        updated.validateNow(now);
         reservationRepository.updateReservation(updated);
         return updated;
     }

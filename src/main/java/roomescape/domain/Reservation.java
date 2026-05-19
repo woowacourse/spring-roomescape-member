@@ -2,7 +2,9 @@ package roomescape.domain;
 
 import roomescape.command.ReservationSaveCommand;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.UnprocessableException;
 import roomescape.exception.code.BadRequestCode;
+import roomescape.exception.code.UnprocessableCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -78,5 +80,16 @@ public record Reservation(
 
     public boolean isDateBefore(LocalDate today) {
         return this.date.isBefore(today);
+    }
+
+    public void validateNow(LocalDateTime now) {
+        if (date().isBefore(now.toLocalDate())) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_DATE);
+        }
+
+        LocalDateTime editedDateTime = date.atTime(time.startAt());
+        if (editedDateTime.isBefore(now)) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_TIME);
+        }
     }
 }
