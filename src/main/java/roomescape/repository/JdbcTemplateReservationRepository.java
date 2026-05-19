@@ -149,11 +149,11 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
-    public void updateReservation(Long id, LocalDate date, long timeId) {
+    public void updateReservation(Reservation reservation) {
         try {
             jdbcTemplate.update(
                     "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
-                    date, timeId, id);
+                    reservation.date(), reservation.timeId(), reservation.id());
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException();
         }

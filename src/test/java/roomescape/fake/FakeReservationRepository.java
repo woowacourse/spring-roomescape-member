@@ -66,17 +66,10 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void updateReservation(Long id, LocalDate date, long timeId) {
-        Reservation reservation = findById(id).orElseThrow(IllegalStateException::new);
-        ReservationTime updatedTime = new ReservationTime(timeId, reservation.time().startAt());
-        Reservation updated = new Reservation(
-                reservation.id(),
-                reservation.name(),
-                date,
-                updatedTime,
-                reservation.theme());
-        int index = reservations.indexOf(reservation);
-        reservations.set(index, updated);
+    public void updateReservation(Reservation reservation) {
+        Reservation existing = findById(reservation.id()).orElseThrow(IllegalStateException::new);
+        int index = reservations.indexOf(existing);
+        reservations.set(index, reservation);
     }
 
     @Override

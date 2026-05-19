@@ -76,15 +76,18 @@ public class ReservationService {
         int reservationCount = reservationRepository.countReservationsOf(command.date(), command.timeId(),
                 reservation.themeId());
         checkReservationDuplication(reservationCount);
-        validateEditedDateTime(command, now);
+        ReservationTime updatedTime = reservationTimeRepository.findById(command.timeId())
+                .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
+        command.validateNow(updatedTime, now);
 
-        try {
-            reservationRepository.updateReservation(id, command.date(), command.timeId());
-            return reservationRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_NOT_FOUND));
-        } catch (IllegalStateException e) {
-            throw new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND);
-        }
+        Reservation updated = new Reservation(
+                reservation.id(),
+                reservation.name(),
+                command.date(),
+                updatedTime,
+                reservation.theme());
+        reservationRepository.updateReservation(updated);
+        return updated;
     }
 
     @NonNull
@@ -95,12 +98,6 @@ public class ReservationService {
             throw new UnprocessableException(UnprocessableCode.RESERVATION_ALREADY_STARTED);
         }
         return reservation;
-    }
-
-    private void validateEditedDateTime(ReservationEditCommand command, LocalDateTime now) {
-        ReservationTime time = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new NotFoundException(NotFoundCode.RESERVATION_TIME_NOT_FOUND));
-        command.validateNow(time, now);
     }
 
     private static void checkReservationDuplication(int reservationCount) {
