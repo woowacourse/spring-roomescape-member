@@ -23,10 +23,11 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest request) {
-        ReservationTime saved = new ReservationTime(
-                null,
-                request.startAt()
-        );
+        if (reservationTimeDao.existsByStartAt(request.startAt())) {
+            throw new IllegalArgumentException("이미 존재하는 시간대이므로 추가할 수 없습니다.");
+        }
+
+        ReservationTime saved = new ReservationTime(request.startAt());
 
         ReservationTime time = reservationTimeDao.save(saved);
 
@@ -34,6 +35,9 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id) {
+        if (reservationTimeDao.existsByTimeId(id)) {
+            throw new IllegalArgumentException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+        }
         reservationTimeDao.delete(id);
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -56,6 +57,72 @@ public class ReservationDao {
         );
     }
 
+    public Reservation findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                """
+                    SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at,
+                    t.id AS theme_id, t.name AS theme_name, t.description, t.url
+                    FROM reservation r
+                    INNER JOIN reservation_time rt ON r.time_id = rt.id
+                    INNER JOIN theme t ON r.theme_id = t.id
+                    WHERE r.id = ?
+                """,
+                (rs, rowNum) -> {
+                    ReservationTime time = new ReservationTime(
+                            rs.getLong("time_id"),
+                            rs.getTime("start_at").toLocalTime()
+                    );
+                    Theme theme = new Theme(
+                            rs.getLong("theme_id"),
+                            rs.getString("theme_name"),
+                            rs.getString("description"),
+                            rs.getString("url")
+                    );
+                    return new Reservation(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getDate("date").toLocalDate(),
+                            time,
+                            theme
+                    );
+                },
+                id
+        );
+    }
+
+    public Optional<Reservation> findByName(String name) {
+        return jdbcTemplate.query(
+                """
+                            SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at,
+                            t.id AS theme_id, t.name AS theme_name, t.description, t.url
+                            FROM reservation r
+                            INNER JOIN reservation_time rt ON r.time_id = rt.id
+                            INNER JOIN theme t ON r.theme_id = t.id
+                            WHERE r.name = ?
+                        """,
+                (rs, rowNum) -> {
+                    ReservationTime time = new ReservationTime(
+                            rs.getLong("time_id"),
+                            rs.getTime("start_at").toLocalTime()
+                    );
+                    Theme theme = new Theme(
+                            rs.getLong("theme_id"),
+                            rs.getString("theme_name"),
+                            rs.getString("description"),
+                            rs.getString("url")
+                    );
+                    return new Reservation(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getDate("date").toLocalDate(),
+                            time,
+                            theme
+                    );
+                },
+                name
+        ).stream().findFirst();
+    }
+
     public boolean existsBy(LocalDate date, Theme theme, ReservationTime time) {
         Boolean result = jdbcTemplate.queryForObject("""
         SELECT EXISTS(
@@ -85,6 +152,21 @@ public class ReservationDao {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
+    }
+
+    @Transactional
+    public Reservation update(Long id, LocalDate date, Long timeId) {
+        jdbcTemplate.update(
+                """
+                    UPDATE reservation
+                    SET date = ?, time_id = ?
+                    WHERE id = ?
+                """,
+                date,
+                timeId,
+                id
+        );
+        return findById(id);
     }
 
     @Transactional

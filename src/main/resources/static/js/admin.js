@@ -54,7 +54,7 @@
   async function loadThemesIntoDeleteSelect() {
     themeDeleteSelect.innerHTML = "";
     try {
-      const apiThemes = await fetchJson(`/theme`);
+      const apiThemes = await fetchJson(`/themes`);
       const themes = apiThemes || [];
       const sorted = [...themes].sort((a, b) => a.name.localeCompare(b.name, "ko"));
 
@@ -88,7 +88,7 @@
       formData.append("description", themeDesc.value.trim());
       formData.append("file", file);
 
-      const res = await fetch("/admin/theme", { method: "POST", body: formData });
+      const res = await fetch("/admin/themes", { method: "POST", body: formData });
       if (!res.ok) throw new Error(await res.text() || "등록 실패");
 
       setMsg(themeCreateMsg, "테마가 등록되었습니다.", true);
@@ -103,7 +103,7 @@
     const id = themeDeleteSelect.value;
     if (!id || !confirm("삭제하시겠습니까?")) return;
     try {
-      await fetchJson(`/admin/theme/${id}`, { method: "DELETE" });
+      await fetchJson(`/admin/themes/${id}`, { method: "DELETE" });
       setMsg(themeDeleteMsg, "삭제되었습니다.", true);
       await loadThemesIntoDeleteSelect(); // 삭제 후 목록 갱신
     } catch (e) {
@@ -158,11 +158,17 @@
     const id = timeDeleteSelect.value;
     if (!id || !confirm("삭제하시겠습니까?")) return;
     try {
-      await fetch(`/admin/times/${id}`, { method: "DELETE" });
+      await fetchJson(`/admin/times/${id}`, { method: "DELETE" });
       setMsg(timeDeleteMsg, "삭제되었습니다.", true);
       await loadTimesIntoDeleteSelect();
     } catch (e) {
-      setMsg(timeDeleteMsg, "삭제 실패", false);
+      // 서버가 JSON 에러 응답을 반환하는 경우 메시지 파싱
+      try {
+        const parsed = JSON.parse(e.message);
+        setMsg(timeDeleteMsg, parsed.message || "삭제 실패", false);
+      } catch {
+        setMsg(timeDeleteMsg, e.message || "삭제 실패", false);
+      }
     }
   });
 
@@ -177,8 +183,8 @@
       }
       list.forEach((r) => {
         const tr = document.createElement("tr");
-        const timeVal = r.time && r.time.startAt ? r.time.startAt : r.time;
-        const cells = [r.id, r.name, r.date, formatTime(timeVal), r.theme?.name || "—"];
+        const timeVal = r.timeResponse?.startAt;
+        const cells = [r.id, r.name, r.date, formatTime(timeVal), r.themeResponse?.name || "—"];
         cells.forEach(text => {
           const td = document.createElement("td");
           td.textContent = text;

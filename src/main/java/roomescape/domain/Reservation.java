@@ -9,10 +9,6 @@ public class Reservation {
     private ReservationTime time;
     private Theme theme;
 
-    public Reservation() {
-
-    }
-
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
@@ -21,6 +17,7 @@ public class Reservation {
         this.id = id;
         validateName(name);
         validateDate(date);
+        validateTime(time);
         this.name = name;
         this.date = date;
         this.time = time;
@@ -28,7 +25,7 @@ public class Reservation {
     }
 
     private void validateName(String name) {
-        if (name == null) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자명이 유효하지 않습니다.");
         }
     }
@@ -36,6 +33,12 @@ public class Reservation {
     private void validateDate(LocalDate date) {
         if (date == null) {
             throw new IllegalArgumentException("예약 날짜가 유효하지 않습니다.");
+        }
+    }
+
+    private void validateTime(ReservationTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간이 유효하지 않습니다.");
         }
     }
 
