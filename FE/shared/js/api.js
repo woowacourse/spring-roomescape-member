@@ -48,7 +48,9 @@ export const api = {
     if (themeId) query.set('themeId', themeId);
 
     const path = query.size > 0 ? `/reservations?${query}` : '/reservations';
-    const response = await fetch(`${BASE_URL}${path}`);
+    const response = await fetch(`${BASE_URL}${path}`, {
+      headers: { Authorization: ADMIN_TOKEN }
+    });
     return handleResponse(response);
   },
 
@@ -79,6 +81,32 @@ export const api = {
     const response = await fetch(`${BASE_URL}/reservations/${id}`, {
       method: 'DELETE',
       headers: { Authorization: ADMIN_TOKEN }
+    });
+    return handleResponse(response);
+  },
+
+  async getMyReservations(name) {
+    const query = new URLSearchParams({ name });
+    const response = await fetch(`${BASE_URL}/reservations/me?${query}`);
+    return handleResponse(response);
+  },
+
+  async updateMyReservation(id, { name, date, timeId }) {
+    const query = new URLSearchParams({
+      name,
+      date,
+      timeId
+    });
+    const response = await fetch(`${BASE_URL}/reservations/me/${id}?${query}`, {
+      method: 'PATCH'
+    });
+    return handleResponse(response);
+  },
+
+  async cancelMyReservation(id, name) {
+    const query = new URLSearchParams({ name });
+    const response = await fetch(`${BASE_URL}/reservations/me/${id}?${query}`, {
+      method: 'DELETE'
     });
     return handleResponse(response);
   },
