@@ -417,3 +417,96 @@ button {
     min-width: 140px;
     margin: 0;
 }
+
+/* Toast */
+.toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    min-width: 260px;
+    max-width: 360px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-left: 4px solid #888;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    transform: translateX(24px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.error {
+    border-left-color: #d44;
+}
+
+.toast.success {
+    border-left-color: #2a9d4a;
+}
+
+.toast-message {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 900;
+    padding: 16px;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    width: 100%;
+    max-width: 440px;
+}
+
+.modal h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+}
+
+.modal-current {
+    margin: 0 0 20px;
+    font-size: 13px;
+    color: #666;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.cell-actions {
+    display: flex;
+    gap: 6px;
+}

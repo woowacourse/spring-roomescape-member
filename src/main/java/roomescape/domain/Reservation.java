@@ -1,11 +1,22 @@
 package roomescape.domain;
 
 import roomescape.command.ReservationSaveCommand;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.UnprocessableException;
+import roomescape.exception.code.BadRequestCode;
+import roomescape.exception.code.UnprocessableCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+public record Reservation(
+        Long id,
+        String name,
+        LocalDate date,
+        ReservationTime time,
+        Theme theme) {
+
     public Reservation {
         validateName(name);
         validateDate(date);
@@ -15,28 +26,28 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
 
     private void validateTheme(Theme theme) {
         if (Objects.isNull(theme)) {
-            throw new IllegalArgumentException("유효하지 않는 테마입니다.");
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_THEME);
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (Objects.isNull(time)) {
-            throw new IllegalArgumentException("유효하지 않은 시간입니다.");
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_TIME);
         }
     }
 
     private void validateName(String name) {
         if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("유효하지 않은 이름입니다.");
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_NAME);
         }
         if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
+            throw new BadRequestException(BadRequestCode.BLANK_RESERVATION_NAME);
         }
     }
 
     private void validateDate(LocalDate date) {
         if (Objects.isNull(date)) {
-            throw new IllegalArgumentException("유효하지 않은 날짜입니다");
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_DATE);
         }
     }
 
@@ -61,5 +72,24 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public boolean isDateTimeBefore(LocalDateTime dateTime) {
+        return LocalDateTime.of(this.date, this.time.startAt()).isBefore(dateTime);
+    }
+
+    public boolean isDateBefore(LocalDate today) {
+        return this.date.isBefore(today);
+    }
+
+    public void validateNow(LocalDateTime now) {
+        if (date().isBefore(now.toLocalDate())) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_DATE);
+        }
+
+        LocalDateTime editedDateTime = date.atTime(time.startAt());
+        if (editedDateTime.isBefore(now)) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_TIME);
+        }
     }
 }

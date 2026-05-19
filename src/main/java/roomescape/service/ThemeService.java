@@ -1,26 +1,24 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.config.PopularPeriodProperties;
+import roomescape.domain.Period;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.code.ConflictCode;
+import roomescape.exception.code.NotFoundCode;
 import roomescape.repository.ThemeRepository;
 
-import java.time.Clock;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class ThemeService {
     private static final int TOP_NUMBERS = 10;
-    private final ThemeRepository themeRepository;
-    private final Clock clock;
-    private final PopularPeriodProperties popularPeriod;
 
-    public ThemeService(ThemeRepository themeRepository, Clock clock, PopularPeriodProperties popularPeriod) {
+    private final ThemeRepository themeRepository;
+
+    public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
-        this.clock = clock;
-        this.popularPeriod = popularPeriod;
     }
 
 
@@ -30,7 +28,7 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("theme"));
+                .orElseThrow(() -> new NotFoundException(NotFoundCode.THEME_NOT_FOUND));
     }
 
     public Theme saveTheme(Theme theme) {
@@ -38,14 +36,14 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.delete(id);
+        try {
+            themeRepository.delete(id);
+        } catch (IllegalStateException e) {
+            throw new ConflictException(ConflictCode.THEME_IN_USE);
+        }
     }
 
-    public List<Theme> findPopularThemes() {
-        LocalDate currentDate = LocalDate.now(clock);
-        LocalDate startInclusive = currentDate.minusDays(popularPeriod.startDaysAgo());
-        LocalDate endInclusive = currentDate.minusDays(popularPeriod.endDaysAgo());
-
-        return themeRepository.findPopularThemes(startInclusive, endInclusive, TOP_NUMBERS);
+    public List<Theme> findPopularThemes(Period period) {
+        return themeRepository.findPopularThemes(period.startInclusive(), period.endInclusive(), TOP_NUMBERS);
     }
 }

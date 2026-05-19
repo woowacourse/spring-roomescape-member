@@ -27,3 +27,14 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     UNIQUE (date, time_id, theme_id)
 );
+
+CREATE TABLE canceled_reservation
+(
+    id          BIGINT       NOT NULL,
+    name        VARCHAR(255) NOT NULL,
+    date        DATE         NOT NULL,
+    time_id     BIGINT       NOT NULL,
+    theme_id    BIGINT       NOT NULL,
+    canceled_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);

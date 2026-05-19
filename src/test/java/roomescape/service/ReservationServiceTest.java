@@ -5,47 +5,59 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.command.ReservationEditCommand;
 import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
-import roomescape.policy.ReservationSavePolicy;
+import roomescape.exception.UnprocessableException;
+import roomescape.exception.code.BadRequestCode;
+import roomescape.exception.code.ConflictCode;
+import roomescape.exception.code.NotFoundCode;
+import roomescape.exception.code.UnprocessableCode;
+import roomescape.policy.AdminReservationCancelPolicy;
+import roomescape.policy.UserReservationCancelPolicy;
+import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
-
+    private static final LocalTime FIXED_TIME = LocalTime.of(12, 0);
+    private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 1);
+    private static final LocalDateTime NOW = LocalDateTime.of(FIXED_TODAY, FIXED_TIME);
+    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy();
+    private final UserReservationCancelPolicy userCancelPolicy = new UserReservationCancelPolicy();
+    private final AdminReservationCancelPolicy adminCancelPolicy = new AdminReservationCancelPolicy();
     @Mock
     private ReservationRepository reservationRepository;
-
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
-
     @Mock
     private ThemeRepository themeRepository;
-
-    private final ReservationSavePolicy DUMMY_POLICY = CMD -> {};
-
     private ReservationService reservationService;
 
     @BeforeEach
@@ -67,7 +79,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
         given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
 
-        Reservation saved = reservationService.saveReservation(saveCommand, DUMMY_POLICY);
+        Reservation saved = reservationService.saveReservation(saveCommand, NOW, userPolicy);
 
         assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
@@ -81,7 +93,7 @@ class ReservationServiceTest {
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, DUMMY_POLICY))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -92,7 +104,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, DUMMY_POLICY))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -130,9 +142,155 @@ class ReservationServiceTest {
     }
 
     @Test
-    void id로_예약을_삭제한다() {
-        reservationService.deleteById(1L);
+    void 관리자는_지난_예약도_취소할_수_있다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        Reservation past = new Reservation(1L, "브라운", FIXED_TODAY.minusDays(1), time, theme);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(past));
+        given(reservationRepository.relocateToCanceledReservation(1L)).willReturn(1);
 
-        verify(reservationRepository).deleteById(eq(1L));
+        reservationService.updateCanceled(1L, NOW, adminCancelPolicy);
+
+        verify(reservationRepository).relocateToCanceledReservation(eq(1L));
+    }
+
+    @Test
+    void 오늘_날짜의_지난_시간으로_예약하면_예외가_발생한다() {
+        ReservationTime pastTime = new ReservationTime(TIME_ID, LocalTime.of(0, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", FIXED_TODAY, TIME_ID, THEME_ID);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(pastTime));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
+                .isInstanceOf(UnprocessableException.class);
+    }
+
+    @Test
+    void 같은_날짜_시간_테마에_이미_예약이_있으면_중복_예외가_발생한다() {
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", date, TIME_ID, THEME_ID);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+        given(reservationRepository.addReservation(any(Reservation.class)))
+                .willThrow(new ConflictException(ConflictCode.RESERVATION_DUPLICATED));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(ConflictCode.RESERVATION_DUPLICATED.getMessage());
+    }
+
+    @Test
+    void 빈_이름으로_예약하면_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(" ", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(BadRequestCode.BLANK_RESERVATION_NAME.getMessage());
+    }
+
+    @Test
+    void 이름을_null예약하면_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(null, LocalDate.of(2026, 5, 10), TIME_ID,
+                THEME_ID);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, NOW, userPolicy))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(BadRequestCode.INVALID_RESERVATION_NAME.getMessage());
+    }
+
+    @Test
+    void 예약을_취소하면_repository에_id가_전달된다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        Reservation future = new Reservation(1L, "브라운", FIXED_TODAY.plusDays(1), time, theme);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(future));
+        given(reservationRepository.relocateToCanceledReservation(1L)).willReturn(1);
+
+        reservationService.updateCanceled(1L, NOW, userCancelPolicy);
+
+        verify(reservationRepository).relocateToCanceledReservation(eq(1L));
+    }
+
+    @Test
+    void 존재하지_않는_예약을_취소하면_404_예외가_발생한다() {
+        given(reservationRepository.findById(999L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.updateCanceled(999L, NOW, userCancelPolicy))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(NotFoundCode.RESERVATION_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 이미_지난_예약은_사용자가_취소할_수_없다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        Reservation past = new Reservation(7L, "브라운", FIXED_TODAY.minusDays(1), time, theme);
+        given(reservationRepository.findById(7L)).willReturn(Optional.of(past));
+
+        assertThatThrownBy(() -> reservationService.updateCanceled(7L, NOW, userCancelPolicy))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage(UnprocessableCode.RESERVATION_ALREADY_STARTED.getMessage());
+    }
+
+    @Test
+    void 기존_예약과_겹치면_수정_불가() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme1 = new Theme(1L, "우주 정거장", "설명", "https://example.com/1.jpg");
+
+        Reservation future = new Reservation(1L, "브라운", FIXED_TODAY.plusDays(1), time, theme1);
+        ReservationEditCommand editCommand = new ReservationEditCommand(FIXED_TODAY.plusDays(1), TIME_ID);
+        given(reservationRepository.findById(1L)).willReturn(Optional.of(future));
+        given(reservationRepository.countReservationsOf(any(), anyLong(), anyLong())).willReturn(1);
+        assertThatThrownBy(() -> reservationService.editReservation(1L, editCommand, NOW))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(ConflictCode.RESERVATION_DUPLICATED.getMessage());
+    }
+
+    @Test
+    void 과거_날짜로_수정_불가() {
+        ReservationTime time = new ReservationTime(TIME_ID, FIXED_TIME);
+        Theme theme = new Theme(1L, "우주 정거장", "설명", "https://example.com/1.jpg");
+
+        Reservation reservation = new Reservation(1L, "브라운", FIXED_TODAY, time, theme);
+        ReservationEditCommand editCommand = new ReservationEditCommand(FIXED_TODAY.minusDays(1), TIME_ID);
+
+        when((reservationRepository.findById(1L))).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(TIME_ID)).thenReturn(Optional.of(time));
+        assertThatThrownBy(() -> reservationService.editReservation(1L, editCommand, NOW))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage(UnprocessableCode.RESERVATION_PAST_DATE.getMessage());
+    }
+
+    @Test
+    void 과거_시간으로_수정_불가() {
+        long currentReservationTimeId = 3L;
+        long editedReservationTimeId = 1L;
+        ReservationTime time = new ReservationTime(currentReservationTimeId, FIXED_TIME);
+        Theme theme = new Theme(1L, "우주 정거장", "설명", "https://example.com/1.jpg");
+
+        Reservation reservation = new Reservation(1L, "브라운", FIXED_TODAY, time, theme);
+        ReservationEditCommand editCommand = new ReservationEditCommand(FIXED_TODAY, editedReservationTimeId);
+        ReservationTime pastTime = new ReservationTime(editedReservationTimeId, LocalTime.of(11, 0));
+
+        when((reservationRepository.findById(1L))).thenReturn(Optional.of(reservation));
+        when(reservationTimeRepository.findById(editedReservationTimeId)).thenReturn(Optional.of(pastTime));
+        assertThatThrownBy(() -> reservationService.editReservation(1L, editCommand, NOW))
+                .isInstanceOf(UnprocessableException.class)
+                .hasMessage(UnprocessableCode.RESERVATION_PAST_TIME.getMessage());
     }
 }

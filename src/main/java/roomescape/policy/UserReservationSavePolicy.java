@@ -1,24 +1,24 @@
 package roomescape.policy;
 
 import org.springframework.stereotype.Component;
-import roomescape.command.ReservationSaveCommand;
+import roomescape.domain.Reservation;
+import roomescape.exception.UnprocessableException;
+import roomescape.exception.code.UnprocessableCode;
 
-import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class UserReservationSavePolicy implements ReservationSavePolicy {
 
-    private final Clock clock;
-
-    public UserReservationSavePolicy(Clock clock) {
-        this.clock = clock;
-    }
-
     @Override
-    public void validate(ReservationSaveCommand command) {
-        if (command.date().isBefore(LocalDate.now(clock))) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+    public void validate(Reservation reservation, LocalDateTime now) {
+        LocalDate today = now.toLocalDate();
+        if (reservation.isDateBefore(today)) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_DATE);
+        }
+        if (reservation.isDateTimeBefore(now)) {
+            throw new UnprocessableException(UnprocessableCode.RESERVATION_PAST_TIME);
         }
     }
 }

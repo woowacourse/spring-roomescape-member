@@ -15,18 +15,22 @@
             description: descEl.value.trim(),
             thumbnailUrl: thumbEl.value.trim()
         };
-        if (!body.name) return alert('이름을 입력해주세요.');
-        const res = await fetch('/admin/themes', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-        if (!res.ok) return alert('추가 실패');
-        const t = await res.json();
-        appendRow(t);
-        nameEl.value = '';
-        descEl.value = '';
-        thumbEl.value = '';
+        if (!body.name) return showToast('이름을 입력해주세요.', 'error');
+        try {
+            const res = await apiFetch('/admin/themes', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const t = await res.json();
+            appendRow(t);
+            nameEl.value = '';
+            descEl.value = '';
+            thumbEl.value = '';
+            toastSuccess('테마가 추가되었습니다.');
+        } catch (e) {
+            toastError(e);
+        }
     });
 
     function appendRow(t) {
@@ -45,8 +49,12 @@
     async function deleteRow(tr) {
         if (!confirm('삭제하시겠습니까?')) return;
         const id = tr.dataset.id;
-        const res = await fetch(`/admin/themes/${id}`, {method: 'DELETE'});
-        if (res.ok) tr.remove();
-        else alert('삭제 실패');
+        try {
+            await apiFetch(`/admin/themes/${id}`, {method: 'DELETE'});
+            tr.remove();
+            toastSuccess('테마가 삭제되었습니다.');
+        } catch (e) {
+            toastError(e);
+        }
     }
 })();

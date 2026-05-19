@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -59,7 +60,11 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     @Override
     public void delete(Long id) {
-        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+        try {
+            jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException();
+        }
     }
 
     @Override

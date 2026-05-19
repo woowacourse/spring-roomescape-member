@@ -5,29 +5,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.config.PopularPeriodProperties;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.code.ConflictCode;
 import roomescape.repository.ThemeRepository;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
-
-    private static final PopularPeriodProperties DEFAULT_PERIOD = new PopularPeriodProperties(7, 1);
 
     @Mock
     private ThemeRepository themeRepository;
@@ -36,7 +31,7 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        themeService = new ThemeService(themeRepository, Clock.systemDefaultZone(), DEFAULT_PERIOD);
+        themeService = new ThemeService(themeRepository);
     }
 
     @Test
@@ -99,24 +94,10 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 인기_테마를_조회한다() {
-        final LocalDate fixedToday = LocalDate.of(2026, 5, 8);
-        final ZoneId zone = ZoneId.of("Asia/Seoul");
-
-        Clock fixedClock = Clock.fixed(
-                fixedToday.atStartOfDay(zone).toInstant(),
-                zone);
-        ThemeService timeRelatedThemeService = new ThemeService(themeRepository, fixedClock, DEFAULT_PERIOD);
-
-        List<Theme> themes = List.of(
-                new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
-                new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg")
-        );
-
-        when(themeRepository.findPopularThemes(any(), any(), anyInt())).thenReturn(themes);
-        List<Theme> result = timeRelatedThemeService.findPopularThemes();
-
-        assertThat(result.size()).isEqualTo(2);
-        assertThat(result).isEqualTo(themes);
+    void 예약이_있는_테마_삭제시_conflict() {
+        doThrow(IllegalStateException.class).when(themeRepository).delete(1L);
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage(ConflictCode.THEME_IN_USE.getMessage());
     }
 }
