@@ -13,7 +13,6 @@ import roomescape.global.exception.customException.BusinessException;
 import roomescape.global.exception.customException.EntityNotFoundException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationUpdateCommand;
-import roomescape.reservation.domain.DefaultReservationPolicy;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.fake.FakeReservationRepository;
@@ -40,7 +39,6 @@ class ReservationServiceTest {
                 reservationRepository,
                 reservationTimeRepository,
                 themeRepository,
-                new DefaultReservationPolicy(),
                 new ReservationValidator(reservationRepository)
         );
     }

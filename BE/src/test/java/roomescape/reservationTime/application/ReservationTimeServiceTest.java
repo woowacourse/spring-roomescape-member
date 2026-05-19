@@ -89,7 +89,7 @@ class ReservationTimeServiceTest {
         ReservationTime bookedTime = saveTime(LocalTime.of(10, 0));
         saveTime(LocalTime.of(11, 0));
         Theme theme = Theme.createRow(1L, "공포", "설명", "https://good.com/thumb-nail/1");
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now().plusDays(1);
         reservationRepository.save(Reservation.create("테스터", date, bookedTime, theme));
 
         // when
@@ -127,7 +127,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약에서 참조 중인 예약 시간을 삭제하면 예외가 발생한다")
     void deleteTime_fail_with_referenced_time() {
         // given
-        LocalTime testStartAt = LocalTime.now();
+        LocalTime testStartAt = LocalTime.now().plusHours(1);
         ReservationTime savedReservationTime = saveTime(testStartAt);
         reservationRepository.save(Reservation.create("테스터", LocalDate.now(), savedReservationTime, null));
 

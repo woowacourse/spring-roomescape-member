@@ -28,8 +28,8 @@ import roomescape.theme.infrastructure.ThemeJdbcTemplateRepository;
 class ReservationJdbcTemplateRepositoryTest {
 
     private static final String TEST_NAME = "홍길동";
-    private static final LocalDate DATE_TODAY = LocalDate.now();
-    private static final LocalDate DATE_TOMORROW = LocalDate.now().plusDays(1);
+    private static final LocalDate DATE_TODAY = LocalDate.now().plusDays(1);
+    private static final LocalDate DATE_TOMORROW = LocalDate.now().plusDays(2);
 
     private final ReservationJdbcTemplateRepository reservationRepository;
     private final ReservationTimeJdbcTemplateRepository timeRepository;
@@ -247,19 +247,16 @@ class ReservationJdbcTemplateRepositoryTest {
 
     @Test
     @DisplayName("이름과 예약 ID를 기반으로 예약 일정을 수정한다")
-    void updateScheduleByIdAndName_success() {
+    void updateSchedule_success() {
         // given
         Reservation savedReservation = reservationRepository.save(
                 Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1)
         );
 
         // when
-        reservationRepository.updateScheduleByIdAndName(
-                DATE_TOMORROW,
-                savedTime2.getId(),
-                savedReservation.getId(),
-                TEST_NAME
-        );
+        Reservation updateReservation = savedReservation.update(TEST_NAME, DATE_TOMORROW, savedTime2);
+
+        reservationRepository.updateSchedule(updateReservation);
 
         // then
         Reservation updatedReservation = reservationRepository.findById(savedReservation.getId())

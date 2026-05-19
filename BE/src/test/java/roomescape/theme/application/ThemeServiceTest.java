@@ -120,10 +120,11 @@ class ThemeServiceTest {
         // given
         Theme firstTheme = themeRepository.save(Theme.create("인기 테마", "설명", "https://good.com/thumb-nail/1"));
         Theme secondTheme = themeRepository.save(Theme.create("보통 테마", "설명", "https://good.com/thumb-nail/2"));
+        ReservationTime reservationTime = ReservationTime.createRow(1L, LocalTime.now().plusHours(1));
         LocalDate today = LocalDate.now();
-        reservations.add(Reservation.create("테스터1", today, null, firstTheme));
-        reservations.add(Reservation.create("테스터2", today, null, firstTheme));
-        reservations.add(Reservation.create("테스터3", today, null, secondTheme));
+        reservations.add(Reservation.create("테스터1", today, reservationTime, firstTheme));
+        reservations.add(Reservation.create("테스터2", today, reservationTime, firstTheme));
+        reservations.add(Reservation.create("테스터3", today, reservationTime, secondTheme));
         popularThemeRepository = new FakePopularThemeRepository(reservations, themeRepository.findAll());
         themeService = new ThemeService(themeReference, themeRepository, popularThemeRepository);
 

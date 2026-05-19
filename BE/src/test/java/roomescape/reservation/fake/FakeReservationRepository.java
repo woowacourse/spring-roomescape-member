@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservationTime.domain.ReservationTime;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -74,27 +73,15 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void updateScheduleByIdAndName(
-            LocalDate date,
-            Long timeId,
-            Long id,
-            String name
-    ) {
-        Reservation reservation = store.get(id);
+    public void updateSchedule(Reservation updateReservation) {
+        Reservation reservation = store.get(updateReservation.getId());
         if (reservation == null) {
             return;
         }
-        if (!reservation.getName().equals(name)) {
+        if (!reservation.getName().equals(updateReservation.getName())) {
             return;
         }
-        Reservation updatedReservation = Reservation.createRow(
-                reservation.getId(),
-                reservation.getName(),
-                date,
-                ReservationTime.createRow(timeId, reservation.getTime().getStartAt()),
-                reservation.getTheme()
-        );
-        store.put(id, updatedReservation);
+        store.put(updateReservation.getId(), updateReservation);
     }
 
     @Override
