@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
-import roomescape.domain.reservationtime.dto.TimeCreationRequest;
-import roomescape.domain.reservationtime.dto.TimeCreationResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeAvailabilityResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.reservationtime.dto.TimeCreationRequest;
+import roomescape.domain.reservationtime.dto.TimeCreationResponse;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 
@@ -22,7 +22,14 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
+    private static boolean isAvailable(ReservationTime reservationTime, Set<Long> reservedTimeIds) {
+        return !reservedTimeIds.contains(reservationTime.getId());
+    }
+
     public TimeCreationResponse createReservationTime(TimeCreationRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+            throw new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_DUPLICATED);
+        }
         ReservationTime reservationTime = reservationTimeRepository.save(request.toEntity());
         return TimeCreationResponse.from(reservationTime);
     }
@@ -54,12 +61,13 @@ public class ReservationTimeService {
             .toList();
     }
 
+    public ReservationTime findById(Long id) {
+        return reservationTimeRepository.findById(id)
+            .orElseThrow(() -> new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
+    }
+
     private Set<Long> getReservedTimeIds(Long themeId, Long dateId) {
         List<Long> reservedTimeIds = reservationRepository.findReservedTimes(themeId, dateId);
         return new HashSet<>(reservedTimeIds);
-    }
-
-    private static boolean isAvailable(ReservationTime reservationTime, Set<Long> reservedTimeIds) {
-        return !reservedTimeIds.contains(reservationTime.getId());
     }
 }

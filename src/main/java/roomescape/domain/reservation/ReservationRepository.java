@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository {
 
@@ -17,4 +18,12 @@ public interface ReservationRepository {
     List<Long> findReservedTimes(Long themeId, Long dateId);
 
     int countByThemeId(Long id);
+
+    List<Reservation> findByName(String name);
+
+    Optional<Reservation> findById(Long id);
+
+    int updateReservation(Long id, Long dateId, Long timeId);
+
+    boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId);
 }

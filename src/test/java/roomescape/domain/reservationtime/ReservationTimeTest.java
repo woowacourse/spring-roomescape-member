@@ -45,6 +45,6 @@ class ReservationTimeTest {
         // when & then
         assertThatThrownBy(() -> ReservationTime.createWithoutId(startAt))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("시간은 필수입니다.");
+            .hasMessage("예약 시간 식별자 정보가 누락되었습니다.");
     }
 }

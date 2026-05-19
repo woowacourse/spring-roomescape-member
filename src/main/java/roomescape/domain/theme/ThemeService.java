@@ -62,4 +62,9 @@ public class ThemeService {
             .map(ThemeRankResponse::from)
             .toList();
     }
+
+    public Theme findById(Long id) {
+        return themeRepository.findById(id)
+            .orElseThrow(() -> new RoomescapeException(ThemeErrorCode.THEME_NOT_EXIST));
+    }
 }

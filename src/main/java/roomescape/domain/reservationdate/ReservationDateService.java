@@ -1,5 +1,6 @@
 package roomescape.domain.reservationdate;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,9 @@ public class ReservationDateService {
     }
 
     public ReservationDateCreationResponse createReservationDate(ReservationDateCreationRequest request) {
+        if (reservationDateRepository.existsByPlayDay(request.playDay())) {
+            throw new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_DUPLICATED);
+        }
         ReservationDate reservationDate = reservationDateRepository.save(request.toEntity());
         return ReservationDateCreationResponse.from(reservationDate);
     }
@@ -41,9 +45,15 @@ public class ReservationDateService {
         }
     }
 
-    public List<ReservationDateResponse> getAllReservationDate() {
+    public List<ReservationDateResponse> getAllAvailableReservationDate() {
         return reservationDateRepository.findAll().stream()
+            .filter(reservationDate -> reservationDate.isAvailable(LocalDate.now()))
             .map(ReservationDateResponse::from)
             .toList();
+    }
+
+    public ReservationDate findById(Long id) {
+        return reservationDateRepository.findById(id)
+            .orElseThrow(() -> new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
     }
 }

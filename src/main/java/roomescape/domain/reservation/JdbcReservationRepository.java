@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -59,6 +60,49 @@ public class JdbcReservationRepository implements ReservationRepository {
             where theme_id = ?
             """;
     ;
+
+    private static final String FIND_BY_NAME_SQL =
+        """
+            select r.id, r.name,
+                   rd.id as date_id, rd.play_day,
+                   rt.id as time_id, rt.start_at,
+                   th.id as theme_id, th.name as theme_name, th.content as theme_content, th.url as theme_url
+            from reservation r
+            join reservation_date rd on r.date_id = rd.id
+            join reservation_time rt on r.time_id = rt.id
+            join theme th on r.theme_id = th.id
+            where r.name  = ?
+            order by rd.play_day
+            """;
+
+    private static final String FIND_BY_ID_SQL =
+        """
+            select r.id, r.name,
+                   rd.id as date_id, rd.play_day,
+                   rt.id as time_id, rt.start_at,
+                   th.id as theme_id, th.name as theme_name, th.content as theme_content, th.url as theme_url
+            from reservation r
+            join reservation_date rd on r.date_id = rd.id
+            join reservation_time rt on r.time_id = rt.id
+            join theme th on r.theme_id = th.id
+            where r.id  = ?
+            """;
+
+    private static final String UPDATE_DATE_TIME_SQL =
+        """
+            update reservation
+            set date_id = ?, time_id = ?
+            where id = ?
+            """;
+
+    private static final String EXIST_BY_DATE_TIME_THEME_SQL =
+        """
+            select exists(
+            select 1
+            from reservation
+            where date_id = ? and time_id = ? and theme_id = ?
+            );
+            """;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -123,6 +167,28 @@ public class JdbcReservationRepository implements ReservationRepository {
             return 0;
         }
         return count;
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(FIND_BY_NAME_SQL, reservationRowMapper(), name);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return jdbcTemplate.query(FIND_BY_ID_SQL, reservationRowMapper(), id)
+            .stream()
+            .findFirst();
+    }
+
+    @Override
+    public int updateReservation(Long id, Long dateId, Long timeId) {
+        return jdbcTemplate.update(UPDATE_DATE_TIME_SQL, dateId, timeId, id);
+    }
+
+    @Override
+    public boolean existsByDateIdAndTimeIdAndThemeId(Long dateId, Long timeId, Long themeId) {
+        return jdbcTemplate.queryForObject(EXIST_BY_DATE_TIME_THEME_SQL, Boolean.class, dateId, timeId, themeId);
     }
 
     private RowMapper<Reservation> reservationRowMapper() {

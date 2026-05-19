@@ -103,7 +103,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("이름은 비어 있을 수 없습니다.");
+            .hasMessage("예약자 성명 데이터가 유효하지 않습니다.");
     }
 
     @Test
@@ -117,7 +117,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("이름은 비어 있을 수 없습니다.");
+            .hasMessage("예약자 성명 데이터가 유효하지 않습니다.");
     }
 
     @Test
@@ -131,7 +131,7 @@ class ReservationTest {
         // when & hen
         assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("날짜는 필수입니다.");
+            .hasMessage("예약 날짜 식별자 혹은 데이터가 누락되었습니다.");
     }
 
     @Test
@@ -145,7 +145,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("시간은 필수입니다.");
+            .hasMessage("예약 시간 식별자 정보가 누락되었습니다.");
     }
 
     @Test
@@ -159,6 +159,6 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("테마는 필수입니다.");
+            .hasMessage("테마 엔티티 식별자 정보가 누락되었습니다.");
     }
 }
